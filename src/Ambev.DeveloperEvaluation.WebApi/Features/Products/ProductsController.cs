@@ -62,7 +62,7 @@ public class ProductsController : BaseController
         string category,
         [FromQuery] int page = 1,
         [FromQuery] int size = 10,
-        [FromQuery] string order = null)
+        [FromQuery] string? order = null)
     {
         var query = new GetProductsByCategoryQuery(category, page, size, order);
         var result = await _mediator.Send(query);

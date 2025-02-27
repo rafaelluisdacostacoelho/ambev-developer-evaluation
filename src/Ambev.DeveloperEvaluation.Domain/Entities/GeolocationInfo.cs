@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities;
 
@@ -53,5 +54,23 @@ public class GeolocationInfo
     /// <para>✔ <b>Stored as <c>double</c></b>: Reduces space usage and improves performance.</para>
     /// <para>✔ <b>Range validation applied</b>: Ensures valid coordinate values.</para>
     /// </remarks>
-    public Point Location => new(Longitude, Latitude) { SRID = 4326 };
+    [Column(TypeName = "geography(Point, 4326)")]
+    public Point Location { get; private set; }
+
+    /// <summary>
+    /// Updates the Location property whenever Latitude or Longitude changes.
+    /// </summary>
+    public void UpdateLocation()
+    {
+        Location = new Point(Longitude, Latitude) { SRID = 4326 };
+    }
+
+    /// <summary>
+    /// Ensures the Location is updated when Latitude and Longitude change.
+    /// </summary>
+    public GeolocationInfo()
+    {
+        Location = new Point(0, 0) { SRID = 4326 }; // Initialize Location with a default value
+        UpdateLocation();
+    }
 }

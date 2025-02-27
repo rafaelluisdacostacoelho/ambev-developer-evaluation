@@ -11,6 +11,5 @@ public class Cart : BaseEntity
     [Required]
     public DateTime Date { get; set; } = DateTime.UtcNow;
 
-    [Required]
     public List<CartItem> Products { get; set; } = [];
 }
