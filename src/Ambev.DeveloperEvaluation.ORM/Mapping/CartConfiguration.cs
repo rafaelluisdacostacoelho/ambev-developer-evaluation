@@ -31,12 +31,12 @@ public class CartConfiguration : IEntityTypeConfiguration<Cart>
         builder.OwnsMany(c => c.Products, cartItem =>
         {
             cartItem.Property(ci => ci.ProductId)
-                    .HasColumnName("product_id")
+                    .HasColumnName("ProductId")
                     .HasColumnType("uuid")
                     .IsRequired();
 
             cartItem.Property(ci => ci.Quantity)
-                    .HasColumnName("quantity")
+                    .HasColumnName("Quantity")
                     .HasColumnType("int")
                     .IsRequired();
         });

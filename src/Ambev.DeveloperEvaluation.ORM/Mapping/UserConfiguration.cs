@@ -67,12 +67,12 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.OwnsOne(u => u.Name, name =>
         {
             name.Property(n => n.Firstname)
-                .HasColumnName("firstname")
+                .HasColumnName("Firstname")
                 .HasColumnType("varchar(100)")
                 .IsRequired();
 
             name.Property(n => n.Lastname)
-                .HasColumnName("lastname")
+                .HasColumnName("Lastname")
                 .HasColumnType("varchar(100)")
                 .IsRequired();
         });
@@ -81,22 +81,22 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.OwnsOne(u => u.Address, address =>
         {
             address.Property(a => a.City)
-                   .HasColumnName("city")
+                   .HasColumnName("Address_City")
                    .HasColumnType("varchar(100)")
                    .IsRequired();
 
             address.Property(a => a.Street)
-                   .HasColumnName("street")
+                   .HasColumnName("Address_Street")
                    .HasColumnType("varchar(100)")
                    .IsRequired();
 
             address.Property(a => a.Number)
-                   .HasColumnName("number")
+                   .HasColumnName("Address_Number")
                    .HasColumnType("int")
                    .IsRequired();
 
             address.Property(a => a.Zipcode)
-                   .HasColumnName("zipcode")
+                   .HasColumnName("Address_Zipcode")
                    .HasColumnType("varchar(20)")
                    .IsRequired();
 
@@ -104,17 +104,17 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             address.OwnsOne(a => a.Geolocation, geo =>
             {
                 geo.Property(g => g.Latitude)
-                   .HasColumnName("geo_latitude")
+                   .HasColumnName("Geolocation_Latitude")
                    .HasColumnType("double precision")
                    .IsRequired();
 
                 geo.Property(g => g.Longitude)
-                   .HasColumnName("geo_longitude")
+                   .HasColumnName("Geolocation_Longitude")
                    .HasColumnType("double precision")
                    .IsRequired();
 
                 geo.Property(g => g.Location)
-                   .HasColumnName("geo_location")
+                   .HasColumnName("Geolocation_Location")
                    .HasColumnType("geography(Point, 4326)")
                    .IsRequired();
             });

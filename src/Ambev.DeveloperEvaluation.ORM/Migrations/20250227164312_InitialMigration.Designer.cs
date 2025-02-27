@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Ambev.DeveloperEvaluation.ORM.Migrations
 {
     [DbContext(typeof(DefaultContext))]
-    [Migration("20250227072350_InitialMigration")]
+    [Migration("20250227164312_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -141,11 +141,11 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
 
                             b1.Property<Guid>("ProductId")
                                 .HasColumnType("uuid")
-                                .HasColumnName("product_id");
+                                .HasColumnName("ProductId");
 
                             b1.Property<int>("Quantity")
                                 .HasColumnType("int")
-                                .HasColumnName("quantity");
+                                .HasColumnName("Quantity");
 
                             b1.HasKey("CartId", "Id");
 
@@ -168,12 +168,12 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
                             b1.Property<string>("ExternalId")
                                 .IsRequired()
                                 .HasColumnType("varchar(50)")
-                                .HasColumnName("category_external_id");
+                                .HasColumnName("Category_ExternalId");
 
                             b1.Property<string>("Name")
                                 .IsRequired()
                                 .HasColumnType("varchar(100)")
-                                .HasColumnName("category_name");
+                                .HasColumnName("Category_Name");
 
                             b1.HasKey("ProductId");
 
@@ -190,16 +190,16 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
 
                             b1.Property<double>("AverageRate")
                                 .HasColumnType("numeric(3,1)")
-                                .HasColumnName("rating_average_rate");
+                                .HasColumnName("Rating_AverageRate");
 
                             b1.Property<string>("ExternalId")
                                 .IsRequired()
                                 .HasColumnType("varchar(50)")
-                                .HasColumnName("rating_external_id");
+                                .HasColumnName("Rating_ExternalId");
 
                             b1.Property<int>("TotalReviews")
                                 .HasColumnType("int")
-                                .HasColumnName("rating_total_reviews");
+                                .HasColumnName("Rating_TotalReviews");
 
                             b1.HasKey("ProductId");
 
@@ -226,21 +226,21 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
                             b1.Property<string>("City")
                                 .IsRequired()
                                 .HasColumnType("varchar(100)")
-                                .HasColumnName("city");
+                                .HasColumnName("Address_City");
 
                             b1.Property<int>("Number")
                                 .HasColumnType("int")
-                                .HasColumnName("number");
+                                .HasColumnName("Address_Number");
 
                             b1.Property<string>("Street")
                                 .IsRequired()
                                 .HasColumnType("varchar(100)")
-                                .HasColumnName("street");
+                                .HasColumnName("Address_Street");
 
                             b1.Property<string>("Zipcode")
                                 .IsRequired()
                                 .HasColumnType("varchar(20)")
-                                .HasColumnName("zipcode");
+                                .HasColumnName("Address_Zipcode");
 
                             b1.HasKey("UserId");
 
@@ -256,16 +256,16 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
 
                                     b2.Property<double>("Latitude")
                                         .HasColumnType("double precision")
-                                        .HasColumnName("geo_latitude");
+                                        .HasColumnName("Geolocation_Latitude");
 
                                     b2.Property<Point>("Location")
                                         .IsRequired()
                                         .HasColumnType("geography(Point, 4326)")
-                                        .HasColumnName("geo_location");
+                                        .HasColumnName("Geolocation_Location");
 
                                     b2.Property<double>("Longitude")
                                         .HasColumnType("double precision")
-                                        .HasColumnName("geo_longitude");
+                                        .HasColumnName("Geolocation_Longitude");
 
                                     b2.HasKey("AddressInfoUserId");
 
@@ -287,12 +287,12 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
                             b1.Property<string>("Firstname")
                                 .IsRequired()
                                 .HasColumnType("varchar(100)")
-                                .HasColumnName("firstname");
+                                .HasColumnName("Firstname");
 
                             b1.Property<string>("Lastname")
                                 .IsRequired()
                                 .HasColumnType("varchar(100)")
-                                .HasColumnName("lastname");
+                                .HasColumnName("Lastname");
 
                             b1.HasKey("UserId");
 

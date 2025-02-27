@@ -44,11 +44,11 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.OwnsOne(p => p.Category, category =>
         {
             category.Property(c => c.ExternalId)
-                    .HasColumnName("category_external_id")
+                    .HasColumnName("Category_ExternalId")
                     .HasColumnType("varchar(50)"); // Restricting ID size
 
             category.Property(c => c.Name)
-                    .HasColumnName("category_name")
+                    .HasColumnName("Category_Name")
                     .HasColumnType("varchar(100)"); // Limiting Name size
         });
 
@@ -56,15 +56,15 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.OwnsOne(p => p.Rating, rating =>
         {
             rating.Property(r => r.ExternalId)
-                  .HasColumnName("rating_external_id")
+                  .HasColumnName("Rating_ExternalId")
                   .HasColumnType("varchar(50)");
 
             rating.Property(r => r.AverageRate)
-                  .HasColumnName("rating_average_rate")
+                  .HasColumnName("Rating_AverageRate")
                   .HasColumnType("numeric(3,1)"); // Precision limit
 
             rating.Property(r => r.TotalReviews)
-                  .HasColumnName("rating_total_reviews")
+                  .HasColumnName("Rating_TotalReviews")
                   .HasColumnType("int");
         });
     }

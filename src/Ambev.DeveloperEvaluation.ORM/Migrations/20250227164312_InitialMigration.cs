@@ -38,11 +38,11 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
                     Price = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
                     Image = table.Column<string>(type: "text", nullable: false),
-                    category_external_id = table.Column<string>(type: "varchar(50)", nullable: false),
-                    category_name = table.Column<string>(type: "varchar(100)", nullable: false),
-                    rating_external_id = table.Column<string>(type: "varchar(50)", nullable: false),
-                    rating_average_rate = table.Column<double>(type: "numeric(3,1)", nullable: false),
-                    rating_total_reviews = table.Column<int>(type: "int", nullable: false)
+                    Category_ExternalId = table.Column<string>(type: "varchar(50)", nullable: false),
+                    Category_Name = table.Column<string>(type: "varchar(100)", nullable: false),
+                    Rating_ExternalId = table.Column<string>(type: "varchar(50)", nullable: false),
+                    Rating_AverageRate = table.Column<double>(type: "numeric(3,1)", nullable: false),
+                    Rating_TotalReviews = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -62,15 +62,15 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
                     Status = table.Column<string>(type: "varchar(15)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    firstname = table.Column<string>(type: "varchar(100)", nullable: false),
-                    lastname = table.Column<string>(type: "varchar(100)", nullable: false),
-                    city = table.Column<string>(type: "varchar(100)", nullable: false),
-                    street = table.Column<string>(type: "varchar(100)", nullable: false),
-                    number = table.Column<int>(type: "int", nullable: false),
-                    zipcode = table.Column<string>(type: "varchar(20)", nullable: false),
-                    geo_latitude = table.Column<double>(type: "double precision", nullable: false),
-                    geo_longitude = table.Column<double>(type: "double precision", nullable: false),
-                    geo_location = table.Column<Point>(type: "geography(Point, 4326)", nullable: false)
+                    Firstname = table.Column<string>(type: "varchar(100)", nullable: false),
+                    Lastname = table.Column<string>(type: "varchar(100)", nullable: false),
+                    Address_City = table.Column<string>(type: "varchar(100)", nullable: false),
+                    Address_Street = table.Column<string>(type: "varchar(100)", nullable: false),
+                    Address_Number = table.Column<int>(type: "int", nullable: false),
+                    Address_Zipcode = table.Column<string>(type: "varchar(20)", nullable: false),
+                    Geolocation_Latitude = table.Column<double>(type: "double precision", nullable: false),
+                    Geolocation_Longitude = table.Column<double>(type: "double precision", nullable: false),
+                    Geolocation_Location = table.Column<Point>(type: "geography(Point, 4326)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -84,8 +84,8 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
                     CartId = table.Column<Guid>(type: "uuid", nullable: false),
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    product_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    quantity = table.Column<int>(type: "int", nullable: false)
+                    ProductId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
