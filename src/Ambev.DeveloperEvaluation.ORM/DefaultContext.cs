@@ -6,13 +6,13 @@ using System.Reflection;
 
 namespace Ambev.DeveloperEvaluation.ORM;
 
-public class DefaultContext : DbContext
+public class StoreDbContext : DbContext
 {
     public DbSet<User> Users { get; set; }
     public DbSet<Product> Products { get; set; }
     public DbSet<Cart> Carts { get; set; }
 
-    public DefaultContext(DbContextOptions<DefaultContext> options) : base(options)
+    public StoreDbContext(DbContextOptions<StoreDbContext> options) : base(options)
     {
     }
 
@@ -22,23 +22,27 @@ public class DefaultContext : DbContext
         base.OnModelCreating(modelBuilder);
     }
 }
-public class YourDbContextFactory : IDesignTimeDbContextFactory<DefaultContext>
+
+public class StoreDbContextFactory : IDesignTimeDbContextFactory<StoreDbContext>
 {
-    public DefaultContext CreateDbContext(string[] args)
+    public StoreDbContext CreateDbContext(string[] args)
     {
         IConfigurationRoot configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json")
             .Build();
 
-        var builder = new DbContextOptionsBuilder<DefaultContext>();
-        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        var builder = new DbContextOptionsBuilder<StoreDbContext>();
 
-        builder.UseNpgsql(connectionString,
-                          options => options.MigrationsAssembly("Ambev.DeveloperEvaluation.ORM")
-                                            .UseNetTopologySuite() // Enables PostGIS support
+        builder.UseNpgsql(
+            configuration.GetConnectionString("DefaultConnection"),
+            options =>
+            {
+                options.MigrationsAssembly("Ambev.DeveloperEvaluation.ORM");
+                options.UseNetTopologySuite(); // Enables PostGIS support
+            }
         );
 
-        return new DefaultContext(builder.Options);
+        return new StoreDbContext(builder.Options);
     }
 }

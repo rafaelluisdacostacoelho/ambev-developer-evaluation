@@ -8,13 +8,13 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories;
 
 public class CartRepository : ICartRepository
 {
-    private readonly DefaultContext _context;
+    private readonly StoreDbContext _context;
 
     /// <summary>
     /// Initializes a new instance of CartRepository
     /// </summary>
     /// <param name="context">The database context</param>
-    public CartRepository(DefaultContext context)
+    public CartRepository(StoreDbContext context)
     {
         _context = context;
     }

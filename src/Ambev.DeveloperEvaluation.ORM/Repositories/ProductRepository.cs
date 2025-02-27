@@ -8,13 +8,13 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories;
 
 public class ProductRepository : IProductRepository
 {
-    private readonly DefaultContext _context;
+    private readonly StoreDbContext _context;
 
     /// <summary>
     /// Initializes a new instance of ProductRepository
     /// </summary>
     /// <param name="context">The database context</param>
-    public ProductRepository(DefaultContext context)
+    public ProductRepository(StoreDbContext context)
     {
         _context = context;
     }

@@ -29,12 +29,42 @@ public class Program
             builder.AddBasicHealthChecks();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddDbContext<DefaultContext>(options =>
+            builder.Services.AddDbContext<StoreDbContext>(options =>
+            {
                 options.UseNpgsql(
                     builder.Configuration.GetConnectionString("DefaultConnection"),
-                    b => b.MigrationsAssembly("Ambev.DeveloperEvaluation.ORM")
-                )
-            );
+                    options =>
+                    {
+                        options.MigrationsAssembly("Ambev.DeveloperEvaluation.ORM");
+                        options.UseNetTopologySuite();
+                    }
+                );
+
+                if (builder.Environment.IsDevelopment())
+                {
+                    options.EnableSensitiveDataLogging(); // Apenas em DEV, útil para debug
+                    options.EnableDetailedErrors();
+                }
+            });
+
+            // O DbContextFactory é útil para cenários onde é necessário criar instâncias manuais do contexto, 
+            // como em jobs, background services ou processamento paralelo, evitando problemas de concorrência.
+            // É recomendado manter tanto o AddDbContext quanto o AddDbContextFactory quando necessário, 
+            // pois cada um possui um propósito distinto: 
+            // - AddDbContext: Injeta o DbContext como Scoped, ideal para requisições HTTP na API.
+            // - AddDbContextFactory: Permite a criação de instâncias independentes do DbContext sob demanda.
+            // Exemplo de configuração do DbContextFactory:
+            // builder.Services.AddDbContextFactory<StoreDbContext>(options =>
+            // {
+            //     options.UseNpgsql(
+            //         builder.Configuration.GetConnectionString("DefaultConnection"),
+            //         options =>
+            //         {
+            //             options.MigrationsAssembly("Ambev.DeveloperEvaluation.ORM");
+            //             options.UseNetTopologySuite();
+            //         }
+            //     );
+            // });
 
             builder.Services.AddJwtAuthentication(builder.Configuration);
 
