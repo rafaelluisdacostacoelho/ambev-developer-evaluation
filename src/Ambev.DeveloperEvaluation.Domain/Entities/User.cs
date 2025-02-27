@@ -7,7 +7,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities;
 
-
 /// <summary>
 /// Represents a user in the system with authentication and profile information.
 /// This entity follows domain-driven design principles and includes business rules validation.
@@ -15,66 +14,61 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities;
 public class User : BaseEntity, IUser
 {
     /// <summary>
-    /// Gets the user's full name.
-    /// Must not be null or empty and should contain both first and last names.
+    /// The username of the user.
     /// </summary>
     [Required]
     public string Username { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets the user's email address.
-    /// Must be a valid email format and is used as a unique identifier for authentication.
+    /// The email address of the user.
     /// </summary>
     [Required, EmailAddress]
     public string Email { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets the user's phone number.
-    /// Must be a valid phone number format following the pattern (XX) XXXXX-XXXX.
+    /// The phone number of the user.
     /// </summary>
     [Phone]
     public string Phone { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets the hashed password for authentication.
-    /// Password must meet security requirements: minimum 8 characters, at least one uppercase letter,
-    /// one lowercase letter, one number, and one special character.
+    /// The hashed password for authentication.
     /// </summary>
     [Required]
     public string Password { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets the user's role in the system.
-    /// Determines the user's permissions and access levels.
+    /// The user's role in the system.
     /// </summary>
     [Required]
     public UserRole Role { get; set; }
 
     /// <summary>
-    /// Gets the user's current status.
-    /// Indicates whether the user is active, inactive, or blocked in the system.
+    /// The user's account status.
     /// </summary>
     [Required]
     public UserStatus Status { get; set; }
 
     /// <summary>
-    /// Gets the date and time when the user was created.
+    /// The timestamp of when the user was created.
     /// </summary>
     public DateTime CreatedAt { get; set; }
 
     /// <summary>
-    /// Gets the date and time of the last update to the user's information.
+    /// The timestamp of the last update to the user's information.
     /// </summary>
     public DateTime? UpdatedAt { get; set; }
 
     /// <summary>
-    /// 
+    /// The user's full name.
     /// </summary>
+    [Required]
     public NameInfo Name { get; set; } = new NameInfo();
 
     /// <summary>
-    /// 
+    /// The user's address.
     /// </summary>
+    [Required]
     public AddressInfo Address { get; set; } = new AddressInfo();
 
     /// <summary>
@@ -106,20 +100,6 @@ public class User : BaseEntity, IUser
     /// <summary>
     /// Performs validation of the user entity using the UserValidator rules.
     /// </summary>
-    /// <returns>
-    /// A <see cref="ValidationResultDetail"/> containing:
-    /// - IsValid: Indicates whether all validation rules passed
-    /// - Errors: Collection of validation errors if any rules failed
-    /// </returns>
-    /// <remarks>
-    /// <listheader>The validation includes checking:</listheader>
-    /// <list type="bullet">Username format and length</list>
-    /// <list type="bullet">Email format</list>
-    /// <list type="bullet">Phone number format</list>
-    /// <list type="bullet">Password complexity requirements</list>
-    /// <list type="bullet">Role validity</list>
-    /// 
-    /// </remarks>
     public ValidationResultDetail Validate()
     {
         var validator = new UserValidator();
@@ -133,7 +113,6 @@ public class User : BaseEntity, IUser
 
     /// <summary>
     /// Activates the user account.
-    /// Changes the user's status to Active.
     /// </summary>
     public void Activate()
     {
@@ -143,7 +122,6 @@ public class User : BaseEntity, IUser
 
     /// <summary>
     /// Deactivates the user account.
-    /// Changes the user's status to Inactive.
     /// </summary>
     public void Deactivate()
     {
@@ -152,8 +130,7 @@ public class User : BaseEntity, IUser
     }
 
     /// <summary>
-    /// Blocks the user account.
-    /// Changes the user's status to Blocked.
+    /// Suspends the user account.
     /// </summary>
     public void Suspend()
     {

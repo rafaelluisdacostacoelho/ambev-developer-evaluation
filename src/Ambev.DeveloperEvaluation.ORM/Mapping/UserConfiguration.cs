@@ -4,87 +4,119 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Ambev.DeveloperEvaluation.ORM.Mapping;
 
+/// <summary>
+/// Configuration for the User entity in PostgreSQL.
+/// </summary>
 public class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
         builder.ToTable("Users");
 
+        // Primary Key
         builder.HasKey(u => u.Id);
 
+        // Configure ID as UUID with default value
         builder.Property(u => u.Id)
                .HasColumnType("uuid")
                .HasDefaultValueSql("gen_random_uuid()");
 
+        // Username
         builder.Property(u => u.Username)
-               .HasColumnType("text")
-               .IsRequired()
-               .HasMaxLength(50);
+               .HasColumnType("varchar(50)")
+               .IsRequired();
+        builder.HasIndex(u => u.Username).IsUnique();
 
-        builder.Property(u => u.PasswordHash)
-               .HasColumnType("text")
-               .IsRequired()
-               .HasMaxLength(100);
-
+        // Email
         builder.Property(u => u.Email)
-               .HasColumnType("text")
-               .IsRequired()
-               .HasMaxLength(100);
+               .HasColumnType("varchar(255)")
+               .IsRequired();
+        builder.HasIndex(u => u.Email).IsUnique();
 
+        // Password
+        builder.Property(u => u.Password)
+               .HasColumnType("varchar(100)")
+               .IsRequired();
+
+        // Phone
         builder.Property(u => u.Phone)
-               .HasColumnType("text")
-               .HasMaxLength(20);
+               .HasColumnType("varchar(20)");
+        builder.HasIndex(u => u.Phone); // Não único, mas otimiza busca
 
+        // Status
         builder.Property(u => u.Status)
-               .HasColumnType("text")
+               .HasColumnType("varchar(15)")
                .HasConversion<string>()
-               .HasMaxLength(20);
+               .IsRequired();
 
+        // Role
         builder.Property(u => u.Role)
-               .HasColumnType("text")
+               .HasColumnType("varchar(15)")
                .HasConversion<string>()
-               .HasMaxLength(20);
+               .IsRequired();
 
-        // Configurando NameInfo como Owned Type
+        // CreatedAt e UpdatedAt
+        builder.Property(u => u.CreatedAt)
+               .HasColumnType("timestamp with time zone")
+               .IsRequired();
+
+        builder.Property(u => u.UpdatedAt)
+               .HasColumnType("timestamp with time zone");
+
+        // Configure Name as an Owned Type
         builder.OwnsOne(u => u.Name, name =>
         {
             name.Property(n => n.Firstname)
                 .HasColumnName("firstname")
-                .HasColumnType("text");
+                .HasColumnType("varchar(100)")
+                .IsRequired();
 
             name.Property(n => n.Lastname)
                 .HasColumnName("lastname")
-                .HasColumnType("text");
+                .HasColumnType("varchar(100)")
+                .IsRequired();
         });
 
-        // Configurando AddressInfo como Owned Type
+        // Configure Address as an Owned Type
         builder.OwnsOne(u => u.Address, address =>
         {
             address.Property(a => a.City)
                    .HasColumnName("city")
-                   .HasColumnType("text");
+                   .HasColumnType("varchar(100)")
+                   .IsRequired();
 
             address.Property(a => a.Street)
                    .HasColumnName("street")
-                   .HasColumnType("text");
+                   .HasColumnType("varchar(100)")
+                   .IsRequired();
 
             address.Property(a => a.Number)
                    .HasColumnName("number")
-                   .HasColumnType("int");
+                   .HasColumnType("int")
+                   .IsRequired();
 
             address.Property(a => a.Zipcode)
                    .HasColumnName("zipcode")
-                   .HasColumnType("text");
+                   .HasColumnType("varchar(20)")
+                   .IsRequired();
 
+            // Configure Geolocation as an Owned Type
             address.OwnsOne(a => a.Geolocation, geo =>
             {
                 geo.Property(g => g.Latitude)
-                   .HasColumnName("geo_lat")
-                   .HasColumnType("text");
+                   .HasColumnName("geo_latitude")
+                   .HasColumnType("double precision")
+                   .IsRequired();
 
                 geo.Property(g => g.Longitude)
-                   .HasColumnName("geo_long")
-                   .HasColumnType("text");
+                   .HasColumnName("geo_longitude")
+                   .HasColumnType("double precision")
+                   .IsRequired();
+
+                geo.Property(g => g.Location)
+                   .HasColumnName("geo_location")
+                   .HasColumnType("geography(Point, 4326)")
+                   .IsRequired();
             });
         });
     }

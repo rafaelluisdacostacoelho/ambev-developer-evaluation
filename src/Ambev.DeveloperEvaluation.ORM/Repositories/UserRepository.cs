@@ -1,6 +1,8 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+﻿using Ambev.DeveloperEvaluation.Common.Pagination;
+using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Dynamic.Core;
 
 namespace Ambev.DeveloperEvaluation.ORM.Repositories;
 
@@ -21,6 +23,60 @@ public class UserRepository : IUserRepository
     }
 
     /// <summary>
+    /// Retrieves a paginated list of users
+    /// </summary>
+    /// <param name="page">Page number (default: 1)</param>
+    /// <param name="size">Number of items per page (default: 10)</param>
+    /// <param name="order">Ordering of results (e.g., "username asc, email desc")</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>A paginated list of users</returns>
+    public async Task<PaginatedResult<User>> GetPaginatedAsync(int page = 1, int size = 10, string? order = null, CancellationToken cancellationToken = default)
+    {
+        var query = _context.Users.AsQueryable();
+
+        // Aplicar ordenação dinâmica
+        if (!string.IsNullOrWhiteSpace(order))
+        {
+            query = ApplySorting(query, order);
+        }
+
+        var totalItems = await query.CountAsync(cancellationToken);
+
+        var items = await query.Skip((page - 1) * size)
+                               .Take(size)
+                               .ToListAsync(cancellationToken);
+
+        return new PaginatedResult<User>(items, totalItems, page, size);
+    }
+
+    /// <summary>
+    /// Retrieves a user by their unique identifier
+    /// </summary>
+    /// <param name="id">The unique identifier of the user</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>The user if found, null otherwise</returns>
+    public async Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _context.Users
+                             .Include(u => u.Name)
+                             .Include(u => u.Address)
+                             .ThenInclude(a => a.Geolocation)
+                             .FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
+    }
+
+    /// <summary>
+    /// Retrieves a user by their email address
+    /// </summary>
+    /// <param name="email">The email address to search for</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>The user if found, null otherwise</returns>
+    public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
+    {
+        return await _context.Users
+                             .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
+    }
+
+    /// <summary>
     /// Creates a new user in the database
     /// </summary>
     /// <param name="user">The user to create</param>
@@ -34,26 +90,30 @@ public class UserRepository : IUserRepository
     }
 
     /// <summary>
-    /// Retrieves a user by their unique identifier
+    /// Updates an existing user
     /// </summary>
-    /// <param name="id">The unique identifier of the user</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The user if found, null otherwise</returns>
-    public async Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<User?> UpdateAsync(User user, CancellationToken cancellationToken = default)
     {
-        return await _context.Users.FirstOrDefaultAsync(o=> o.Id == id, cancellationToken);
-    }
+        var existingUser = await _context.Users
+                                         .Include(u => u.Name)
+                                         .Include(u => u.Address)
+                                         .ThenInclude(a => a.Geolocation)
+                                         .FirstOrDefaultAsync(u => u.Id == user.Id, cancellationToken);
 
-    /// <summary>
-    /// Retrieves a user by their email address
-    /// </summary>
-    /// <param name="email">The email address to search for</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The user if found, null otherwise</returns>
-    public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
-    {
-        return await _context.Users
-            .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
+        if (existingUser == null)
+        {
+            return null;
+        }
+
+        _context.Entry(existingUser).CurrentValues.SetValues(user);
+
+        // Atualizar informações aninhadas (Nome, Endereço, Geolocalização)
+        existingUser.Name = user.Name;
+        existingUser.Address = user.Address;
+        existingUser.Address.Geolocation = user.Address.Geolocation;
+
+        await _context.SaveChangesAsync(cancellationToken);
+        return existingUser;
     }
 
     /// <summary>
@@ -71,5 +131,24 @@ public class UserRepository : IUserRepository
         _context.Users.Remove(user);
         await _context.SaveChangesAsync(cancellationToken);
         return true;
+    }
+
+    /// <summary>
+    /// Aplica ordenação dinâmica a uma query usando uma string de ordenação no formato "campo1 asc, campo2 desc"
+    /// </summary>
+    private static IQueryable<User> ApplySorting(IQueryable<User> query, string order)
+    {
+        var orders = order.Split(',');
+        foreach (var orderBy in orders)
+        {
+            var parts = orderBy.Trim().Split(' ');
+            if (parts.Length == 2)
+            {
+                var property = parts[0];
+                var direction = parts[1].Equals("desc", StringComparison.CurrentCultureIgnoreCase) ? "descending" : "ascending";
+                query = query.OrderBy($"{property} {direction}");
+            }
+        }
+        return query;
     }
 }

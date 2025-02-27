@@ -21,19 +21,24 @@ public class CartConfiguration : IEntityTypeConfiguration<Cart>
                .IsRequired();
 
         builder.Property(c => c.Date)
-               .HasColumnType("timestamp")
+               .HasColumnType("timestamp with time zone")
                .IsRequired();
+
+        // Índice para otimizar buscas por usuário
+        builder.HasIndex(c => c.UserId);
 
         // Configurando CartItem como Owned Type
         builder.OwnsMany(c => c.Products, cartItem =>
         {
             cartItem.Property(ci => ci.ProductId)
                     .HasColumnName("product_id")
-                    .HasColumnType("uuid");
+                    .HasColumnType("uuid")
+                    .IsRequired();
 
             cartItem.Property(ci => ci.Quantity)
                     .HasColumnName("quantity")
-                    .HasColumnType("int");
+                    .HasColumnType("int")
+                    .IsRequired();
         });
     }
 }
