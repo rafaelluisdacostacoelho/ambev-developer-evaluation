@@ -1,15 +1,42 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Common;
-using System.ComponentModel.DataAnnotations;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities;
 
 public class Cart : BaseEntity
 {
-    [Required]
-    public Guid UserId { get; set; }
+    public Guid UserId { get; private set; }
+    public DateTime Date { get; private set; }
+    public List<CartItem> Products { get; private set; } = [];
 
-    [Required]
-    public DateTime Date { get; set; } = DateTime.UtcNow;
+    // Construtor privado para ORMs
+    // Cart possui construtor privado para evitar inicializações inválidas e garantir imutabilidade.
+    private Cart() { }
 
-    public List<CartItem> Products { get; set; } = [];
+    public Cart(Guid userId)
+    {
+        UserId = userId;
+        Date = DateTime.UtcNow;
+        Products = [];
+    }
+
+    public void AddProduct(Guid productId, int quantity)
+    {
+        if (quantity < 1 || quantity > 20)
+            throw new ArgumentOutOfRangeException(nameof(quantity), "Quantity must be between 1 and 20");
+
+        var existingItem = Products.FirstOrDefault(p => p.ProductId == productId);
+        if (existingItem != null)
+        {
+            existingItem.IncreaseQuantity(quantity);
+        }
+        else
+        {
+            Products.Add(new CartItem(productId, quantity));
+        }
+    }
+
+    public void RemoveProduct(Guid productId)
+    {
+        Products.RemoveAll(p => p.ProductId == productId);
+    }
 }

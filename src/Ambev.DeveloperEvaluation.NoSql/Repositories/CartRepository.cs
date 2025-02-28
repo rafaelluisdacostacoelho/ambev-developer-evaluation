@@ -1,33 +1,60 @@
 ﻿using Ambev.DeveloperEvaluation.Common.Pagination;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
+using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 
 namespace Ambev.DeveloperEvaluation.NoSql.Repositories;
 
 public class CartRepository : ICartRepository
 {
-    public Task AddAsync(Cart cart)
+    private readonly IMongoCollection<Cart> _collection;
+
+    public CartRepository(IMongoDatabase database)
     {
-        throw new NotImplementedException();
+        _collection = database.GetCollection<Cart>("carts");
     }
 
-    public Task DeleteAsync(Guid id)
+    public async Task AddAsync(Cart cart)
     {
-        throw new NotImplementedException();
+        await _collection.InsertOneAsync(cart);
     }
 
-    public Task<Cart?> GetByIdAsync(Guid id)
+    public async Task DeleteAsync(Guid id)
     {
-        throw new NotImplementedException();
+        var filter = Builders<Cart>.Filter.Eq(c => c.Id, id);
+        await _collection.DeleteOneAsync(filter);
     }
 
-    public Task<PaginatedResult<Cart>> GetPaginatedAsync(int page = 1, int size = 10, string? order = null)
+    public async Task<Cart?> GetByIdAsync(Guid id)
     {
-        throw new NotImplementedException();
+        var filter = Builders<Cart>.Filter.Eq(c => c.Id, id);
+        return await _collection.Find(filter).FirstOrDefaultAsync();
     }
 
-    public Task UpdateAsync(Cart cart)
+    public async Task<PaginatedResult<Cart>> GetPaginatedAsync(int page = 1, int size = 10, string? order = null)
     {
-        throw new NotImplementedException();
+        var query = _collection.AsQueryable();
+
+        if (!string.IsNullOrEmpty(order))
+        {
+            query = order switch
+            {
+                "date_desc" => query.OrderByDescending(c => c.Date),
+                "date_asc" => query.OrderBy(c => c.Date),
+                _ => query
+            };
+        }
+
+        var totalCount = await query.CountAsync();
+        var carts = await query.Skip((page - 1) * size).Take(size).ToListAsync();
+
+        return new PaginatedResult<Cart>(carts, totalCount, page, size);
+    }
+
+    public async Task UpdateAsync(Cart cart)
+    {
+        var filter = Builders<Cart>.Filter.Eq(c => c.Id, cart.Id);
+        await _collection.ReplaceOneAsync(filter, cart);
     }
 }
