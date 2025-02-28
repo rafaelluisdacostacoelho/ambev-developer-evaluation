@@ -29,5 +29,14 @@ public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
         RuleFor(user => user.Phone).Matches(@"^\+?[1-9]\d{1,14}$");
         RuleFor(user => user.Status).NotEqual(UserStatus.Unknown);
         RuleFor(user => user.Role).NotEqual(UserRole.None);
+
+        // Validações para NameInfo
+        RuleFor(user => user.Name.Firstname).NotEmpty().MaximumLength(100);
+        RuleFor(user => user.Name.Lastname).NotEmpty().MaximumLength(100);
+
+        // Validações para AddressInfo
+        RuleFor(user => user.Address.Street).NotEmpty().MaximumLength(100);
+        RuleFor(user => user.Address.City).NotEmpty().MaximumLength(100);
+        RuleFor(user => user.Address.Zipcode).NotEmpty().Matches(@"^\d{5}-\d{3}$"); // Exemplo para CEP BR
     }
 }

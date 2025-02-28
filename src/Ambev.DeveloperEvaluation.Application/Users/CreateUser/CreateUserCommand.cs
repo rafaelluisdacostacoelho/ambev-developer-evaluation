@@ -50,7 +50,19 @@ public class CreateUserCommand : IRequest<CreateUserResult>
     /// </summary>
     public UserRole Role { get; set; }
 
+    /// <summary>
+    /// Gets or sets the full name of the user.
+    /// </summary>
+    public CreateNameInfoCommand Name { get; set; } = new CreateNameInfoCommand();
 
+    /// <summary>
+    /// Gets or sets the address of the user.
+    /// </summary>
+    public CreateAddressInfoCommand Address { get; set; } = new CreateAddressInfoCommand();
+
+    /// <summary>
+    /// Performs validation of the command using the CreateUserCommandValidator rules.
+    /// </summary>
     public ValidationResultDetail Validate()
     {
         var validator = new CreateUserCommandValidator();

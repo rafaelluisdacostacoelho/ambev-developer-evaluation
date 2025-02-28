@@ -36,4 +36,14 @@ public class CreateUserRequest
     /// Gets or sets the role assigned to the user.
     /// </summary>
     public UserRole Role { get; set; }
+
+    /// <summary>
+    /// Gets or sets the full name of the user.
+    /// </summary>
+    public CreateNameInfoRequest Name { get; set; } = new CreateNameInfoRequest();
+
+    /// <summary>
+    /// Gets or sets the address of the user.
+    /// </summary>
+    public CreateAddressInfoRequest Address { get; set; } = new CreateAddressInfoRequest();
 }

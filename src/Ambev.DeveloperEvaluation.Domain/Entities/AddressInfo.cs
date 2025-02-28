@@ -1,11 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace Ambev.DeveloperEvaluation.Domain.Entities;
+﻿namespace Ambev.DeveloperEvaluation.Domain.Entities;
 
 /// <summary>
 /// Value Object representing the user's address.
 /// </summary>
-[Owned]
 public class AddressInfo
 {
     public string City { get; set; } = string.Empty;
@@ -18,7 +15,7 @@ public class AddressInfo
 
     public GeolocationInfo Geolocation { get; set; } = null!;
 
-    private AddressInfo() { }
+    public AddressInfo() { }
 
     public AddressInfo(string city, string street, int number, string zipcode, GeolocationInfo geolocation)
     {

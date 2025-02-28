@@ -9,6 +9,7 @@ public class RedisCacheService : ICacheService
 {
     private readonly IDatabase _cache;
     private readonly TimeSpan _defaultExpiration;
+    private readonly IConnectionMultiplexer _redis;
 
     public RedisCacheService(IConfiguration configuration)
     {
@@ -17,19 +18,31 @@ public class RedisCacheService : ICacheService
             throw new ArgumentNullException(nameof(configuration), "A configuração do Redis não pode ser nula.");
         }
 
-        var connectionString = configuration["Redis:ConnectionString"]
-            ?? throw new ArgumentNullException(nameof(configuration), "A configuração do Redis não pode ser nula.");
+        var redisConfig = configuration.GetSection("Redis");
+        var host = redisConfig["Host"] ?? "localhost";
+        var port = redisConfig["Port"] ?? "6379";
+        var password = redisConfig["Password"];
 
-        var expirationString = configuration["Redis:CacheExpirationInMinutes"];
+        var connectionString = password != null
+            ? $"{host}:{port},password={password},abortConnect=false,connectRetry=5,connectTimeout=5000"
+            : $"{host}:{port},abortConnect=false,connectRetry=5,connectTimeout=5000";
 
-        if (!int.TryParse(expirationString, out int expirationMinutes) || expirationMinutes <= 0)
+        if (!int.TryParse(redisConfig["CacheExpirationInMinutes"], out int expirationMinutes) || expirationMinutes <= 0)
         {
             expirationMinutes = 10;
         }
 
-        var redis = ConnectionMultiplexer.Connect(connectionString);
-        _cache = redis.GetDatabase();
         _defaultExpiration = TimeSpan.FromMinutes(expirationMinutes);
+
+        try
+        {
+            _redis = ConnectionMultiplexer.Connect(connectionString);
+            _cache = _redis.GetDatabase();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Erro ao conectar ao Redis: {ex.Message}");
+        }
     }
 
     public async Task<T?> GetAsync<T>(string key)

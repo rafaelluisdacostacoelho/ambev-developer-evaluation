@@ -8,7 +8,7 @@ public class NameInfo
     public string Firstname { get; set; } = string.Empty;
     public string Lastname { get; set; } = string.Empty;
 
-    private NameInfo() { }
+    public NameInfo() { }
 
     public NameInfo(string firstname, string lastname)
     {

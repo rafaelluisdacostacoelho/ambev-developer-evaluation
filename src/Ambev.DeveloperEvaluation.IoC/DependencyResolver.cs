@@ -10,7 +10,7 @@ public static class DependencyResolver
         new ApplicationModuleInitializer().Initialize(builder);
         new InfrastructureCacheModuleInitializer().Initialize(builder);
         new InfrastructureOrmModuleInitializer().Initialize(builder);
-        new InfrastructureNoSqlModuleInitializer().Initialize(builder);
+        //new InfrastructureNoSqlModuleInitializer().Initialize(builder);
         new WebApiModuleInitializer().Initialize(builder);
     }
 }
