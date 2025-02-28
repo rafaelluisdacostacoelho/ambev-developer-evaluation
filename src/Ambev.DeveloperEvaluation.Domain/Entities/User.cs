@@ -3,7 +3,6 @@ using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.Domain.Common;
 using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.Domain.Validation;
-using System.ComponentModel.DataAnnotations;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities;
 
@@ -16,43 +15,37 @@ public class User : BaseEntity, IUser
     /// <summary>
     /// The username of the user.
     /// </summary>
-    [Required]
     public string Username { get; set; } = string.Empty;
 
     /// <summary>
     /// The email address of the user.
     /// </summary>
-    [Required, EmailAddress]
     public string Email { get; set; } = string.Empty;
 
     /// <summary>
     /// The phone number of the user.
     /// </summary>
-    [Phone]
     public string Phone { get; set; } = string.Empty;
 
     /// <summary>
     /// The hashed password for authentication.
     /// </summary>
-    [Required]
     public string Password { get; set; } = string.Empty;
 
     /// <summary>
     /// The user's role in the system.
     /// </summary>
-    [Required]
     public UserRole Role { get; set; }
 
     /// <summary>
     /// The user's account status.
     /// </summary>
-    [Required]
     public UserStatus Status { get; set; }
 
     /// <summary>
     /// The timestamp of when the user was created.
     /// </summary>
-    public DateTime CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// The timestamp of the last update to the user's information.
@@ -62,14 +55,12 @@ public class User : BaseEntity, IUser
     /// <summary>
     /// The user's full name.
     /// </summary>
-    [Required]
-    public NameInfo Name { get; set; } = new NameInfo();
+    public NameInfo Name { get; set; } = null!;
 
     /// <summary>
     /// The user's address.
     /// </summary>
-    [Required]
-    public AddressInfo Address { get; set; } = new AddressInfo();
+    public AddressInfo Address { get; set; } = null!;
 
     /// <summary>
     /// Gets the unique identifier of the user.
@@ -92,9 +83,29 @@ public class User : BaseEntity, IUser
     /// <summary>
     /// Initializes a new instance of the User class.
     /// </summary>
-    public User()
+    public User() { }
+
+    public User(string username, string email, string password, string phone, UserStatus status, UserRole role, NameInfo name, AddressInfo address)
     {
+        if (string.IsNullOrWhiteSpace(username))
+            throw new ArgumentException("Username cannot be empty.", nameof(username));
+
+        if (string.IsNullOrWhiteSpace(email))
+            throw new ArgumentException("Email cannot be empty.", nameof(email));
+
+        if (string.IsNullOrWhiteSpace(password))
+            throw new ArgumentException("Password cannot be empty.", nameof(password));
+
+        Username = username;
+        Email = email;
+        Phone = phone;
+        Password = password;
+        Status = status;
+        Role = role;
+        Status = UserStatus.Inactive;
         CreatedAt = DateTime.UtcNow;
+        Name = name ?? throw new ArgumentNullException(nameof(name));
+        Address = address ?? throw new ArgumentNullException(nameof(address));
     }
 
     /// <summary>

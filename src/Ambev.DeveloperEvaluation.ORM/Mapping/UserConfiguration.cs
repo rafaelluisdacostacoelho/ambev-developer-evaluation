@@ -1,6 +1,8 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.ORM.Mappers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Ambev.DeveloperEvaluation.ORM.Mapping;
 
@@ -113,10 +115,18 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                    .HasColumnType("double precision")
                    .IsRequired();
 
-                geo.Property(g => g.Location)
-                   .HasColumnName("Geolocation_Location")
-                   .HasColumnType("geography(Point, 4326)")
-                   .IsRequired();
+                // Aplicar a conversão de GeolocationInfo para PostGIS (Point)
+                geo.Property(g => g.Latitude)
+                   .HasConversion(new ValueConverter<double, double>(
+                       lat => PostgresGeolocationMapper.ToPostgres(new GeolocationInfo(lat, 0)).Y, // Para o banco
+                       lat => lat // Do banco para a entidade
+                   ));
+
+                geo.Property(g => g.Longitude)
+                   .HasConversion(new ValueConverter<double, double>(
+                       lon => PostgresGeolocationMapper.ToPostgres(new GeolocationInfo(0, lon)).X, // Para o banco
+                       lon => lon // Do banco para a entidade
+                   ));
             });
         });
     }

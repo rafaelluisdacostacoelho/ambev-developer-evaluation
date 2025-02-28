@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -69,8 +68,7 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
                     Address_Number = table.Column<int>(type: "int", nullable: false),
                     Address_Zipcode = table.Column<string>(type: "varchar(20)", nullable: false),
                     Geolocation_Latitude = table.Column<double>(type: "double precision", nullable: false),
-                    Geolocation_Longitude = table.Column<double>(type: "double precision", nullable: false),
-                    Geolocation_Location = table.Column<Point>(type: "geography(Point, 4326)", nullable: false)
+                    Geolocation_Longitude = table.Column<double>(type: "double precision", nullable: false)
                 },
                 constraints: table =>
                 {

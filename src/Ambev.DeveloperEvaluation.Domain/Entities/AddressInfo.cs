@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities;
 
@@ -9,18 +8,36 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities;
 [Owned]
 public class AddressInfo
 {
-    [Required]
     public string City { get; set; } = string.Empty;
 
-    [Required]
     public string Street { get; set; } = string.Empty;
 
-    [Required]
     public int Number { get; set; }
 
-    [Required]
     public string Zipcode { get; set; } = string.Empty;
 
-    [Required]
-    public GeolocationInfo Geolocation { get; set; } = new GeolocationInfo();
+    public GeolocationInfo Geolocation { get; set; } = null!;
+
+    private AddressInfo() { }
+
+    public AddressInfo(string city, string street, int number, string zipcode, GeolocationInfo geolocation)
+    {
+        if (string.IsNullOrWhiteSpace(city))
+            throw new ArgumentException("City cannot be empty.", nameof(city));
+
+        if (string.IsNullOrWhiteSpace(street))
+            throw new ArgumentException("Street cannot be empty.", nameof(street));
+
+        if (number <= 0)
+            throw new ArgumentOutOfRangeException(nameof(number), "Number must be greater than zero.");
+
+        if (string.IsNullOrWhiteSpace(zipcode))
+            throw new ArgumentException("Zipcode cannot be empty.", nameof(zipcode));
+
+        City = city;
+        Street = street;
+        Number = number;
+        Zipcode = zipcode;
+        Geolocation = geolocation ?? throw new ArgumentNullException(nameof(geolocation));
+    }
 }

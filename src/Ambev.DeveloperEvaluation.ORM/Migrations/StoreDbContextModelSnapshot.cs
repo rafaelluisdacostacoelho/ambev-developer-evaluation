@@ -3,9 +3,7 @@ using System;
 using Ambev.DeveloperEvaluation.ORM;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -13,11 +11,9 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Ambev.DeveloperEvaluation.ORM.Migrations
 {
     [DbContext(typeof(StoreDbContext))]
-    [Migration("20250227164312_InitialMigration")]
-    partial class InitialMigration
+    partial class StoreDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -163,6 +159,7 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
                     b.OwnsOne("Ambev.DeveloperEvaluation.Domain.Entities.CategoryInfo", "Category", b1 =>
                         {
                             b1.Property<Guid>("ProductId")
+                                .ValueGeneratedOnAdd()
                                 .HasColumnType("uuid");
 
                             b1.Property<string>("ExternalId")
@@ -186,6 +183,7 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
                     b.OwnsOne("Ambev.DeveloperEvaluation.Domain.Entities.RatingInfo", "Rating", b1 =>
                         {
                             b1.Property<Guid>("ProductId")
+                                .ValueGeneratedOnAdd()
                                 .HasColumnType("uuid");
 
                             b1.Property<double>("AverageRate")
@@ -252,16 +250,12 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
                             b1.OwnsOne("Ambev.DeveloperEvaluation.Domain.Entities.GeolocationInfo", "Geolocation", b2 =>
                                 {
                                     b2.Property<Guid>("AddressInfoUserId")
+                                        .ValueGeneratedOnAdd()
                                         .HasColumnType("uuid");
 
                                     b2.Property<double>("Latitude")
                                         .HasColumnType("double precision")
                                         .HasColumnName("Geolocation_Latitude");
-
-                                    b2.Property<Point>("Location")
-                                        .IsRequired()
-                                        .HasColumnType("geography(Point, 4326)")
-                                        .HasColumnName("Geolocation_Location");
 
                                     b2.Property<double>("Longitude")
                                         .HasColumnType("double precision")
@@ -282,6 +276,7 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
                     b.OwnsOne("Ambev.DeveloperEvaluation.Domain.Entities.NameInfo", "Name", b1 =>
                         {
                             b1.Property<Guid>("UserId")
+                                .ValueGeneratedOnAdd()
                                 .HasColumnType("uuid");
 
                             b1.Property<string>("Firstname")

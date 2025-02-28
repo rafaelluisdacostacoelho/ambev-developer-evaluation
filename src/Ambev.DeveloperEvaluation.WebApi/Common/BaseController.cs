@@ -25,7 +25,7 @@ public class BaseController : ControllerBase
     protected IActionResult NotFound(string message = "Resource not found") =>
         base.NotFound(new ApiResponse { Message = message, Success = false });
 
-    protected IActionResult OkPaginated<T>(PaginatedList<T> pagedList) =>
+    protected IActionResult OkPaginated<T>(PaginatedRequest<T> pagedList) =>
             Ok(new PaginatedResponse<T>
             {
                 Data = pagedList,

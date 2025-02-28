@@ -69,15 +69,16 @@ public class UserTests
     public void Given_InvalidUserData_When_Validated_Then_ShouldReturnInvalid()
     {
         // Arrange
-        var user = new User
-        {
-            Username = "", // Invalid: empty
-            Password = UserTestData.GenerateInvalidPassword(), // Invalid: doesn't meet password requirements
-            Email = UserTestData.GenerateInvalidEmail(), // Invalid: not a valid email
-            Phone = UserTestData.GenerateInvalidPhone(), // Invalid: doesn't match pattern
-            Status = UserStatus.Unknown, // Invalid: cannot be Unknown
-            Role = UserRole.None // Invalid: cannot be None
-        };
+        var user = new User(
+            username: "", // Invalid: empty
+            email: UserTestData.GenerateInvalidEmail(), // Invalid: not a valid email
+            password: UserTestData.GenerateInvalidPassword(), // Invalid: doesn't meet password requirements
+            phone: UserTestData.GenerateInvalidPhone(), // Invalid: doesn't match pattern
+            status: UserStatus.Unknown, // Invalid: cannot be Unknown
+            role: UserRole.None, // Invalid: cannot be None
+            name: new NameInfo("", ""),
+            address: new AddressInfo("", "", 0, "", new GeolocationInfo(0.0, 0.0)) // Provide a default AddressInfo instance
+        );
 
         // Act
         var result = user.Validate();

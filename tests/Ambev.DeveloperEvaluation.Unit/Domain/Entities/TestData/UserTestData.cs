@@ -150,4 +150,14 @@ public static class UserTestData
     {
         return new Faker().Random.String2(51);
     }
+
+    public static string GenerateInvalidFirstname()
+    {
+        return new Faker().Random.String2(51);
+    }
+
+    public static string GenerateInvalidLastname()
+    {
+        return new Faker().Random.String2(51);
+    }
 }
