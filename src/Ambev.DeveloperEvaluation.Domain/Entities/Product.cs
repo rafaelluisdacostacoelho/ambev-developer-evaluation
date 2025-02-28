@@ -1,5 +1,4 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Common;
-using System.ComponentModel.DataAnnotations;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities;
 
@@ -8,37 +7,37 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities;
 /// </summary>
 public class Product : BaseEntity
 {
-    /// <summary>
-    /// The title of the product.
-    /// </summary>
-    [Required]
-    public string Title { get; set; } = string.Empty;
+    public string Title { get; private set; } = string.Empty;
+    public decimal Price { get; private set; }
+    public string Description { get; private set; } = string.Empty;
+    public string Image { get; private set; } = string.Empty;
+    public CategoryInfo Category { get; private set; } = default!;
+    public RatingInfo Rating { get; private set; } = default!;
 
-    /// <summary>
-    /// The price of the product.
-    /// </summary>
-    [Required]
-    public decimal Price { get; set; }
+    // Construtor privado para ORMs
+    private Product() { }
 
-    /// <summary>
-    /// The product description.
-    /// </summary>
-    public string Description { get; set; } = string.Empty;
+    public Product(string title, decimal price, string description, string image, CategoryInfo category, RatingInfo rating)
+    {
+        if (string.IsNullOrWhiteSpace(title))
+            throw new ArgumentException("Title cannot be empty.", nameof(title));
 
-    /// <summary>
-    /// The URL of the product image.
-    /// </summary>
-    public string Image { get; set; } = string.Empty;
+        if (price < 0)
+            throw new ArgumentOutOfRangeException(nameof(price), "Price must be a positive value.");
 
-    /// <summary>
-    /// Category as a Value Object (denormalized).
-    /// </summary>
-    [Required]
-    public CategoryInfo Category { get; set; } = new CategoryInfo();
+        Title = title;
+        Price = price;
+        Description = description;
+        Image = image;
+        Category = category ?? throw new ArgumentNullException(nameof(category));
+        Rating = rating ?? throw new ArgumentNullException(nameof(rating));
+    }
 
-    /// <summary>
-    /// Rating as a Value Object (denormalized).
-    /// </summary>
-    [Required]
-    public RatingInfo Rating { get; set; } = new RatingInfo();
+    public void UpdatePrice(decimal newPrice)
+    {
+        if (newPrice < 0)
+            throw new ArgumentOutOfRangeException(nameof(newPrice), "Price must be a positive value.");
+
+        Price = newPrice;
+    }
 }

@@ -1,23 +1,25 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
-
-namespace Ambev.DeveloperEvaluation.Domain.Entities;
+﻿namespace Ambev.DeveloperEvaluation.Domain.Entities;
 
 /// <summary>
 /// Value Object representing the category of a product.
 /// </summary>
-[Owned]
 public class CategoryInfo
 {
-    /// <summary>
-    /// External category identifier.
-    /// </summary>
-    [Required]
-    public string ExternalId { get; set; } = string.Empty;
+    public string ExternalId { get; private set; } = string.Empty;
+    public string Name { get; private set; } = string.Empty;
 
-    /// <summary>
-    /// Denormalized category name.
-    /// </summary>
-    [Required]
-    public string Name { get; set; } = string.Empty;
+    // Construtor privado para ORMs
+    private CategoryInfo() { }
+
+    public CategoryInfo(string externalId, string name)
+    {
+        if (string.IsNullOrWhiteSpace(externalId))
+            throw new ArgumentException("ExternalId cannot be empty.", nameof(externalId));
+
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Name cannot be empty.", nameof(name));
+
+        ExternalId = externalId;
+        Name = name;
+    }
 }

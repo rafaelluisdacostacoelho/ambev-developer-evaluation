@@ -12,7 +12,7 @@ public class CartRepository : ICartRepository
 
     public CartRepository(IMongoDatabase database)
     {
-        _collection = database.GetCollection<Cart>("carts");
+        _collection = database.GetCollection<Cart>("Carts");
     }
 
     public async Task AddAsync(Cart cart)
