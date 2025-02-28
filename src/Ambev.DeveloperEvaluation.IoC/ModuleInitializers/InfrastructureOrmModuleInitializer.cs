@@ -7,11 +7,13 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Ambev.DeveloperEvaluation.IoC.ModuleInitializers;
 
-public class InfrastructureModuleInitializer : IModuleInitializer
+public class InfrastructureOrmModuleInitializer : IModuleInitializer
 {
     public void Initialize(WebApplicationBuilder builder)
     {
         builder.Services.AddScoped<DbContext>(provider => provider.GetRequiredService<StoreDbContext>());
         builder.Services.AddScoped<IUserRepository, UserRepository>();
+        builder.Services.AddScoped<IProductRepository, ProductRepository>();
+        builder.Services.AddScoped<ICartRepository, CartRepository>();
     }
 }
