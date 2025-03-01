@@ -35,9 +35,6 @@
     <Folder Include="Features\Products\GetProduct\" />
     <Folder Include="Features\Products\GetProductCategories\" />
     <Folder Include="Features\Products\UpdateProduct\" />
-    <Folder Include="Features\Users\CreateUser\" />
-    <Folder Include="Features\Users\GetUser\" />
-    <Folder Include="Features\Users\DeleteUser\" />
   </ItemGroup>
 
 </Project>

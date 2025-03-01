@@ -4,7 +4,6 @@ using Ambev.DeveloperEvaluation.Application.Users.DeleteUser;
 using Ambev.DeveloperEvaluation.Application.Users.GetUser;
 using Ambev.DeveloperEvaluation.Application.Users.ListUsers;
 using Ambev.DeveloperEvaluation.WebApi.Common;
-using Ambev.DeveloperEvaluation.WebApi.Features.Users.GetUser;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -74,14 +73,6 @@ public class UsersController : BaseController
         if (id == Guid.Empty)
         {
             return BadRequest(new { Message = "Invalid user ID." });
-        }
-
-        var validator = new GetUserRequestValidator();
-        var validationResult = await validator.ValidateAsync(new GetUserRequest { Id = id }, cancellationToken);
-
-        if (!validationResult.IsValid)
-        {
-            return BadRequest(validationResult.Errors);
         }
 
         var command = _mapper.Map<GetUserCommand>(id);
