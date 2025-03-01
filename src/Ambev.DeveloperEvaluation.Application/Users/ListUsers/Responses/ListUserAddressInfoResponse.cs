@@ -1,4 +1,4 @@
-﻿namespace Ambev.DeveloperEvaluation.Application.Users.ListUsers;
+﻿namespace Ambev.DeveloperEvaluation.Application.Users.ListUsers.Responses;
 
 public class ListUserAddressInfoResponse
 {
@@ -10,5 +10,5 @@ public class ListUserAddressInfoResponse
 
     public string Zipcode { get; set; } = string.Empty;
 
-    public ListUserAddressGeolocationInfo Geolocation { get; set; } = null!;
+    public ListUserAddressGeolocationInfoResponse Geolocation { get; set; } = null!;
 }

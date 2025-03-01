@@ -1,4 +1,4 @@
-﻿namespace Ambev.DeveloperEvaluation.Application.Users.ListUsers;
+﻿namespace Ambev.DeveloperEvaluation.Application.Users.ListUsers.Responses;
 
 public class ListUserNameInfoResponse
 {

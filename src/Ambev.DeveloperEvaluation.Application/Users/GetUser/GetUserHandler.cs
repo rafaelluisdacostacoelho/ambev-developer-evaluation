@@ -1,3 +1,5 @@
+using Ambev.DeveloperEvaluation.Application.Users.GetUser.Commands;
+using Ambev.DeveloperEvaluation.Application.Users.GetUser.Responses;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using AutoMapper;
 using FluentValidation;

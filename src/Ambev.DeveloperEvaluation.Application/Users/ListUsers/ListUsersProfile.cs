@@ -1,4 +1,4 @@
-using Ambev.DeveloperEvaluation.Application.Users.ListUsers;
+using Ambev.DeveloperEvaluation.Application.Users.ListUsers.Responses;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using AutoMapper;
 
@@ -31,7 +31,7 @@ public class ListUsersProfile : Profile
             .ForMember(dest => dest.Geolocation, opt => opt.MapFrom(src => src.Geolocation)); // Mapeia a geolocalização corretamente
 
         // Mapeamento entre GeolocationInfo e ListUserAddressGeolocationInfo
-        CreateMap<GeolocationInfo, ListUserAddressGeolocationInfo>();
+        CreateMap<GeolocationInfo, ListUserAddressGeolocationInfoResponse>();
 
         // Mapeamento de ICollection<User> para ICollection<ListUsersResponse>
         CreateMap<ICollection<User>, ICollection<ListUserResponse>>()

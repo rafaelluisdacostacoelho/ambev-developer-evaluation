@@ -16,13 +16,13 @@ public class CreateUserProfile : Profile
     public CreateUserProfile()
     {
         CreateMap<CreateUserCommand, User>()
-            .ForMember(dest => dest.Password, opt => opt.Ignore()) // Senha será tratada no handler
+            .ForMember(dest => dest.Password, opt => opt.Ignore())
             .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow))
-            .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore()); // Será atualizado apenas quando necessário;
+            .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
 
-        CreateMap<CreateAddressInfoCommand, AddressInfo>();
         CreateMap<CreateNameInfoCommand, NameInfo>();
-        CreateMap<CreateGeolocationInfoCommand, GeolocationInfo>();
+        CreateMap<CreateAddressInfoCommand, AddressInfo>();
+        CreateMap<GetGeolocationInfoResponse, GeolocationInfo>();
 
         CreateMap<User, CreateUserResponse>();
     }

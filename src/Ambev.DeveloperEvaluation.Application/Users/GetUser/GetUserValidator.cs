@@ -1,3 +1,4 @@
+using Ambev.DeveloperEvaluation.Application.Users.GetUser.Commands;
 using FluentValidation;
 
 namespace Ambev.DeveloperEvaluation.Application.Users.GetUser;

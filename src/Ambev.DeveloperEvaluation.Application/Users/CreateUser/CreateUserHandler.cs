@@ -38,13 +38,6 @@ public class CreateUserHandler : IRequestHandler<CreateUserCommand, CreateUserRe
     /// <returns>The created user details</returns>
     public async Task<CreateUserResponse> Handle(CreateUserCommand command, CancellationToken cancellationToken)
     {
-        // Validação do comando
-        //var validator = new CreateUserCommandValidator();
-        //var validationResult = await validator.ValidateAsync(command, cancellationToken);
-
-        //if (!validationResult.IsValid)
-        //    throw new ValidationException(validationResult.Errors);
-
         // Verifica se o usuário já existe
         var existingUser = await _userRepository.GetByEmailAsync(command.Email, cancellationToken);
         if (existingUser != null)
