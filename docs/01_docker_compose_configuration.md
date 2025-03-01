@@ -1,16 +1,4 @@
-﻿Para persistir os dados é preciso adicionar dois volumes manualmente, após feito isso o docker-compose passará a utilizar esses volumes e os dados não serão perdidos a cada reinicio.
-
-:one: Crie os volumes manualmente com os nomes desejados:
-
-```sh
-docker volume create ambev_pg_data
-docker volume create ambev_mongo_data
-```
-
-:two: Atualize o docker-compose.yml já está atualizado para usar os volumes criados manualmente:
-
-```yaml
-services:
+﻿services:
   ambev.developerevaluation.webapi:
     container_name: ambev_developer_evaluation_webapi
     image: ${DOCKER_REGISTRY-}ambevdeveloperevaluationwebapi
@@ -31,13 +19,12 @@ services:
   ambev.developerevaluation.database:
     container_name: ambev_developer_evaluation_database
     image: postgis/postgis:13-3.3
-
     environment:
       POSTGRES_DB: developer_evaluation
       POSTGRES_USER: developer
       POSTGRES_PASSWORD: ev@luAt10n
     ports:
-      - "61096:5432"
+      - "54322:5432"
     restart: unless-stopped
     volumes:
       - ambev_pg_data:/var/lib/postgresql/data
@@ -49,7 +36,7 @@ services:
         MONGO_INITDB_ROOT_USERNAME: developer
         MONGO_INITDB_ROOT_PASSWORD: ev@luAt10n
     ports:
-      - "61097:27017"
+      - "27017:27017"
     volumes:
       - ambev_mongo_data:/data/db
 
@@ -58,28 +45,10 @@ services:
     image: redis:7.4.1-alpine
     command: redis-server --requirepass ev@luAt10n
     ports:
-       - "61093:6379"
+       - "6379:6379"
 
 volumes:
   ambev_pg_data:
     external: true
   ambev_mongo_data:
     external: true
-```
-
-:three: Reinicie os containers e use os volumes fixos:
-
-```sh
-docker-compose down -v
-docker-compose up -d
-```
-
-:four: Verifique no Docker Desktop GUI ou rode:
-
-```sh
-docker volume ls
-```
-
->[!NOTE]
->
-> Especialmente no caso do Redis não é preciso criar um volume pois ele mantém apenas dados em memória e é utilizado apenas para cache.
