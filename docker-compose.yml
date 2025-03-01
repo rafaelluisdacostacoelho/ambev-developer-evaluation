@@ -19,13 +19,12 @@ services:
   ambev.developerevaluation.database:
     container_name: ambev_developer_evaluation_database
     image: postgis/postgis:13-3.3
-
     environment:
       POSTGRES_DB: developer_evaluation
       POSTGRES_USER: developer
       POSTGRES_PASSWORD: ev@luAt10n
     ports:
-      - "61096:5432"
+      - "5432:5432"
     restart: unless-stopped
     volumes:
       - ambev_pg_data:/var/lib/postgresql/data
@@ -37,7 +36,7 @@ services:
         MONGO_INITDB_ROOT_USERNAME: developer
         MONGO_INITDB_ROOT_PASSWORD: ev@luAt10n
     ports:
-      - "61097:27017"
+      - "27017:27017"
     volumes:
       - ambev_mongo_data:/data/db
 
@@ -46,7 +45,37 @@ services:
     image: redis:7.4.1-alpine
     command: redis-server --requirepass ev@luAt10n
     ports:
-       - "61093:6379"
+       - "6379:6379"
+
+  adminer:
+    container_name: adminer
+    image: adminer
+    restart: always
+    ports:
+      - "8082:8080"
+    environment:
+      - ADMINER_DEFAULT_SERVER=ambev_developer_evaluation_database
+
+  mongo-express:
+    container_name: mongo_express
+    image: mongo-express
+    restart: always
+    ports:
+      - "8083:8081"
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=developer
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=ev@luAt10n
+      - ME_CONFIG_MONGODB_SERVER=ambev_developer_evaluation_nosql
+
+  redis-commander:
+    container_name: redis_commander
+    image: rediscommander/redis-commander:latest
+    restart: always
+    ports:
+      - "8084:8081"
+    environment:
+      - REDIS_HOSTS=local:ambev_developer_evaluation_cache:6379
+      - REDIS_PASSWORD=ev@luAt10n
 
 volumes:
   ambev_pg_data:

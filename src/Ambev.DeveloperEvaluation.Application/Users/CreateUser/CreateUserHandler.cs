@@ -1,11 +1,9 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Users.CreateUser.Commands;
 using Ambev.DeveloperEvaluation.Application.Users.CreateUser.Responses;
-using Ambev.DeveloperEvaluation.Application.Users.CreateUser.Validators;
 using Ambev.DeveloperEvaluation.Common.Security;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using AutoMapper;
-using FluentValidation;
 using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Users.CreateUser;
@@ -41,11 +39,11 @@ public class CreateUserHandler : IRequestHandler<CreateUserCommand, CreateUserRe
     public async Task<CreateUserResponse> Handle(CreateUserCommand command, CancellationToken cancellationToken)
     {
         // Validação do comando
-        var validator = new CreateUserCommandValidator();
-        var validationResult = await validator.ValidateAsync(command, cancellationToken);
+        //var validator = new CreateUserCommandValidator();
+        //var validationResult = await validator.ValidateAsync(command, cancellationToken);
 
-        if (!validationResult.IsValid)
-            throw new ValidationException(validationResult.Errors);
+        //if (!validationResult.IsValid)
+        //    throw new ValidationException(validationResult.Errors);
 
         // Verifica se o usuário já existe
         var existingUser = await _userRepository.GetByEmailAsync(command.Email, cancellationToken);
