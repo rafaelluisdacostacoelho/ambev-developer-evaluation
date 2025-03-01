@@ -10,7 +10,7 @@ namespace Ambev.DeveloperEvaluation.Application.Users.CreateUser;
 /// <summary>
 /// Handler for processing CreateUserCommand requests
 /// </summary>
-public class CreateUserHandler : IRequestHandler<CreateUserCommand, CreateUserResult>
+public class CreateUserHandler : IRequestHandler<CreateUserCommand, CreateUserResponse>
 {
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
@@ -35,7 +35,7 @@ public class CreateUserHandler : IRequestHandler<CreateUserCommand, CreateUserRe
     /// <param name="command">The CreateUser command</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The created user details</returns>
-    public async Task<CreateUserResult> Handle(CreateUserCommand command, CancellationToken cancellationToken)
+    public async Task<CreateUserResponse> Handle(CreateUserCommand command, CancellationToken cancellationToken)
     {
         // Validação do comando
         var validator = new CreateUserCommandValidator();
@@ -56,7 +56,8 @@ public class CreateUserHandler : IRequestHandler<CreateUserCommand, CreateUserRe
         // Persiste no repositório
         var createdUser = await _userRepository.CreateAsync(user, cancellationToken);
 
-        // Retorna o resultado
-        return _mapper.Map<CreateUserResult>(createdUser);
+        var response = _mapper.Map<CreateUserResponse>(createdUser);
+
+        return response;
     }
 }

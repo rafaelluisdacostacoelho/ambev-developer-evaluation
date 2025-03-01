@@ -51,14 +51,14 @@ public class CreateUserHandlerTests
             Role = command.Role
         };
 
-        var result = new CreateUserResult
+        var result = new CreateUserResponse
         {
             Id = user.Id,
         };
 
 
         _mapper.Map<User>(command).Returns(user);
-        _mapper.Map<CreateUserResult>(user).Returns(result);
+        _mapper.Map<CreateUserResponse>(user).Returns(result);
 
         _userRepository.CreateAsync(Arg.Any<User>(), Arg.Any<CancellationToken>())
             .Returns(user);

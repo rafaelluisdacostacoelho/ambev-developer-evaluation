@@ -22,6 +22,6 @@ public class CreateUserProfile : Profile
         CreateMap<CreateNameInfoCommand, NameInfo>();
         CreateMap<CreateGeolocationInfoCommand, GeolocationInfo>();
 
-        CreateMap<User, CreateUserResult>();
+        CreateMap<User, CreateUserResponse>();
     }
 }

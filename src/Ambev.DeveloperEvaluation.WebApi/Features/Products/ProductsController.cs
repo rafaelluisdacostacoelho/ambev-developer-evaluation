@@ -1,5 +1,4 @@
-﻿using Ambev.DeveloperEvaluation.Application.Pagination;
-using Ambev.DeveloperEvaluation.Application.Products.CreateProduct;
+﻿using Ambev.DeveloperEvaluation.Application.Products.CreateProduct;
 using Ambev.DeveloperEvaluation.Application.Products.GetProductCategories;
 using Ambev.DeveloperEvaluation.Application.Products.GetProductsByCategory;
 using Ambev.DeveloperEvaluation.WebApi.Common;
@@ -28,8 +27,8 @@ public class ProductsController : BaseController
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The created user details</returns>
     [HttpPost]
-    [ProducesResponseType(typeof(ApiResponseWithData<CreateProductResponse>), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateProductAsync([FromBody] CreateProductRequest request, CancellationToken cancellationToken)
     {
         var validator = new CreateProductRequestValidator();
@@ -43,12 +42,7 @@ public class ProductsController : BaseController
         var command = _mapper.Map<CreateProductCommand>(request);
         var response = await _mediator.Send(command, cancellationToken);
 
-        return Created(string.Empty, new ApiResponseWithData<CreateProductResponse>
-        {
-            Success = true,
-            Message = "Product created successfully",
-            Data = _mapper.Map<CreateProductResponse>(response)
-        });
+        return Created("GetProductByIdAsync", _mapper.Map<CreateProductResponse>(response));
     }
 
     [HttpGet("categories")]

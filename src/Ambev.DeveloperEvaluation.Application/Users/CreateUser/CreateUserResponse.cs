@@ -7,7 +7,7 @@
 /// This response contains the unique identifier of the newly created user,
 /// which can be used for subsequent operations or reference.
 /// </remarks>
-public class CreateUserResult
+public class CreateUserResponse
 {
     /// <summary>
     /// Gets or sets the unique identifier of the newly created user.

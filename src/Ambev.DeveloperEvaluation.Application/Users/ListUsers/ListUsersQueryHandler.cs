@@ -1,29 +1,38 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Pagination;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
+using AutoMapper;
 using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Users.ListUsers;
 
-public class ListUsersQueryHandler : IRequestHandler<PaginationQuery<ListUsersFilter, ListUsersResponse>, PaginatedResponse<ListUsersResponse>>
+public class ListUsersQueryHandler : IRequestHandler<PaginationQuery<ListUsersFilter, ListUserResponse>, PaginatedResponse<ListUserResponse>>
 {
     private readonly IUserRepository _repository;
+    private readonly IMapper _mapper;
 
-    public ListUsersQueryHandler(IUserRepository repository)
+    public ListUsersQueryHandler(IUserRepository repository, IMapper mapper)
     {
         _repository = repository;
+        _mapper = mapper;
     }
 
-    public async Task<PaginatedResponse<ListUsersResponse>> Handle(PaginationQuery<ListUsersFilter, ListUsersResponse> request, CancellationToken cancellationToken)
+    public async Task<PaginatedResponse<ListUserResponse>> Handle(PaginationQuery<ListUsersFilter, ListUserResponse> request, CancellationToken cancellationToken)
     {
-        var result = await _repository.GetPaginatedAsync(request.PageNumber, request.PageSize, request.Order, cancellationToken: cancellationToken);
+        var paginatedResult = await _repository.GetPaginatedAsync(
+            request.PageNumber,
+            request.PageSize,
+            request.Order,
+            cancellationToken: cancellationToken
+        );
 
-        return new PaginatedResponse<ListUsersResponse>
+        var mappedUsers = _mapper.Map<ICollection<ListUserResponse>>(paginatedResult.Items);
+
+        return new PaginatedResponse<ListUserResponse>
         {
-            Data = result.Items.Select(u => new ListUsersResponse()),
-            CurrentPage = result.CurrentPage,
-            TotalPages = result.TotalPages,
-            TotalCount = result.TotalItems,
-            Success = true
+            Data = mappedUsers,
+            CurrentPage = paginatedResult.CurrentPage,
+            TotalPages = paginatedResult.TotalPages,
+            TotalCount = paginatedResult.TotalItems
         };
     }
 }

@@ -74,7 +74,7 @@ public class Program
 
             builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(ApplicationLayer).Assembly);
 
-            builder.Services.AddTransient<IRequest<PaginatedResponse<ListUsersResponse>>, PaginationQuery<ListUsersFilter, ListUsersResponse>>();
+            builder.Services.AddTransient<IRequest<PaginatedResponse<ListUserResponse>>, PaginationQuery<ListUsersFilter, ListUserResponse>>();
 
             builder.Services.AddMediatR(cfg =>
             {

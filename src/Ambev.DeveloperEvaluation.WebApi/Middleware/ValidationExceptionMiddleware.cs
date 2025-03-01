@@ -8,6 +8,10 @@ namespace Ambev.DeveloperEvaluation.WebApi.Middleware
     public class ValidationExceptionMiddleware
     {
         private readonly RequestDelegate _next;
+        private static readonly JsonSerializerOptions _jsonOptions = new()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
 
         public ValidationExceptionMiddleware(RequestDelegate next)
         {
@@ -31,7 +35,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Middleware
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = StatusCodes.Status400BadRequest;
 
-            var response = new ApiResponse
+            var response = new ErrorResponse
             {
                 Success = false,
                 Message = "Validation Failed",
@@ -39,12 +43,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Middleware
                     .Select(error => (ValidationErrorDetail)error)
             };
 
-            var jsonOptions = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            };
-
-            return context.Response.WriteAsync(JsonSerializer.Serialize(response, jsonOptions));
+            return context.Response.WriteAsync(JsonSerializer.Serialize(response, _jsonOptions));
         }
     }
 }

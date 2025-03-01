@@ -7,7 +7,7 @@ using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Products.CreateProduct;
 
-class CreateProductHandler : IRequestHandler<CreateUserCommand, CreateUserResult>
+class CreateProductHandler : IRequestHandler<CreateUserCommand, CreateUserResponse>
 {
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
@@ -30,7 +30,7 @@ class CreateProductHandler : IRequestHandler<CreateUserCommand, CreateUserResult
     /// <param name="command">The CreateUser command</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The created user details</returns>
-    public async Task<CreateUserResult> Handle(CreateUserCommand command, CancellationToken cancellationToken)
+    public async Task<CreateUserResponse> Handle(CreateUserCommand command, CancellationToken cancellationToken)
     {
         var validator = new CreateUserCommandValidator();
         var validationResult = await validator.ValidateAsync(command, cancellationToken);
@@ -45,7 +45,7 @@ class CreateProductHandler : IRequestHandler<CreateUserCommand, CreateUserResult
         var user = _mapper.Map<User>(command);
 
         var createdUser = await _userRepository.CreateAsync(user, cancellationToken);
-        var result = _mapper.Map<CreateUserResult>(createdUser);
-        return result;
+
+        return _mapper.Map<CreateUserResponse>(createdUser);
     }
 }
