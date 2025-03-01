@@ -1,10 +1,11 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Pagination;
-using Ambev.DeveloperEvaluation.Application.Users.CreateUser;
+using Ambev.DeveloperEvaluation.Application.Users.CreateUser.Commands;
+using Ambev.DeveloperEvaluation.Application.Users.CreateUser.Requests;
+using Ambev.DeveloperEvaluation.Application.Users.CreateUser.Validators;
 using Ambev.DeveloperEvaluation.Application.Users.DeleteUser;
 using Ambev.DeveloperEvaluation.Application.Users.GetUser;
 using Ambev.DeveloperEvaluation.Application.Users.ListUsers;
 using Ambev.DeveloperEvaluation.WebApi.Common;
-using Ambev.DeveloperEvaluation.WebApi.Features.Users.CreateUser;
 using Ambev.DeveloperEvaluation.WebApi.Features.Users.DeleteUser;
 using Ambev.DeveloperEvaluation.WebApi.Features.Users.GetUser;
 using AutoMapper;
@@ -17,7 +18,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Users;
 /// Controller for managing user operations
 /// </summary>
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/users")]
 public class UsersController : BaseController
 {
     private readonly IMediator _mediator;
@@ -35,16 +36,24 @@ public class UsersController : BaseController
     }
 
     /// <summary>
-    /// Creates a new user
+    /// Creates a new user.
     /// </summary>
-    /// <param name="request">The user creation request</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The created user details</returns>
+    /// <param name="request">The user creation request.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The created user details.</returns>
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status201Created)] // Usuário criado com sucesso
+    [ProducesResponseType(StatusCodes.Status400BadRequest)] // Dados inválidos
+    [ProducesResponseType(StatusCodes.Status409Conflict)] // Usuário já existe
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)] // Falha inesperada
     public async Task<IActionResult> CreateUserAsync([FromBody] CreateUserRequest request, CancellationToken cancellationToken)
     {
+        // Verificação inicial: request não pode ser nulo
+        if (request == null)
+        {
+            return BadRequest(new { Message = "Request body cannot be empty." });
+        }
+
         var validator = new CreateUserRequestValidator();
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
@@ -56,76 +65,124 @@ public class UsersController : BaseController
         var command = _mapper.Map<CreateUserCommand>(request);
         var response = await _mediator.Send(command, cancellationToken);
 
-        return Created("GetUserByIdAsync", response);
+        // Verifica se o usuário já existia (caso o Mediator implemente essa lógica)
+        if (response == null)
+        {
+            return Conflict(new { Message = "User already exists." });
+        }
+
+        // Retorna 201 Created com a URL correta do usuário recém-criado
+        return Created(nameof(GetUserByIdAsync), new { id = response.Id }, response);
     }
 
     /// <summary>
-    /// Retrieves a user by their ID
+    /// Retrieves a user by their ID.
     /// </summary>
-    /// <param name="id">The unique identifier of the user</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The user details if found</returns>
-    [HttpGet("{id}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    /// <param name="id">The unique identifier of the user.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The user details if found, otherwise an appropriate error response.</returns>
+    [HttpGet("{id}", Name = "GetUserByIdAsync")]
+    [ProducesResponseType(StatusCodes.Status200OK)]  // Retorno bem-sucedido
+    [ProducesResponseType(StatusCodes.Status400BadRequest)] // ID inválido ou erro de validação
+    [ProducesResponseType(StatusCodes.Status404NotFound)] // Usuário não encontrado
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)] // Erros inesperados
     public async Task<IActionResult> GetUserByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        var request = new GetUserRequest { Id = id };
+        // Validação inicial: ID não pode ser vazio
+        if (id == Guid.Empty)
+        {
+            return BadRequest(new { Message = "Invalid user ID." });
+        }
+
         var validator = new GetUserRequestValidator();
-        var validationResult = await validator.ValidateAsync(request, cancellationToken);
+        var validationResult = await validator.ValidateAsync(new GetUserRequest { Id = id }, cancellationToken);
 
         if (!validationResult.IsValid)
         {
             return BadRequest(validationResult.Errors);
         }
 
-        var command = _mapper.Map<GetUserCommand>(request.Id);
+        var command = _mapper.Map<GetUserCommand>(id);
         var response = await _mediator.Send(command, cancellationToken);
+
+        // Verifica se o usuário foi encontrado
+        if (response == null)
+        {
+            return NotFound(new { Message = "User not found." });
+        }
 
         return Ok(response);
     }
 
+    /// <summary>
+    /// Retrieves a paginated list of users.
+    /// </summary>
+    /// <param name="pageNumber">Page number (must be 1 or greater).</param>
+    /// <param name="pageSize">Number of users per page (must be between 1 and 100).</param>
+    /// <param name="order">Sorting order (optional).</param>
+    /// <param name="filter">Filters to apply (optional).</param>
+    /// <returns>Paginated list of users.</returns>
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status200OK)]  // Sempre retorna 200, mesmo com lista vazia
+    [ProducesResponseType(StatusCodes.Status400BadRequest)] // Para parâmetros inválidos
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)] // Para falhas inesperadas
     public async Task<IActionResult> GetUsersPageAsync([FromQuery] int pageNumber = 1,
                                                        [FromQuery] int pageSize = 10,
                                                        [FromQuery] string? order = null,
                                                        [FromQuery] ListUsersFilter? filter = null)
     {
+        // Validação dos parâmetros
+        if (pageNumber < 1)
+        {
+            return BadRequest(new { Message = "Page number must be greater than or equal to 1." });
+        }
+
+        if (pageSize < 1 || pageSize > 100)
+        {
+            return BadRequest(new { Message = "Page size must be between 1 and 100." });
+        }
+
+        // Criando a query paginada
         var query = new PaginationQuery<ListUsersFilter, ListUserResponse>(pageNumber, pageSize, order, filter);
 
+        // Enviando para o mediador
         PaginatedResponse<ListUserResponse> result = await _mediator.Send(query);
 
+        // Retornando resultado paginado corretamente
         return OkPaginated(result);
     }
 
+
     /// <summary>
-    /// Deletes a user by their ID
+    /// Deletes a user by their ID.
     /// </summary>
-    /// <param name="id">The unique identifier of the user to delete</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>Success response if the user was deleted</returns>
+    /// <param name="id">The unique identifier of the user to delete.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>No content if the user was deleted, or an error response.</returns>
     [HttpDelete("{id}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]  // Deleção bem-sucedida
+    [ProducesResponseType(StatusCodes.Status400BadRequest)] // Falha na validação
+    [ProducesResponseType(StatusCodes.Status404NotFound)]   // Usuário não encontrado
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)] // Erro interno
     public async Task<IActionResult> DeleteUserAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        var request = new DeleteUserRequest { Id = id };
         var validator = new DeleteUserRequestValidator();
-        var validationResult = await validator.ValidateAsync(request, cancellationToken);
+        var validationResult = await validator.ValidateAsync(new DeleteUserRequest { Id = id }, cancellationToken);
 
         if (!validationResult.IsValid)
         {
             return BadRequest(validationResult.Errors);
         }
 
-        var command = _mapper.Map<DeleteUserCommand>(request.Id);
-        await _mediator.Send(command, cancellationToken);
+        var command = _mapper.Map<DeleteUserCommand>(id);
+        var result = await _mediator.Send(command, cancellationToken);
 
-        return Ok();
+        if (result == null)  // Se o comando não encontrou um usuário para deletar
+        {
+            return NotFound(new { Message = "User not found." });
+        }
+
+        return NoContent();
     }
+
 }

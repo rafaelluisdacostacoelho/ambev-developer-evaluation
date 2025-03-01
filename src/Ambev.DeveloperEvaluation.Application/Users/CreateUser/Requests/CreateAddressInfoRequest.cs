@@ -1,4 +1,4 @@
-﻿namespace Ambev.DeveloperEvaluation.WebApi.Features.Users.CreateUser;
+﻿namespace Ambev.DeveloperEvaluation.Application.Users.CreateUser.Requests;
 
 public class CreateAddressInfoRequest
 {

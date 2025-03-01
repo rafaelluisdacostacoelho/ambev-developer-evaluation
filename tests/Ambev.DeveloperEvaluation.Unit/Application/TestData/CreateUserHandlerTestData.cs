@@ -1,4 +1,4 @@
-using Ambev.DeveloperEvaluation.Application.Users.CreateUser;
+using Ambev.DeveloperEvaluation.Application.Users.CreateUser.Commands;
 using Ambev.DeveloperEvaluation.Domain.Enums;
 using Bogus;
 

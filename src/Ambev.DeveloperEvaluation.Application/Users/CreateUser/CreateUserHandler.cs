@@ -1,4 +1,7 @@
-﻿using Ambev.DeveloperEvaluation.Common.Security;
+﻿using Ambev.DeveloperEvaluation.Application.Users.CreateUser.Commands;
+using Ambev.DeveloperEvaluation.Application.Users.CreateUser.Responses;
+using Ambev.DeveloperEvaluation.Application.Users.CreateUser.Validators;
+using Ambev.DeveloperEvaluation.Common.Security;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using AutoMapper;

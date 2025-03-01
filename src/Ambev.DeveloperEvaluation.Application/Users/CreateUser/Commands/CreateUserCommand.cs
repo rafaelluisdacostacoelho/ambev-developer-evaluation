@@ -1,8 +1,10 @@
-﻿using Ambev.DeveloperEvaluation.Common.Validation;
+﻿using Ambev.DeveloperEvaluation.Application.Users.CreateUser.Responses;
+using Ambev.DeveloperEvaluation.Application.Users.CreateUser.Validators;
+using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.Domain.Enums;
 using MediatR;
 
-namespace Ambev.DeveloperEvaluation.Application.Users.CreateUser;
+namespace Ambev.DeveloperEvaluation.Application.Users.CreateUser.Commands;
 
 /// <summary>
 /// Command for creating a new user.

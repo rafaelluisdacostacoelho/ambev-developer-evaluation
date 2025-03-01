@@ -4,7 +4,6 @@ using Ambev.DeveloperEvaluation.Common.Security;
 using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.IoC;
 using Ambev.DeveloperEvaluation.ORM;
-using Ambev.DeveloperEvaluation.WebApi.Filters;
 using Ambev.DeveloperEvaluation.WebApi.Middleware;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -21,12 +20,9 @@ builder.Host.UseSerilog((context, services, configuration) =>
 
 // Configuração de Controllers e Swagger
 builder.Services.AddControllers();
-builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.DocumentFilter<LowercaseDocumentFilter>();
-    c.DocumentFilter<LowercaseDocumentFilter>();
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,

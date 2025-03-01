@@ -1,6 +1,6 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Enums;
 
-namespace Ambev.DeveloperEvaluation.WebApi.Features.Users.CreateUser;
+namespace Ambev.DeveloperEvaluation.Application.Users.CreateUser.Requests;
 
 /// <summary>
 /// Represents a request to create a new user in the system.
