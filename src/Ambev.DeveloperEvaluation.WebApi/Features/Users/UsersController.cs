@@ -1,12 +1,9 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Pagination;
 using Ambev.DeveloperEvaluation.Application.Users.CreateUser.Commands;
-using Ambev.DeveloperEvaluation.Application.Users.CreateUser.Requests;
-using Ambev.DeveloperEvaluation.Application.Users.CreateUser.Validators;
 using Ambev.DeveloperEvaluation.Application.Users.DeleteUser;
 using Ambev.DeveloperEvaluation.Application.Users.GetUser;
 using Ambev.DeveloperEvaluation.Application.Users.ListUsers;
 using Ambev.DeveloperEvaluation.WebApi.Common;
-using Ambev.DeveloperEvaluation.WebApi.Features.Users.DeleteUser;
 using Ambev.DeveloperEvaluation.WebApi.Features.Users.GetUser;
 using AutoMapper;
 using MediatR;
@@ -46,23 +43,8 @@ public class UsersController : BaseController
     [ProducesResponseType(StatusCodes.Status400BadRequest)] // Dados inválidos
     [ProducesResponseType(StatusCodes.Status409Conflict)] // Usuário já existe
     [ProducesResponseType(StatusCodes.Status500InternalServerError)] // Falha inesperada
-    public async Task<IActionResult> CreateUserAsync([FromBody] CreateUserRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateUserAsync([FromBody] CreateUserCommand command, CancellationToken cancellationToken)
     {
-        // Verificação inicial: request não pode ser nulo
-        if (request == null)
-        {
-            return BadRequest(new { Message = "Request body cannot be empty." });
-        }
-
-        var validator = new CreateUserRequestValidator();
-        var validationResult = await validator.ValidateAsync(request, cancellationToken);
-
-        if (!validationResult.IsValid)
-        {
-            return BadRequest(validationResult.Errors);
-        }
-
-        var command = _mapper.Map<CreateUserCommand>(request);
         var response = await _mediator.Send(command, cancellationToken);
 
         // Verifica se o usuário já existia (caso o Mediator implemente essa lógica)
@@ -166,14 +148,6 @@ public class UsersController : BaseController
     [ProducesResponseType(StatusCodes.Status500InternalServerError)] // Erro interno
     public async Task<IActionResult> DeleteUserAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        var validator = new DeleteUserRequestValidator();
-        var validationResult = await validator.ValidateAsync(new DeleteUserRequest { Id = id }, cancellationToken);
-
-        if (!validationResult.IsValid)
-        {
-            return BadRequest(validationResult.Errors);
-        }
-
         var command = _mapper.Map<DeleteUserCommand>(id);
         var result = await _mediator.Send(command, cancellationToken);
 

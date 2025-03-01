@@ -1,5 +1,4 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Users.CreateUser.Commands;
-using Ambev.DeveloperEvaluation.Application.Users.CreateUser.Requests;
 using Ambev.DeveloperEvaluation.Application.Users.CreateUser.Responses;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using AutoMapper;
@@ -16,11 +15,6 @@ public class CreateUserProfile : Profile
     /// </summary>
     public CreateUserProfile()
     {
-        CreateMap<CreateUserRequest, CreateUserCommand>();
-        CreateMap<CreateAddressInfoRequest, CreateAddressInfoCommand>();
-        CreateMap<CreateNameInfoRequest, CreateNameInfoCommand>();
-        CreateMap<CreateGeolocationInfoRequest, CreateGeolocationInfoCommand>();
-
         CreateMap<CreateUserCommand, User>()
             .ForMember(dest => dest.Password, opt => opt.Ignore()) // Senha será tratada no handler
             .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow))
