@@ -7,6 +7,7 @@ using Ambev.DeveloperEvaluation.Common.Security;
 using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.IoC;
 using Ambev.DeveloperEvaluation.ORM;
+using Ambev.DeveloperEvaluation.WebApi.Filters;
 using Ambev.DeveloperEvaluation.WebApi.Middleware;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -26,10 +27,14 @@ public class Program
             builder.AddDefaultLogging();
 
             builder.Services.AddControllers();
+            builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
             builder.Services.AddEndpointsApiExplorer();
 
             builder.AddBasicHealthChecks();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.DocumentFilter<LowercaseDocumentFilter>();
+            });
 
             builder.Services.AddDbContext<StoreDbContext>(options =>
             {
@@ -88,6 +93,8 @@ public class Program
 
             var app = builder.Build();
             app.UseMiddleware<ValidationExceptionMiddleware>();
+
+            app.UseRouting();
 
             if (app.Environment.IsDevelopment())
             {
