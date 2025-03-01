@@ -1,3 +1,15 @@
+﻿Para persistir os dados é preciso adicionar dois volumes manualmente, após feito isso o docker-compose passará a utilizar esses volumes e os dados não serão perdidos a cada reinicio.
+
+:one: Crie os volumes manualmente com os nomes desejados:
+
+```sh
+docker volume create ambev_pg_data
+docker volume create ambev_mongo_data
+```
+
+:two: Atualize o docker-compose.yml já está atualizado para usar os volumes criados manualmente:
+
+```yaml
 services:
   ambev.developerevaluation.webapi:
     container_name: ambev_developer_evaluation_webapi
@@ -53,3 +65,21 @@ volumes:
     external: true
   ambev_mongo_data:
     external: true
+```
+
+:three: Reinicie os containers e use os volumes fixos:
+
+```sh
+docker-compose down -v
+docker-compose up -d
+```
+
+:four: Verifique no Docker Desktop GUI ou rode:
+
+```sh
+docker volume ls
+```
+
+>[!NOTE]
+>
+> Especialmente no caso do Redis não é preciso criar um volume pois ele mantém apenas dados em memória e é utilizado apenas para cache.

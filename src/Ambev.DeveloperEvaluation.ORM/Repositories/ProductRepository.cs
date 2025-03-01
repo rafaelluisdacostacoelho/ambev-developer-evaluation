@@ -1,5 +1,5 @@
-﻿using Ambev.DeveloperEvaluation.Common.Pagination;
-using Ambev.DeveloperEvaluation.Domain.Entities;
+﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Pagination;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Dynamic.Core;
@@ -19,7 +19,7 @@ public class ProductRepository : IProductRepository
         _context = context;
     }
 
-    public async Task<PaginatedResult<Product>> GetPaginatedAsync(int page = 1, int size = 10, string? order = null)
+    public async Task<PaginatedResult<Product>> GetPaginatedAsync(int page = 1, int size = 10, string? order = null, CancellationToken cancellationToken = default)
     {
         var query = _context.Products.AsQueryable();
 
@@ -30,26 +30,26 @@ public class ProductRepository : IProductRepository
         }
 
         // Contagem total de itens antes da paginação
-        var totalItems = await query.CountAsync();
+        var totalItems = await query.CountAsync(cancellationToken: cancellationToken);
 
         // Aplicar paginação
         var items = await query
             .Skip((page - 1) * size)
             .Take(size)
-            .ToListAsync();
+            .ToListAsync(cancellationToken: cancellationToken);
 
         return new PaginatedResult<Product>
         {
-            Data = items,
+            Items = items,
             TotalItems = totalItems,
             CurrentPage = page,
             TotalPages = (int)Math.Ceiling(totalItems / (double)size)
         };
     }
 
-    public async Task<Product?> GetByIdAsync(Guid id)
+    public async Task<Product> GetByIdAsync(Guid id)
     {
-        return await _context.Products.FindAsync(id);
+        return await _context.Products.SingleAsync(p => p.Id == id);
     }
 
     public async Task AddAsync(Product product)

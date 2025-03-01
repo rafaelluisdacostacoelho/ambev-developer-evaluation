@@ -1,20 +1,23 @@
-﻿namespace Ambev.DeveloperEvaluation.Common.Pagination;
+﻿namespace Ambev.DeveloperEvaluation.Domain.Pagination;
 
 public class PaginatedResult<T>
 {
-    public List<T> Data { get; set; }
+    public ICollection<T> Items { get; set; } = [];
     public int TotalItems { get; set; }
     public int CurrentPage { get; set; }
     public int TotalPages { get; set; }
 
+    public bool HasPrevious => CurrentPage > 1;
+    public bool HasNext => CurrentPage < TotalPages;
+
     public PaginatedResult()
     {
-        Data = [];
+        Items = [];
     }
 
-    public PaginatedResult(List<T> data, int totalItems, int currentPage, int size)
+    public PaginatedResult(ICollection<T> items, int totalItems, int currentPage, int size)
     {
-        Data = data;
+        Items = items;
         TotalItems = totalItems;
         CurrentPage = currentPage;
         TotalPages = (int)Math.Ceiling(totalItems / (double)size);

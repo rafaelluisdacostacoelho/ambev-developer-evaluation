@@ -1,5 +1,5 @@
-﻿using Ambev.DeveloperEvaluation.Common.Pagination;
-using Ambev.DeveloperEvaluation.Domain.Entities;
+﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Pagination;
 using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Products.GetProductsByCategory;

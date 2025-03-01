@@ -5,7 +5,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Repositories;
 /// <summary>
 /// Repository interface for User entity operations
 /// </summary>
-public interface IUserRepository
+public interface IUserRepository : IPaginatedRepository<User>
 {
     /// <summary>
     /// Creates a new user in the repository

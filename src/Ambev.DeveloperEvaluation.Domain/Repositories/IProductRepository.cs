@@ -1,12 +1,11 @@
-﻿using Ambev.DeveloperEvaluation.Common.Pagination;
-using Ambev.DeveloperEvaluation.Domain.Entities;
+﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Pagination;
 
 namespace Ambev.DeveloperEvaluation.Domain.Repositories;
 
-public interface IProductRepository
+public interface IProductRepository : IPaginatedRepository<Product>
 {
-    Task<PaginatedResult<Product>> GetPaginatedAsync(int page = 1, int size = 10, string? order = null);
-    Task<Product?> GetByIdAsync(Guid id);
+    Task<Product> GetByIdAsync(Guid id);
     Task AddAsync(Product product);
     Task UpdateAsync(Product product);
     Task DeleteAsync(Guid id);

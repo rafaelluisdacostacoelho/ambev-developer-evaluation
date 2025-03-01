@@ -1,5 +1,5 @@
-﻿using Ambev.DeveloperEvaluation.Common.Pagination;
-using Ambev.DeveloperEvaluation.Domain.Entities;
+﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Pagination;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
@@ -15,32 +15,7 @@ public class ProductRepository : IProductRepository
         _collection = database.GetCollection<Product>("Products");
     }
 
-    public async Task AddAsync(Product product)
-    {
-        await _collection.InsertOneAsync(product);
-    }
-
-    public async Task DeleteAsync(Guid id)
-    {
-        var filter = Builders<Product>.Filter.Eq(p => p.Id, id);
-        await _collection.DeleteOneAsync(filter);
-    }
-
-    public async Task<Product?> GetByIdAsync(Guid id)
-    {
-        var filter = Builders<Product>.Filter.Eq(p => p.Id, id);
-        return await _collection.Find(filter).FirstOrDefaultAsync();
-    }
-
-    public async Task<List<string>> GetCategoriesAsync()
-    {
-        return await _collection.AsQueryable()
-            .Select(p => p.Category.Name)
-            .Distinct()
-            .ToListAsync();
-    }
-
-    public async Task<PaginatedResult<Product>> GetPaginatedAsync(int page = 1, int size = 10, string? order = null)
+    public async Task<PaginatedResult<Product>> GetPaginatedAsync(int page = 1, int size = 10, string? order = null, CancellationToken cancellationToken = default)
     {
         var query = _collection.AsQueryable();
 
@@ -56,10 +31,35 @@ public class ProductRepository : IProductRepository
             };
         }
 
-        var totalCount = await query.CountAsync();
-        var products = await query.Skip((page - 1) * size).Take(size).ToListAsync();
+        var totalCount = await query.CountAsync(cancellationToken: cancellationToken);
+        var products = await query.Skip((page - 1) * size).Take(size).ToListAsync(cancellationToken: cancellationToken);
 
         return new PaginatedResult<Product>(products, totalCount, page, size);
+    }
+
+    public async Task AddAsync(Product product)
+    {
+        await _collection.InsertOneAsync(product);
+    }
+
+    public async Task DeleteAsync(Guid id)
+    {
+        var filter = Builders<Product>.Filter.Eq(p => p.Id, id);
+        await _collection.DeleteOneAsync(filter);
+    }
+
+    public async Task<Product> GetByIdAsync(Guid id)
+    {
+        var filter = Builders<Product>.Filter.Eq(p => p.Id, id);
+        return await _collection.Find(filter).FirstOrDefaultAsync();
+    }
+
+    public async Task<List<string>> GetCategoriesAsync()
+    {
+        return await _collection.AsQueryable()
+            .Select(p => p.Category.Name)
+            .Distinct()
+            .ToListAsync();
     }
 
     public async Task<PaginatedResult<Product>> GetProductsByCategoryAsync(string category, int page = 1, int size = 10, string? order = null)

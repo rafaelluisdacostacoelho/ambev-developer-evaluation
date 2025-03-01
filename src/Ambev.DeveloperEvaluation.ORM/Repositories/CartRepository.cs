@@ -1,5 +1,5 @@
-﻿using Ambev.DeveloperEvaluation.Common.Pagination;
-using Ambev.DeveloperEvaluation.Domain.Entities;
+﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Pagination;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Dynamic.Core;
@@ -19,11 +19,11 @@ public class CartRepository : ICartRepository
         _context = context;
     }
 
-    public async Task<PaginatedResult<Cart>> GetPaginatedAsync(int page = 1, int size = 10, string? order = null)
+    public async Task<PaginatedResult<Cart>> GetPaginatedAsync(int page = 1, int size = 10, string? order = null, CancellationToken cancellationToken = default)
     {
         var query = _context.Carts
-            .Include(c => c.Products) // Carregar os produtos do carrinho
-            .AsQueryable();
+                            .Include(c => c.Products) // Carregar os produtos do carrinho
+                            .AsQueryable();
 
         // Aplicar ordenação dinâmica
         if (!string.IsNullOrWhiteSpace(order))
@@ -32,22 +32,21 @@ public class CartRepository : ICartRepository
         }
 
         // Contagem total de itens antes da paginação
-        var totalItems = await query.CountAsync();
+        var totalItems = await query.CountAsync(cancellationToken: cancellationToken);
 
         // Aplicar paginação
-        var items = await query
-            .Skip((page - 1) * size)
-            .Take(size)
-            .ToListAsync();
+        var items = await query.Skip((page - 1) * size)
+                               .Take(size)
+                               .ToListAsync(cancellationToken: cancellationToken);
 
         return new PaginatedResult<Cart>(items, totalItems, page, size);
     }
 
-    public async Task<Cart?> GetByIdAsync(Guid id)
+    public async Task<Cart> GetByIdAsync(Guid id)
     {
         return await _context.Carts
             .Include(c => c.Products) // Carregar os produtos do carrinho
-            .FirstOrDefaultAsync(c => c.Id == id);
+            .SingleAsync(c => c.Id == id);
     }
 
     public async Task AddAsync(Cart cart)
@@ -60,7 +59,8 @@ public class CartRepository : ICartRepository
     {
         var existingCart = await _context.Carts
             .Include(c => c.Products)
-            .FirstOrDefaultAsync(c => c.Id == cart.Id) ?? throw new KeyNotFoundException("Carrinho não encontrado.");
+            .SingleAsync(c => c.Id == cart.Id) ?? throw new KeyNotFoundException("Carrinho não encontrado.");
+
         _context.Entry(existingCart).CurrentValues.SetValues(cart);
 
         // Atualizar produtos do carrinho

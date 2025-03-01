@@ -17,6 +17,7 @@
 		<PackageReference Include="System.Linq.Dynamic.Core" Version="1.6.0.2" />
 	</ItemGroup>
 	<ItemGroup>
+		<ProjectReference Include="..\Ambev.DeveloperEvaluation.Core\Ambev.DeveloperEvaluation.Core.csproj" />
 		<ProjectReference Include="..\Ambev.DeveloperEvaluation.Domain\Ambev.DeveloperEvaluation.Domain.csproj" />
 	</ItemGroup>
 	<ItemGroup>

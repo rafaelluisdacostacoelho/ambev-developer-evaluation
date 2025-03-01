@@ -1,4 +1,6 @@
 using Ambev.DeveloperEvaluation.Application;
+using Ambev.DeveloperEvaluation.Application.Pagination;
+using Ambev.DeveloperEvaluation.Application.Users.ListUsers;
 using Ambev.DeveloperEvaluation.Common.HealthChecks;
 using Ambev.DeveloperEvaluation.Common.Logging;
 using Ambev.DeveloperEvaluation.Common.Security;
@@ -71,6 +73,8 @@ public class Program
             builder.RegisterDependencies();
 
             builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(ApplicationLayer).Assembly);
+
+            builder.Services.AddTransient<IRequest<PaginatedResponse<ListUsersResponse>>, PaginationQuery<ListUsersFilter, ListUsersResponse>>();
 
             builder.Services.AddMediatR(cfg =>
             {
