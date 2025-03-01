@@ -1,8 +1,5 @@
 using Ambev.DeveloperEvaluation.Application;
-using Ambev.DeveloperEvaluation.Application.Pagination;
-using Ambev.DeveloperEvaluation.Application.Users.ListUsers;
 using Ambev.DeveloperEvaluation.Common.HealthChecks;
-using Ambev.DeveloperEvaluation.Common.Logging;
 using Ambev.DeveloperEvaluation.Common.Security;
 using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.IoC;
@@ -11,115 +8,129 @@ using Ambev.DeveloperEvaluation.WebApi.Filters;
 using Ambev.DeveloperEvaluation.WebApi.Middleware;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.OpenApi.Models;
 using Serilog;
 
-namespace Ambev.DeveloperEvaluation.WebApi;
+var builder = WebApplication.CreateBuilder(args);
 
-public class Program
+// Configuração do Serilog (Logging global desde o início)
+builder.Host.UseSerilog((context, services, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration)
+);
+
+// Configuração de Controllers e Swagger
+builder.Services.AddControllers();
+builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
 {
-    public static void Main(string[] args)
+    c.DocumentFilter<LowercaseDocumentFilter>();
+    c.DocumentFilter<LowercaseDocumentFilter>();
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        try
+        In = ParameterLocation.Header,
+        Description = "JWT Authorization header using the Bearer scheme",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
         {
-            Log.Information("Starting web application");
-
-            WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-            builder.AddDefaultLogging();
-
-            builder.Services.AddControllers();
-            builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
-            builder.Services.AddEndpointsApiExplorer();
-
-            builder.AddBasicHealthChecks();
-            builder.Services.AddSwaggerGen(c =>
+            new OpenApiSecurityScheme
             {
-                c.DocumentFilter<LowercaseDocumentFilter>();
-            });
-
-            builder.Services.AddDbContext<StoreDbContext>(options =>
-            {
-                options.UseNpgsql(
-                    builder.Configuration.GetConnectionString("DefaultConnection"),
-                    options =>
-                    {
-                        options.MigrationsAssembly("Ambev.DeveloperEvaluation.ORM");
-                        options.UseNetTopologySuite();
-                    }
-                );
-
-                if (builder.Environment.IsDevelopment())
+                Reference = new OpenApiReference
                 {
-                    options.EnableSensitiveDataLogging(); // Apenas em DEV, útil para debug
-                    options.EnableDetailedErrors();
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
                 }
-            });
-
-            // O DbContextFactory é útil para cenários onde é necessário criar instâncias manuais do contexto, 
-            // como em jobs, background services ou processamento paralelo, evitando problemas de concorrência.
-            // É recomendado manter tanto o AddDbContext quanto o AddDbContextFactory quando necessário, 
-            // pois cada um possui um propósito distinto: 
-            // - AddDbContext: Injeta o DbContext como Scoped, ideal para requisições HTTP na API.
-            // - AddDbContextFactory: Permite a criação de instâncias independentes do DbContext sob demanda.
-            // Exemplo de configuração do DbContextFactory:
-            // builder.Services.AddDbContextFactory<StoreDbContext>(options =>
-            // {
-            //     options.UseNpgsql(
-            //         builder.Configuration.GetConnectionString("DefaultConnection"),
-            //         options =>
-            //         {
-            //             options.MigrationsAssembly("Ambev.DeveloperEvaluation.ORM");
-            //             options.UseNetTopologySuite();
-            //         }
-            //     );
-            // });
-
-            builder.Services.AddJwtAuthentication(builder.Configuration);
-
-            builder.RegisterDependencies();
-
-            builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(ApplicationLayer).Assembly);
-
-            builder.Services.AddTransient<IRequest<PaginatedResponse<ListUserResponse>>, PaginationQuery<ListUsersFilter, ListUserResponse>>();
-
-            builder.Services.AddMediatR(cfg =>
-            {
-                cfg.RegisterServicesFromAssemblies(
-                    typeof(ApplicationLayer).Assembly,
-                    typeof(Program).Assembly
-                );
-            });
-
-            builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-
-            var app = builder.Build();
-            app.UseMiddleware<ValidationExceptionMiddleware>();
-
-            app.UseRouting();
-
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
-
-            app.UseHttpsRedirection();
-
-            app.UseAuthentication();
-            app.UseAuthorization();
-
-            app.UseBasicHealthChecks();
-
-            app.MapControllers();
-
-            app.Run();
+            },
+            new List<string>()
         }
-        catch (Exception ex)
+    });
+});
+
+// Health Checks
+builder.AddBasicHealthChecks();
+
+// Configuração do DbContext
+builder.Services.AddDbContext<StoreDbContext>(options =>
+{
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        npgsqlOptions =>
         {
-            Log.Fatal(ex, "Application terminated unexpectedly");
+            npgsqlOptions.MigrationsAssembly("Ambev.DeveloperEvaluation.ORM");
+            npgsqlOptions.UseNetTopologySuite();
         }
-        finally
-        {
-            Log.CloseAndFlush();
-        }
+    );
+
+    if (builder.Environment.IsDevelopment())
+    {
+        options.EnableSensitiveDataLogging();
+        options.EnableDetailedErrors();
     }
+});
+
+// Adicionar DbContextFactory (Útil para processamento paralelo, background jobs, etc.)
+builder.Services.AddSingleton<IDbContextFactory<StoreDbContext>>(provider =>
+{
+    var options = provider.GetRequiredService<DbContextOptions<StoreDbContext>>();
+    return new PooledDbContextFactory<StoreDbContext>(options);
+});
+
+// Autenticação JWT
+builder.Services.AddJwtAuthentication(builder.Configuration);
+
+// Injeção de dependências via IoC
+builder.RegisterDependencies();
+
+// Configuração do AutoMapper
+builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(ApplicationLayer).Assembly);
+
+// Configuração do MediatR
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssemblies(typeof(ApplicationLayer).Assembly)
+);
+
+// Adicionando Pipeline de validação
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
+// Construção da aplicação
+var app = builder.Build();
+
+// Middleware de validação
+app.UseMiddleware<ValidationExceptionMiddleware>();
+
+// Configuração de middlewares principais
+app.UseRouting();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseBasicHealthChecks();
+
+app.MapControllers();
+
+// Inicializa a aplicação e captura exceções
+try
+{
+    Log.Information("Starting web application");
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
 }
