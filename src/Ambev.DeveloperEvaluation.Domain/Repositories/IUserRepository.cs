@@ -1,4 +1,4 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Entities;
 
 namespace Ambev.DeveloperEvaluation.Domain.Repositories;
 
@@ -30,6 +30,8 @@ public interface IUserRepository : IPaginatedRepository<User>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The user if found, null otherwise</returns>
     Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default);
+
+    Task<User?> UpdateAsync(User user, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Deletes a user from the repository

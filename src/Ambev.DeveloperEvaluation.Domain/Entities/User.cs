@@ -122,6 +122,16 @@ public class User : BaseEntity, IUser
         };
     }
 
+    public void UpdateAddressInfo(AddressInfo newAddress)
+    {
+        Address = newAddress ?? throw new ArgumentNullException(nameof(newAddress));
+    }
+
+    public void UpdateNameInfo(NameInfo newNameInfo)
+    {
+        Name = newNameInfo ?? throw new ArgumentNullException(nameof(newNameInfo));
+    }
+
     /// <summary>
     /// Activates the user account.
     /// </summary>

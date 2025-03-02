@@ -4,6 +4,7 @@ using Ambev.DeveloperEvaluation.Application.Users.DeleteUser.Commands;
 using Ambev.DeveloperEvaluation.Application.Users.GetUser.Commands;
 using Ambev.DeveloperEvaluation.Application.Users.ListUsers;
 using Ambev.DeveloperEvaluation.Application.Users.ListUsers.Responses;
+using Ambev.DeveloperEvaluation.Application.Users.UpdateUser.Commands;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using AutoMapper;
 using MediatR;
@@ -117,6 +118,26 @@ public class UsersController : BaseController
         return OkPaginated(result);
     }
 
+    /// <summary>
+    /// Updates an existing user
+    /// </summary>
+    /// <param name="id">The unique identifier of the user to update</param>
+    /// <param name="request">The user update request</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>The updated user details</returns>
+    [HttpPut("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdateUserAsync([FromRoute] Guid id, [FromBody] UpdateUserCommand request, CancellationToken cancellationToken)
+    {
+        // Garante que o ID da rota seja utilizado no comando
+        request.Id = id;
+
+        // Envia o comando direto ao Mediator, confiando que os middlewares e validators já garantem a integridade dos dados
+        var response = await _mediator.Send(request, cancellationToken);
+        return Ok(response);
+    }
 
     /// <summary>
     /// Deletes a user by their ID.

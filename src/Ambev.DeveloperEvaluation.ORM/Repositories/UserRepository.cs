@@ -59,7 +59,15 @@ public class UserRepository : IUserRepository
         if (existingUser == null) return null;
 
         _context.Entry(existingUser).CurrentValues.SetValues(user);
+
+        existingUser.UpdatedAt = DateTime.UtcNow;
+
+        // Atualiza propriedades complexas manualmente
+        existingUser.UpdateAddressInfo(new AddressInfo(user.Address.City, user.Address.Street, user.Address.Number, user.Address.Zipcode, user.Address.Geolocation));
+        existingUser.UpdateNameInfo(new NameInfo(user.Name.Firstname, user.Name.Lastname));
+
         await _context.SaveChangesAsync(cancellationToken);
+
         return existingUser;
     }
 
