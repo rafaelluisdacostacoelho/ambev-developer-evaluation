@@ -51,16 +51,16 @@ public class UserRepository : IUserRepository
         return result.DeletedCount > 0;
     }
 
-    public async Task<User> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
+    public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
         return await _collection.AsQueryable()
-                                .SingleAsync(u => u.Email == email, cancellationToken);
+                                .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
     }
 
-    public async Task<User> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _collection.AsQueryable()
-                                .SingleAsync(u => u.Id == id, cancellationToken);
+                                .FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
     }
 
     public async Task<User?> UpdateAsync(User user, CancellationToken cancellationToken = default)

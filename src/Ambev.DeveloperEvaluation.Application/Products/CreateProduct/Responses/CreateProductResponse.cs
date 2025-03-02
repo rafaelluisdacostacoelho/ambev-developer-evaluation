@@ -1,4 +1,4 @@
-﻿namespace Ambev.DeveloperEvaluation.Application.Products.CreateProduct;
+﻿namespace Ambev.DeveloperEvaluation.Application.Products.CreateProduct.Responses;
 
 /// <summary>
 /// Represents the response returned after successfully creating a new user.
@@ -7,7 +7,7 @@
 /// This response contains the unique identifier of the newly created user,
 /// which can be used for subsequent operations or reference.
 /// </remarks>
-public class CreateProductResult
+public class CreateProductResponse
 {
     /// <summary>
     /// Gets or sets the unique identifier of the newly created user.

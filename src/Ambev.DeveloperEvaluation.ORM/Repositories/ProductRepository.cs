@@ -47,44 +47,52 @@ public class ProductRepository : IProductRepository
         };
     }
 
-    public async Task<Product> GetByIdAsync(Guid id)
+    public async Task<Product> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _context.Products.SingleAsync(p => p.Id == id);
+        return await _context.Products.SingleAsync(p => p.Id == id, cancellationToken: cancellationToken);
     }
 
-    public async Task AddAsync(Product product)
+    public async Task<Product> CreateAsync(Product product, CancellationToken cancellationToken = default)
     {
-        await _context.Products.AddAsync(product);
-        await _context.SaveChangesAsync();
+        await _context.Products.AddAsync(product, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
+        return product;
     }
 
-    public async Task UpdateAsync(Product product)
+    public async Task<Product> UpdateAsync(Product product, CancellationToken cancellationToken = default)
     {
-        var existingProduct = await _context.Products.FindAsync(product.Id) ?? throw new KeyNotFoundException("Produto não encontrado.");
+        var existingProduct = await _context.Products.FindAsync([product.Id], cancellationToken: cancellationToken)
+            ?? throw new KeyNotFoundException("Produto não encontrado.");
         _context.Entry(existingProduct).CurrentValues.SetValues(product);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
+        return product;
     }
 
-    public async Task DeleteAsync(Guid id)
+    public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var product = await _context.Products.FindAsync(id) ?? throw new KeyNotFoundException("Produto não encontrado.");
+        var entity = await _context.Products.FindAsync([id], cancellationToken);
+        if (entity == null)
+            return false;
+        var product = await _context.Products.FindAsync([id], cancellationToken: cancellationToken)
+            ?? throw new KeyNotFoundException("Produto não encontrado.");
         _context.Products.Remove(product);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
+        return true;
     }
 
-    public async Task<List<string>> GetCategoriesAsync()
+    public async Task<List<string>> GetCategoriesAsync(CancellationToken cancellationToken = default)
     {
         return await _context.Products
                              .Select(p => p.Category.Name)
                              .Distinct()
-                             .ToListAsync();
+                             .ToListAsync(cancellationToken: cancellationToken);
     }
 
-    public async Task<PaginatedResult<Product>> GetProductsByCategoryAsync(string category, int page = 1, int size = 10, string? order = null)
+    public async Task<PaginatedResult<Product>> GetProductsByCategoryAsync(string category, int page = 1, int size = 10, string? order = null, CancellationToken cancellationToken = default)
     {
         var query = _context.Products
-            .Where(p => p.Category.Name == category)
-            .AsQueryable();
+                            .Where(p => p.Category.Name == category)
+                            .AsQueryable();
 
         // Aplicar ordenação dinâmica
         if (!string.IsNullOrWhiteSpace(order))
@@ -92,12 +100,11 @@ public class ProductRepository : IProductRepository
             query = ApplySorting(query, order);
         }
 
-        var totalItems = await query.CountAsync();
+        var totalItems = await query.CountAsync(cancellationToken: cancellationToken);
 
-        var items = await query
-            .Skip((page - 1) * size)
-            .Take(size)
-            .ToListAsync();
+        var items = await query.Skip((page - 1) * size)
+                               .Take(size)
+                               .ToListAsync(cancellationToken: cancellationToken);
 
         return new PaginatedResult<Product>(items, totalItems, page, size);
     }

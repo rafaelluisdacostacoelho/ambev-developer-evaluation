@@ -5,10 +5,10 @@ namespace Ambev.DeveloperEvaluation.Domain.Repositories;
 
 public interface IProductRepository : IPaginatedRepository<Product>
 {
-    Task<Product> GetByIdAsync(Guid id);
-    Task AddAsync(Product product);
-    Task UpdateAsync(Product product);
-    Task DeleteAsync(Guid id);
-    Task<List<string>> GetCategoriesAsync();
-    Task<PaginatedResult<Product>> GetProductsByCategoryAsync(string category, int page = 1, int size = 10, string? order = null);
+    Task<Product> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<Product> CreateAsync(Product product, CancellationToken cancellationToken = default);
+    Task<Product> UpdateAsync(Product product, CancellationToken cancellationToken = default);
+    Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<List<string>> GetCategoriesAsync(CancellationToken cancellationToken = default);
+    Task<PaginatedResult<Product>> GetProductsByCategoryAsync(string category, int page = 1, int size = 10, string? order = null, CancellationToken cancellationToken = default);
 }

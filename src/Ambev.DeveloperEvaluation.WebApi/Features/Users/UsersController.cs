@@ -14,7 +14,6 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Users;
 /// <summary>
 /// Controller for managing user operations
 /// </summary>
-[ApiController]
 [Route("api/users")]
 public class UsersController : BaseController
 {

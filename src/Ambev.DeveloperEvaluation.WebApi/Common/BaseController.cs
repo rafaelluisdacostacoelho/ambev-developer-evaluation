@@ -4,7 +4,6 @@ using System.Security.Claims;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Common;
 
-[Route("api/[controller]")]
 [ApiController]
 public class BaseController : ControllerBase
 {

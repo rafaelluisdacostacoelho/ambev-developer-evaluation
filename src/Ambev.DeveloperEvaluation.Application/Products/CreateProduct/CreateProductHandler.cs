@@ -1,17 +1,15 @@
-﻿using Ambev.DeveloperEvaluation.Application.Users.CreateUser.Commands;
-using Ambev.DeveloperEvaluation.Application.Users.CreateUser.Responses;
-using Ambev.DeveloperEvaluation.Application.Users.CreateUser.Validators;
+﻿using Ambev.DeveloperEvaluation.Application.Products.CreateProduct.Commands;
+using Ambev.DeveloperEvaluation.Application.Products.CreateProduct.Responses;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using AutoMapper;
-using FluentValidation;
 using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Products.CreateProduct;
 
-class CreateProductHandler : IRequestHandler<CreateUserCommand, CreateUserResponse>
+class CreateProductHandler : IRequestHandler<CreateProductCommand, CreateProductResponse>
 {
-    private readonly IUserRepository _userRepository;
+    private readonly IProductRepository _productRepository;
     private readonly IMapper _mapper;
 
     /// <summary>
@@ -20,9 +18,9 @@ class CreateProductHandler : IRequestHandler<CreateUserCommand, CreateUserRespon
     /// <param name="userRepository">The user repository</param>
     /// <param name="mapper">The AutoMapper instance</param>
     /// <param name="validator">The validator for CreateUserCommand</param>
-    public CreateProductHandler(IUserRepository userRepository, IMapper mapper)
+    public CreateProductHandler(IProductRepository productRepository, IMapper mapper)
     {
-        _userRepository = userRepository;
+        _productRepository = productRepository;
         _mapper = mapper;
     }
 
@@ -32,22 +30,12 @@ class CreateProductHandler : IRequestHandler<CreateUserCommand, CreateUserRespon
     /// <param name="command">The CreateUser command</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The created user details</returns>
-    public async Task<CreateUserResponse> Handle(CreateUserCommand command, CancellationToken cancellationToken)
+    public async Task<CreateProductResponse> Handle(CreateProductCommand command, CancellationToken cancellationToken)
     {
-        var validator = new CreateUserCommandValidator();
-        var validationResult = await validator.ValidateAsync(command, cancellationToken);
+        var product = _mapper.Map<Product>(command);
 
-        if (!validationResult.IsValid)
-            throw new ValidationException(validationResult.Errors);
+        var createdProduct = await _productRepository.CreateAsync(product, cancellationToken);
 
-        var existingUser = await _userRepository.GetByEmailAsync(command.Email, cancellationToken);
-        if (existingUser != null)
-            throw new InvalidOperationException($"User with email {command.Email} already exists");
-
-        var user = _mapper.Map<User>(command);
-
-        var createdUser = await _userRepository.CreateAsync(user, cancellationToken);
-
-        return _mapper.Map<CreateUserResponse>(createdUser);
+        return _mapper.Map<CreateProductResponse>(createdProduct);
     }
 }
