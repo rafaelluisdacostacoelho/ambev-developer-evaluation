@@ -1,4 +1,4 @@
-﻿using Ambev.DeveloperEvaluation.Application;
+using Ambev.DeveloperEvaluation.Application;
 using Ambev.DeveloperEvaluation.Common.HealthChecks;
 using Ambev.DeveloperEvaluation.Common.Security;
 using Ambev.DeveloperEvaluation.Common.Validation;
@@ -98,7 +98,7 @@ builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBeh
 var app = builder.Build();
 
 // Middleware de validação
-app.UseMiddleware<ValidationExceptionMiddleware>();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // Configuração de middlewares principais
 app.UseRouting();

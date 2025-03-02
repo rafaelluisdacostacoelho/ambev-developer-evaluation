@@ -46,16 +46,6 @@ public class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>
         RuleFor(x => x.Status)
             .IsInEnum().WithMessage("Invalid user status.");
 
-        // Validação do CreatedAt
-        RuleFor(x => x.CreatedAt)
-            .NotEmpty().WithMessage("CreatedAt date must not be empty.")
-            .LessThanOrEqualTo(DateTime.UtcNow).WithMessage("CreatedAt date cannot be in the future.");
-
-        // Validação do UpdatedAt (opcional)
-        RuleFor(x => x.UpdatedAt)
-            .LessThanOrEqualTo(DateTime.UtcNow).When(x => x.UpdatedAt.HasValue)
-            .WithMessage("UpdatedAt date cannot be in the future.");
-
         // Validação do Nome do Usuário
         RuleFor(x => x.Name)
             .NotNull().WithMessage("Name information must not be null.")
