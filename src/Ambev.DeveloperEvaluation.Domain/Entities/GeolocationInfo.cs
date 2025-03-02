@@ -19,8 +19,9 @@ public class GeolocationInfo
     /// </summary>
     public double Longitude { get; set; }
 
+
     // Construtor privado para ORMs
-    private GeolocationInfo() { }
+    public GeolocationInfo() { }
 
     public GeolocationInfo(double latitude, double longitude)
     {

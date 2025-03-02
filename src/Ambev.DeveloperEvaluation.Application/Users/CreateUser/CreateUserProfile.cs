@@ -1,4 +1,4 @@
-﻿using Ambev.DeveloperEvaluation.Application.Users.CreateUser.Commands;
+using Ambev.DeveloperEvaluation.Application.Users.CreateUser.Commands;
 using Ambev.DeveloperEvaluation.Application.Users.CreateUser.Responses;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using AutoMapper;
@@ -21,8 +21,18 @@ public class CreateUserProfile : Profile
             .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
 
         CreateMap<CreateNameInfoCommand, NameInfo>();
-        CreateMap<CreateAddressInfoCommand, AddressInfo>();
-        CreateMap<GetGeolocationInfoResponse, GeolocationInfo>();
+
+        CreateMap<CreateGeolocationInfoCommand, GeolocationInfo>()
+            .ConstructUsing(src => new GeolocationInfo(src.Latitude, src.Longitude));
+
+        CreateMap<CreateAddressInfoCommand, AddressInfo>()
+            .ConstructUsing(src => new AddressInfo(
+                src.City,
+                src.Street,
+                src.Number,
+                src.Zipcode,
+                new GeolocationInfo(src.Geolocation.Latitude, src.Geolocation.Longitude)
+            ));
 
         CreateMap<User, CreateUserResponse>();
     }
