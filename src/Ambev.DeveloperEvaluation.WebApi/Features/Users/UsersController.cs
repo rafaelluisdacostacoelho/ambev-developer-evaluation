@@ -98,7 +98,7 @@ public class UsersController : BaseController
     public async Task<IActionResult> GetUsersPageAsync([FromQuery] int pageNumber = 1,
                                                        [FromQuery] int pageSize = 10,
                                                        [FromQuery] string? order = null,
-                                                       [FromQuery] ListUsersFilter? filter = null)
+                                                       [FromQuery] ListUsersQuery? filter = null)
     {
         if (pageNumber < 1)
         {
@@ -110,7 +110,7 @@ public class UsersController : BaseController
             return BadRequest(new { Message = "Page size must be between 1 and 100." });
         }
 
-        var query = new PaginationQuery<ListUsersFilter, ListUserResponse>(pageNumber, pageSize, order, filter);
+        var query = new PaginationQuery<ListUsersQuery, ListUserResponse>(pageNumber, pageSize, order, filter);
 
         PaginatedResponse<ListUserResponse> result = await _mediator.Send(query);
 

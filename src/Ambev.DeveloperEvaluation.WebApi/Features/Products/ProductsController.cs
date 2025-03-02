@@ -1,9 +1,12 @@
+using Ambev.DeveloperEvaluation.Application.Pagination;
 using Ambev.DeveloperEvaluation.Application.Products.CreateProduct.Commands;
 using Ambev.DeveloperEvaluation.Application.Products.CreateProduct.Responses;
 using Ambev.DeveloperEvaluation.Application.Products.DeleteProduct.Commands;
 using Ambev.DeveloperEvaluation.Application.Products.GetProduct.Commands;
 using Ambev.DeveloperEvaluation.Application.Products.GetProductCategories;
 using Ambev.DeveloperEvaluation.Application.Products.GetProductsByCategory;
+using Ambev.DeveloperEvaluation.Application.Products.ListProducts;
+using Ambev.DeveloperEvaluation.Application.Products.ListProducts.Responses;
 using Ambev.DeveloperEvaluation.Application.Products.UpdateProduct.Commands;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using AutoMapper;
@@ -69,6 +72,41 @@ public class ProductsController : BaseController
 
         return Ok(response);
     }
+
+    /// <summary>
+    /// Retrieves a paginated list of products.
+    /// </summary>
+    /// <param name="pageNumber">Page number (must be 1 or greater).</param>
+    /// <param name="pageSize">Number of products per page (must be between 1 and 100).</param>
+    /// <param name="order">Sorting order (optional).</param>
+    /// <param name="filter">Filters to apply (optional).</param>
+    /// <returns>Paginated list of products.</returns>
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetProductsPageAsync([FromQuery] int pageNumber = 1,
+                                                          [FromQuery] int pageSize = 10,
+                                                          [FromQuery] string? order = null,
+                                                          [FromQuery] ListProductsQuery? filter = null)
+    {
+        if (pageNumber < 1)
+        {
+            return BadRequest(new { Message = "Page number must be greater than or equal to 1." });
+        }
+
+        if (pageSize < 1 || pageSize > 100)
+        {
+            return BadRequest(new { Message = "Page size must be between 1 and 100." });
+        }
+
+        var query = new PaginationQuery<ListProductsQuery, ListProductResponse>(pageNumber, pageSize, order, filter);
+
+        PaginatedResponse<ListProductResponse> result = await _mediator.Send(query);
+
+        return OkPaginated(result);
+    }
+
 
     [HttpGet("categories")]
     public async Task<IActionResult> GetCategories()

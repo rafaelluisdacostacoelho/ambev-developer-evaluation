@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Pagination;
 
@@ -9,7 +9,6 @@ public class PaginationQuery<TFilter, TResponse> : IRequest<PaginatedResponse<TR
     public string? Order { get; }
     public TFilter? Filter { get; }
 
-    // 🔥 Construtor sem parâmetros necessário para o Model Binding do ASP.NET Core
     public PaginationQuery() { }
 
     public PaginationQuery(int pageNumber, int pageSize, string? order, TFilter? filter)
