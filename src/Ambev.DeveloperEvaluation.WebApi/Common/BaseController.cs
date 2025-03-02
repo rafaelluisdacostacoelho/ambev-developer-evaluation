@@ -1,4 +1,4 @@
-﻿using Ambev.DeveloperEvaluation.Application.Pagination;
+using Ambev.DeveloperEvaluation.Application.Pagination;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 

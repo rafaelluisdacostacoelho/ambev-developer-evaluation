@@ -1,4 +1,4 @@
-namespace Ambev.DeveloperEvaluation.Domain.Exceptions;
+﻿namespace Ambev.DeveloperEvaluation.Domain.Exceptions;
 
 public class DomainException : Exception
 {

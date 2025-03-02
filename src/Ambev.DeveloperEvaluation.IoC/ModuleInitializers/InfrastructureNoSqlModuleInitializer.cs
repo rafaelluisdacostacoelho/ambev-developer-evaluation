@@ -1,4 +1,4 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Repositories;
+using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.NoSql.Extensions;
 using Ambev.DeveloperEvaluation.NoSql.Repositories;
 using Microsoft.AspNetCore.Builder;

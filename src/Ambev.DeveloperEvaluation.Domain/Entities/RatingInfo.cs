@@ -1,4 +1,4 @@
-﻿namespace Ambev.DeveloperEvaluation.Domain.Entities;
+namespace Ambev.DeveloperEvaluation.Domain.Entities;
 
 /// <summary>
 /// Value Object representing the product rating information.

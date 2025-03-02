@@ -1,4 +1,4 @@
-using Ambev.DeveloperEvaluation.Domain.Entities;
+﻿using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Enums;
 using Bogus;
 
@@ -25,7 +25,7 @@ public static class ActiveUserSpecificationTestData
     private static readonly Faker<User> userFaker = new Faker<User>()
         .CustomInstantiator(f => new User(username: f.Internet.UserName(),
                                           email: f.Internet.Email(),
-                                          password: $"Test@{f.Random.Number(1000)}", // Simulando senha aleat�ria
+                                          password: $"Test@{f.Random.Number(1000)}", // Simulando senha aleatória
                                           phone: "",
                                           status: UserStatus.Active,
                                           role: f.PickRandom<UserRole>(),

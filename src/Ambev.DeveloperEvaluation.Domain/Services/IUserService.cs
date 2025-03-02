@@ -1,1 +1,1 @@
-// Placeholder for IInventoryService.cs file
+﻿// Placeholder for IInventoryService.cs file

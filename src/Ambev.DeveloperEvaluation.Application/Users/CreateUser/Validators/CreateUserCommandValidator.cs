@@ -1,4 +1,4 @@
-﻿using Ambev.DeveloperEvaluation.Application.Users.CreateUser.Commands;
+using Ambev.DeveloperEvaluation.Application.Users.CreateUser.Commands;
 using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.Domain.Validation;
 using FluentValidation;

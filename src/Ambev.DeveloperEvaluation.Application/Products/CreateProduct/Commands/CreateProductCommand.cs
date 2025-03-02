@@ -1,4 +1,4 @@
-﻿using Ambev.DeveloperEvaluation.Application.Products.CreateProduct.Responses;
+using Ambev.DeveloperEvaluation.Application.Products.CreateProduct.Responses;
 using Ambev.DeveloperEvaluation.Application.Products.CreateProduct.Validators;
 using Ambev.DeveloperEvaluation.Common.Validation;
 using MediatR;

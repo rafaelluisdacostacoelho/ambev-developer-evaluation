@@ -1,4 +1,4 @@
-using Ambev.DeveloperEvaluation.Application.Users.ListUsers.Responses;
+Ôªøusing Ambev.DeveloperEvaluation.Application.Users.ListUsers.Responses;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using AutoMapper;
 
@@ -20,7 +20,7 @@ public class ListUsersProfile : Profile
         // Mapeamento direto entre User e ListUserResponse
         CreateMap<User, ListUserResponse>()
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name)) // Nome
-            .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address)) // EndereÁo
+            .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address)) // Endere√ßo
             .ForMember(dest => dest.Password, opt => opt.Ignore()); // Evitar expor a senha
 
         // Mapeamento entre NameInfo e ListUserNameInfoResponse
@@ -28,7 +28,7 @@ public class ListUsersProfile : Profile
 
         // Mapeamento entre AddressInfo e ListUserAddressInfoResponse
         CreateMap<AddressInfo, ListUserAddressInfoResponse>()
-            .ForMember(dest => dest.Geolocation, opt => opt.MapFrom(src => src.Geolocation)); // Mapeia a geolocalizaÁ„o corretamente
+            .ForMember(dest => dest.Geolocation, opt => opt.MapFrom(src => src.Geolocation)); // Mapeia a geolocaliza√ß√£o corretamente
 
         // Mapeamento entre GeolocationInfo e ListUserAddressGeolocationInfo
         CreateMap<GeolocationInfo, ListUserAddressGeolocationInfoResponse>();

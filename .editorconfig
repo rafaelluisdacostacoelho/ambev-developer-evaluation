@@ -1,4 +1,9 @@
-﻿[*.cs]
+﻿root = true
+
+[*]
+charset = utf-8
+
+[*.cs]
 
 # IDE0290: Use primary constructor
 csharp_style_prefer_primary_constructors = false

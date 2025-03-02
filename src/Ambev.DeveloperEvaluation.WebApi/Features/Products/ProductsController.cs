@@ -1,6 +1,5 @@
-﻿using Ambev.DeveloperEvaluation.Application.Products.CreateProduct.Commands;
 using Ambev.DeveloperEvaluation.Application.Products.CreateProduct.Responses;
-using Ambev.DeveloperEvaluation.Application.Products.GetProduct;
+using Ambev.DeveloperEvaluation.Application.Products.GetProduct.Commands;
 using Ambev.DeveloperEvaluation.Application.Products.GetProductCategories;
 using Ambev.DeveloperEvaluation.Application.Products.GetProductsByCategory;
 using Ambev.DeveloperEvaluation.WebApi.Common;

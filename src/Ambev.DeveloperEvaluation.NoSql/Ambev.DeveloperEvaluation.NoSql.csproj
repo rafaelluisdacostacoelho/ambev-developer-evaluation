@@ -4,6 +4,9 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <EnforceUTF8Encoding>true</EnforceUTF8Encoding>
+    <GenerateDebugInformation>true</GenerateDebugInformation>
+    <DebugType>portable</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,6 +16,12 @@
   <ItemGroup>
     <ProjectReference Include="..\Ambev.DeveloperEvaluation.Core\Ambev.DeveloperEvaluation.Core.csproj" />
     <ProjectReference Include="..\Ambev.DeveloperEvaluation.Domain\Ambev.DeveloperEvaluation.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="**\*.cs">
+      <Encoding>utf-8</Encoding>
+    </Compile>
   </ItemGroup>
 
 </Project>

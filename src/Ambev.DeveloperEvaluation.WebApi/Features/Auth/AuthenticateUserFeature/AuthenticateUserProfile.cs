@@ -1,6 +1,4 @@
 using AutoMapper;
-using Ambev.DeveloperEvaluation.Domain.Entities;
-
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Auth.AuthenticateUserFeature;
 
 /// <summary>

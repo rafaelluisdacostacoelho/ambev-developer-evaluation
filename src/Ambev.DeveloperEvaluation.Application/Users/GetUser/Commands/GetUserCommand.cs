@@ -1,4 +1,4 @@
-using Ambev.DeveloperEvaluation.Application.Users.GetUser.Responses;
+﻿using Ambev.DeveloperEvaluation.Application.Users.GetUser.Responses;
 using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Users.GetUser.Commands;

@@ -1,4 +1,4 @@
-using Ambev.DeveloperEvaluation.Application;
+ï»¿using Ambev.DeveloperEvaluation.Application;
 using Ambev.DeveloperEvaluation.Common.HealthChecks;
 using Ambev.DeveloperEvaluation.Common.Security;
 using Ambev.DeveloperEvaluation.Common.Validation;
@@ -13,12 +13,12 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configuração do Serilog (Logging global desde o início)
+// ConfiguraÃ§Ã£o do Serilog (Logging global desde o inÃ­cio)
 builder.Host.UseSerilog((context, services, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration)
 );
 
-// Configuração de Controllers e Swagger
+// ConfiguraÃ§Ã£o de Controllers e Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -51,7 +51,7 @@ builder.Services.AddSwaggerGen(c =>
 // Health Checks
 builder.AddBasicHealthChecks();
 
-// Configuração do DbContext
+// ConfiguraÃ§Ã£o do DbContext
 builder.Services.AddDbContext<StoreDbContext>(options =>
 {
     options.UseNpgsql(
@@ -70,37 +70,37 @@ builder.Services.AddDbContext<StoreDbContext>(options =>
     }
 });
 
-// Adicionar DbContextFactory (Útil para processamento paralelo, background jobs, etc.)
+// Adicionar DbContextFactory (Ãštil para processamento paralelo, background jobs, etc.)
 builder.Services.AddSingleton<IDbContextFactory<StoreDbContext>>(provider =>
 {
     var options = provider.GetRequiredService<DbContextOptions<StoreDbContext>>();
     return new PooledDbContextFactory<StoreDbContext>(options);
 });
 
-// Autenticação JWT
+// AutenticaÃ§Ã£o JWT
 builder.Services.AddJwtAuthentication(builder.Configuration);
 
-// Injeção de dependências via IoC
+// InjeÃ§Ã£o de dependÃªncias via IoC
 builder.RegisterDependencies();
 
-// Configuração do AutoMapper
+// ConfiguraÃ§Ã£o do AutoMapper
 builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(ApplicationLayer).Assembly);
 
-// Configuração do MediatR
+// ConfiguraÃ§Ã£o do MediatR
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssemblies(typeof(ApplicationLayer).Assembly)
 );
 
-// Adicionando Pipeline de validação
+// Adicionando Pipeline de validaÃ§Ã£o
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
-// Construção da aplicação
+// ConstruÃ§Ã£o da aplicaÃ§Ã£o
 var app = builder.Build();
 
-// Middleware de validação
+// Middleware de validaÃ§Ã£o
 app.UseMiddleware<ValidationExceptionMiddleware>();
 
-// Configuração de middlewares principais
+// ConfiguraÃ§Ã£o de middlewares principais
 app.UseRouting();
 
 if (app.Environment.IsDevelopment())
@@ -116,7 +116,7 @@ app.UseBasicHealthChecks();
 
 app.MapControllers();
 
-// Inicializa a aplicação e captura exceções
+// Inicializa a aplicaÃ§Ã£o e captura exceÃ§Ãµes
 try
 {
     Log.Information("Starting web application");

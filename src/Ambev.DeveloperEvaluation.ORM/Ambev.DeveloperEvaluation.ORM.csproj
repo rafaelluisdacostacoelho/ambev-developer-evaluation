@@ -1,10 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<Title>Vendor-Test-Gen-0001</Title>
-	</PropertyGroup>
+    <EnforceUTF8Encoding>true</EnforceUTF8Encoding>
+    <GenerateDebugInformation>true</GenerateDebugInformation>
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+  
 	<ItemGroup>
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10">
@@ -16,11 +21,20 @@
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" Version="8.0.8" />
 		<PackageReference Include="System.Linq.Dynamic.Core" Version="1.6.0.2" />
 	</ItemGroup>
+  
 	<ItemGroup>
 		<ProjectReference Include="..\Ambev.DeveloperEvaluation.Core\Ambev.DeveloperEvaluation.Core.csproj" />
 		<ProjectReference Include="..\Ambev.DeveloperEvaluation.Domain\Ambev.DeveloperEvaluation.Domain.csproj" />
 	</ItemGroup>
+  
 	<ItemGroup>
 	  <Folder Include="Migrations\" />
 	</ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="**\*.cs">
+      <Encoding>utf-8</Encoding>
+    </Compile>
+  </ItemGroup>
+  
 </Project>

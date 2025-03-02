@@ -1,4 +1,4 @@
-﻿namespace Ambev.DeveloperEvaluation.Domain.Entities;
+namespace Ambev.DeveloperEvaluation.Domain.Entities;
 
 /// <summary>
 /// Represents geographical coordinates for spatial queries.

@@ -1,4 +1,4 @@
-﻿namespace Ambev.DeveloperEvaluation.Application.Users.CreateUser.Commands;
+namespace Ambev.DeveloperEvaluation.Application.Users.CreateUser.Commands;
 
 public class CreateNameInfoCommand
 {

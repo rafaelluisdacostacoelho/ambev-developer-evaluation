@@ -33,10 +33,9 @@ public class ProductRepository : IProductRepository
         var totalItems = await query.CountAsync(cancellationToken: cancellationToken);
 
         // Aplicar paginação
-        var items = await query
-            .Skip((page - 1) * size)
-            .Take(size)
-            .ToListAsync(cancellationToken: cancellationToken);
+        var items = await query.Skip((page - 1) * size)
+                               .Take(size)
+                               .ToListAsync(cancellationToken: cancellationToken);
 
         return new PaginatedResult<Product>
         {
@@ -47,9 +46,9 @@ public class ProductRepository : IProductRepository
         };
     }
 
-    public async Task<Product> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<Product?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _context.Products.SingleAsync(p => p.Id == id, cancellationToken: cancellationToken);
+        return await _context.Products.FirstOrDefaultAsync(p => p.Id == id, cancellationToken: cancellationToken);
     }
 
     public async Task<Product> CreateAsync(Product product, CancellationToken cancellationToken = default)
