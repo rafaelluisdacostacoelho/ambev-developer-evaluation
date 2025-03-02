@@ -37,46 +37,30 @@ public class CartRepository : ICartRepository
         return new PaginatedResult<Cart>(carts, totalCount, page, size);
     }
 
-    public async Task AddAsync(Cart cart)
+    public async Task<Cart> CreateAsync(Cart cart, CancellationToken cancellationToken = default)
     {
-        await _collection.InsertOneAsync(cart);
+        await _collection.InsertOneAsync(cart, cancellationToken: cancellationToken);
+        return cart;
     }
 
-    public async Task DeleteAsync(Guid id)
-    {
-        var filter = Builders<Cart>.Filter.Eq(c => c.Id, id);
-        await _collection.DeleteOneAsync(filter);
-    }
-
-    public async Task<Cart> GetByIdAsync(Guid id)
+    public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var filter = Builders<Cart>.Filter.Eq(c => c.Id, id);
-        return await _collection.Find(filter).FirstOrDefaultAsync();
+        await _collection.DeleteOneAsync(filter, cancellationToken);
+        return true;
     }
 
-    public async Task<PaginatedResult<Cart>> GetPaginatedAsync(int page = 1, int size = 10, string? order = null)
+    public async Task<Cart?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var query = _collection.AsQueryable();
-
-        if (!string.IsNullOrEmpty(order))
-        {
-            query = order switch
-            {
-                "date_desc" => query.OrderByDescending(c => c.Date),
-                "date_asc" => query.OrderBy(c => c.Date),
-                _ => query
-            };
-        }
-
-        var totalCount = await query.CountAsync();
-        var carts = await query.Skip((page - 1) * size).Take(size).ToListAsync();
-
-        return new PaginatedResult<Cart>(carts, totalCount, page, size);
+        var filter = Builders<Cart>.Filter.Eq(c => c.Id, id);
+        return await _collection.Find(filter).FirstOrDefaultAsync(cancellationToken: cancellationToken);
     }
 
-    public async Task UpdateAsync(Cart cart)
+    public async Task<Cart> UpdateAsync(Cart cart, CancellationToken cancellationToken = default)
     {
         var filter = Builders<Cart>.Filter.Eq(c => c.Id, cart.Id);
-        await _collection.ReplaceOneAsync(filter, cart);
+        await _collection.ReplaceOneAsync(filter, cart, cancellationToken: cancellationToken);
+
+        return cart;
     }
 }

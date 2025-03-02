@@ -1,7 +1,6 @@
-﻿using Ambev.DeveloperEvaluation.Common.Cache;
 using MediatR;
 
-namespace Ambev.DeveloperEvaluation.Application.Cache;
+namespace Ambev.DeveloperEvaluation.Common.Cache;
 
 public class CacheInvalidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
 {

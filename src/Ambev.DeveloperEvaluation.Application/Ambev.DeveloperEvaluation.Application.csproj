@@ -19,10 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Carts\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Update="**\*.cs">
       <Encoding>utf-8</Encoding>
     </Compile>

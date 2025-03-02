@@ -6,12 +6,12 @@ namespace Ambev.DeveloperEvaluation.Application.Users.GetUser.Validators;
 /// <summary>
 /// Validator for GetUserCommand
 /// </summary>
-public class GetUserCommandValidator : AbstractValidator<GetUserCommand>
+public class GetCartCommandValidator : AbstractValidator<GetUserCommand>
 {
     /// <summary>
     /// Initializes validation rules for GetUserCommand
     /// </summary>
-    public GetUserCommandValidator()
+    public GetCartCommandValidator()
     {
         RuleFor(x => x.Id).NotEmpty().WithMessage("User ID is required");
     }

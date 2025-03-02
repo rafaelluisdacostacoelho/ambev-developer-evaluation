@@ -1,8 +1,7 @@
-﻿using Ambev.DeveloperEvaluation.Common.Cache;
 using MediatR;
 using System.Text.Json;
 
-namespace Ambev.DeveloperEvaluation.Application.Cache;
+namespace Ambev.DeveloperEvaluation.Common.Cache;
 
 public class CachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
 {

@@ -1,4 +1,4 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Pagination;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using MongoDB.Driver;
@@ -37,7 +37,7 @@ public class ProductRepository : IProductRepository
         return new PaginatedResult<Product>(products, totalCount, page, size);
     }
 
-    public async Task<Product> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<Product?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var filter = Builders<Product>.Filter.Eq(p => p.Id, id);
         return await _collection.Find(filter).FirstOrDefaultAsync(cancellationToken);

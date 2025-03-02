@@ -1,4 +1,3 @@
-﻿using Ambev.DeveloperEvaluation.Application.Cache;
 using Ambev.DeveloperEvaluation.Cache;
 using Ambev.DeveloperEvaluation.Common.Cache;
 using MediatR;

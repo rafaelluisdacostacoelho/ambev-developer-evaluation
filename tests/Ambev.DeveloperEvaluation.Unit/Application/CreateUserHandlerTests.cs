@@ -1,4 +1,4 @@
-﻿using Ambev.DeveloperEvaluation.Application.Users.CreateUser;
+using Ambev.DeveloperEvaluation.Application.Users.CreateUser;
 using Ambev.DeveloperEvaluation.Application.Users.CreateUser.Commands;
 using Ambev.DeveloperEvaluation.Application.Users.CreateUser.Responses;
 using Ambev.DeveloperEvaluation.Common.Security;
@@ -13,14 +13,14 @@ using Xunit;
 namespace Ambev.DeveloperEvaluation.Unit.Application;
 
 /// <summary>
-/// Contains unit tests for the <see cref="CreateUserHandler"/> class.
+/// Contains unit tests for the <see cref="CreateUserCommandHandler"/> class.
 /// </summary>
 public class CreateUserHandlerTests
 {
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
     private readonly IPasswordHasher _passwordHasher;
-    private readonly CreateUserHandler _handler;
+    private readonly CreateUserCommandHandler _handler;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CreateUserHandlerTests"/> class.
@@ -31,7 +31,7 @@ public class CreateUserHandlerTests
         _userRepository = Substitute.For<IUserRepository>();
         _mapper = Substitute.For<IMapper>();
         _passwordHasher = Substitute.For<IPasswordHasher>();
-        _handler = new CreateUserHandler(_userRepository, _mapper, _passwordHasher);
+        _handler = new CreateUserCommandHandler(_userRepository, _mapper, _passwordHasher);
     }
 
     /// <summary>
@@ -63,7 +63,8 @@ public class CreateUserHandlerTests
         _mapper.Map<CreateUserResponse>(user).Returns(result);
 
         _userRepository.CreateAsync(Arg.Any<User>(), Arg.Any<CancellationToken>())
-            .Returns(user);
+                       .Returns(user);
+
         _passwordHasher.HashPassword(Arg.Any<string>()).Returns("hashedPassword");
 
         // When

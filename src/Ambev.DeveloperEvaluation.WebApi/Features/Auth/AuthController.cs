@@ -10,8 +10,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Auth;
 /// <summary>
 /// Controller for authentication operations
 /// </summary>
-[ApiController]
-[Route("api/[controller]")]
+[Route("api/auth")]
 public class AuthController : BaseController
 {
     private readonly IMediator _mediator;
