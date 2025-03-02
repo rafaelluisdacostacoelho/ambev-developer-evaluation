@@ -40,4 +40,14 @@ public class Product : BaseEntity
 
         Price = newPrice;
     }
+
+    public void UpdateCategory(CategoryInfo newCategory)
+    {
+        Category = newCategory ?? throw new ArgumentNullException(nameof(newCategory));
+    }
+
+    public void UpdateRating(RatingInfo newRating)
+    {
+        Rating = newRating ?? throw new ArgumentNullException(nameof(newRating));
+    }
 }

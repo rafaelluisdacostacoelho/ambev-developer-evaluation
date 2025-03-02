@@ -4,6 +4,7 @@ using Ambev.DeveloperEvaluation.Application.Products.DeleteProduct.Commands;
 using Ambev.DeveloperEvaluation.Application.Products.GetProduct.Commands;
 using Ambev.DeveloperEvaluation.Application.Products.GetProductCategories;
 using Ambev.DeveloperEvaluation.Application.Products.GetProductsByCategory;
+using Ambev.DeveloperEvaluation.Application.Products.UpdateProduct.Commands;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using AutoMapper;
 using MediatR;
@@ -85,6 +86,27 @@ public class ProductsController : BaseController
         var query = new GetProductsByCategoryQuery(category, page, size, order);
         var result = await _mediator.Send(query);
         return Ok(result);
+    }
+
+    /// <summary>
+    /// Updates an existing product
+    /// </summary>
+    /// <param name="id">The unique identifier of the product to update</param>
+    /// <param name="request">The product update request</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>The updated product details</returns>
+    [HttpPut("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdateProductAsync([FromRoute] Guid id, [FromBody] UpdateProductCommand request, CancellationToken cancellationToken)
+    {
+        // Garante que o ID da rota seja utilizado no comando
+        request.Id = id;
+
+        // Envia o comando direto ao Mediator, confiando que os middlewares e validators já garantem a integridade dos dados
+        var response = await _mediator.Send(request, cancellationToken);
+        return Ok(response);
     }
 
     /// <summary>

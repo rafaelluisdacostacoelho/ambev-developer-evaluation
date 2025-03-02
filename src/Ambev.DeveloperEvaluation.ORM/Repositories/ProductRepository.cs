@@ -1,4 +1,4 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Pagination;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -63,6 +63,11 @@ public class ProductRepository : IProductRepository
         var existingProduct = await _context.Products.FindAsync([product.Id], cancellationToken: cancellationToken)
             ?? throw new KeyNotFoundException("Produto não encontrado.");
         _context.Entry(existingProduct).CurrentValues.SetValues(product);
+
+        // Atualiza propriedades complexas manualmente
+        existingProduct.UpdateCategory(new CategoryInfo(product.Category.ExternalId, product.Category.Name));
+        existingProduct.UpdateRating(new RatingInfo(product.Rating.ExternalId, product.Rating.AverageRate, product.Rating.TotalReviews));
+
         await _context.SaveChangesAsync(cancellationToken);
         return product;
     }
