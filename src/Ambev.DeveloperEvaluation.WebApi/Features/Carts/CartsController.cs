@@ -1,5 +1,8 @@
 using Ambev.DeveloperEvaluation.Application.Carts.CreateCart.Commands;
 using Ambev.DeveloperEvaluation.Application.Carts.GetCart.Commands;
+using Ambev.DeveloperEvaluation.Application.Carts.ListCarts;
+using Ambev.DeveloperEvaluation.Application.Carts.ListCarts.Responses;
+using Ambev.DeveloperEvaluation.Application.Pagination;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using AutoMapper;
 using MediatR;
@@ -30,7 +33,7 @@ public class CartsController : BaseController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateCartAsync([FromBody] CreateCartCommand request, CancellationToken cancellationToken)
     {
-        // TODO: Add UserID from Auth Context and map to UserId into Command.
+        // TODO: Add CartID from Auth Context and map to CartId into Command.
 
         var command = _mapper.Map<CreateCartCommand>(request);
         var response = await _mediator.Send(command, cancellationToken);
@@ -65,5 +68,39 @@ public class CartsController : BaseController
         }
 
         return Ok(response);
+    }
+
+    /// <summary>
+    /// Retrieves a paginated list of carts.
+    /// </summary>
+    /// <param name="pageNumber">Page number (must be 1 or greater).</param>
+    /// <param name="pageSize">Number of carts per page (must be between 1 and 100).</param>
+    /// <param name="order">Sorting order (optional).</param>
+    /// <param name="filter">Filters to apply (optional).</param>
+    /// <returns>Paginated list of carts.</returns>
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetCartPageAsync([FromQuery] int pageNumber = 1,
+                                                      [FromQuery] int pageSize = 10,
+                                                      [FromQuery] string? order = null,
+                                                      [FromQuery] ListCartsQuery? filter = null)
+    {
+        if (pageNumber < 1)
+        {
+            return BadRequest(new { Message = "Page number must be greater than or equal to 1." });
+        }
+
+        if (pageSize < 1 || pageSize > 100)
+        {
+            return BadRequest(new { Message = "Page size must be between 1 and 100." });
+        }
+
+        var query = new PaginationQuery<ListCartsQuery, ListCartResponse>(pageNumber, pageSize, order, filter);
+
+        PaginatedResponse<ListCartResponse> result = await _mediator.Send(query);
+
+        return OkPaginated(result);
     }
 }
