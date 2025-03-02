@@ -1,6 +1,7 @@
+using Ambev.DeveloperEvaluation.Application.Users.DeleteUser.Responses;
 using MediatR;
 
-namespace Ambev.DeveloperEvaluation.Application.Users.DeleteUser;
+namespace Ambev.DeveloperEvaluation.Application.Users.DeleteUser.Commands;
 
 /// <summary>
 /// Command for deleting a user

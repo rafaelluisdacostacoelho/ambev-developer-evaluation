@@ -2,7 +2,6 @@ using Ambev.DeveloperEvaluation.Application.Users.GetUser.Commands;
 using Ambev.DeveloperEvaluation.Application.Users.GetUser.Responses;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using AutoMapper;
-using FluentValidation;
 using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Users.GetUser;
@@ -21,9 +20,7 @@ public class GetUserCommandHandler : IRequestHandler<GetUserCommand, GetUserResp
     /// <param name="userRepository">The user repository</param>
     /// <param name="mapper">The AutoMapper instance</param>
     /// <param name="validator">The validator for GetUserCommand</param>
-    public GetUserCommandHandler(
-        IUserRepository userRepository,
-        IMapper mapper)
+    public GetUserCommandHandler(IUserRepository userRepository, IMapper mapper)
     {
         _userRepository = userRepository;
         _mapper = mapper;
@@ -37,12 +34,6 @@ public class GetUserCommandHandler : IRequestHandler<GetUserCommand, GetUserResp
     /// <returns>The user details if found</returns>
     public async Task<GetUserResponse> Handle(GetUserCommand request, CancellationToken cancellationToken)
     {
-        var validator = new GetUserCommandValidator();
-        var validationResult = await validator.ValidateAsync(request, cancellationToken);
-
-        if (!validationResult.IsValid)
-            throw new ValidationException(validationResult.Errors);
-
         var user = await _userRepository.GetByIdAsync(request.Id, cancellationToken);
 
         return user == null

@@ -1,4 +1,4 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Pagination;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using MediatR;
@@ -16,6 +16,6 @@ public class GetProductsByCategoryQueryHandler : IRequestHandler<GetProductsByCa
 
     public async Task<PaginatedResult<Product>> Handle(GetProductsByCategoryQuery request, CancellationToken cancellationToken)
     {
-        return await _repository.GetProductsByCategoryAsync(request.Category, request.Page, request.Size, request.Order);
+        return await _repository.GetProductsByCategoryAsync(request.Category, request.Page, request.Size, request.Order, cancellationToken);
     }
 }

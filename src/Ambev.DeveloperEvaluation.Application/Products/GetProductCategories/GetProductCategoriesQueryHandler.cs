@@ -1,4 +1,4 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Repositories;
+using Ambev.DeveloperEvaluation.Domain.Repositories;
 using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Products.GetProductCategories;
@@ -14,6 +14,6 @@ public class GetProductCategoriesQueryHandler : IRequestHandler<GetProductCatego
 
     public async Task<List<string>> Handle(GetProductCategoriesQuery request, CancellationToken cancellationToken)
     {
-        return await _repository.GetCategoriesAsync();
+        return await _repository.GetCategoriesAsync(cancellationToken);
     }
 }

@@ -1,5 +1,6 @@
+using Ambev.DeveloperEvaluation.Application.Users.DeleteUser.Commands;
+using Ambev.DeveloperEvaluation.Application.Users.DeleteUser.Responses;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
-using FluentValidation;
 using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Users.DeleteUser;
@@ -7,7 +8,7 @@ namespace Ambev.DeveloperEvaluation.Application.Users.DeleteUser;
 /// <summary>
 /// Handler for processing DeleteUserCommand requests
 /// </summary>
-public class DeleteUserHandler : IRequestHandler<DeleteUserCommand, DeleteUserResponse>
+public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, DeleteUserResponse>
 {
     private readonly IUserRepository _userRepository;
 
@@ -16,8 +17,7 @@ public class DeleteUserHandler : IRequestHandler<DeleteUserCommand, DeleteUserRe
     /// </summary>
     /// <param name="userRepository">The user repository</param>
     /// <param name="validator">The validator for DeleteUserCommand</param>
-    public DeleteUserHandler(
-        IUserRepository userRepository)
+    public DeleteUserCommandHandler(IUserRepository userRepository)
     {
         _userRepository = userRepository;
     }
@@ -30,15 +30,12 @@ public class DeleteUserHandler : IRequestHandler<DeleteUserCommand, DeleteUserRe
     /// <returns>The result of the delete operation</returns>
     public async Task<DeleteUserResponse> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
     {
-        var validator = new DeleteUserValidator();
-        var validationResult = await validator.ValidateAsync(request, cancellationToken);
-
-        if (!validationResult.IsValid)
-            throw new ValidationException(validationResult.Errors);
-
         var success = await _userRepository.DeleteAsync(request.Id, cancellationToken);
+
         if (!success)
+        {
             throw new KeyNotFoundException($"User with ID {request.Id} not found");
+        }
 
         return new DeleteUserResponse { Success = true };
     }

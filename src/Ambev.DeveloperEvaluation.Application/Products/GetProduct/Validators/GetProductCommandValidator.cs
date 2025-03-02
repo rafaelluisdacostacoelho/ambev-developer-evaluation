@@ -1,7 +1,7 @@
-﻿using Ambev.DeveloperEvaluation.Application.Products.GetProduct.Commands;
+using Ambev.DeveloperEvaluation.Application.Products.GetProduct.Commands;
 using FluentValidation;
 
-namespace Ambev.DeveloperEvaluation.Application.Products.GetProduct;
+namespace Ambev.DeveloperEvaluation.Application.Products.GetProduct.Validators;
 
 /// <summary>
 /// Validator for GetProductCommand

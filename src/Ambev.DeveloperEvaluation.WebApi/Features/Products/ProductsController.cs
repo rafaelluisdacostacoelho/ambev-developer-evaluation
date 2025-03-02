@@ -1,5 +1,6 @@
 using Ambev.DeveloperEvaluation.Application.Products.CreateProduct.Commands;
 using Ambev.DeveloperEvaluation.Application.Products.CreateProduct.Responses;
+using Ambev.DeveloperEvaluation.Application.Products.DeleteProduct.Commands;
 using Ambev.DeveloperEvaluation.Application.Products.GetProduct.Commands;
 using Ambev.DeveloperEvaluation.Application.Products.GetProductCategories;
 using Ambev.DeveloperEvaluation.Application.Products.GetProductsByCategory;
@@ -46,13 +47,12 @@ public class ProductsController : BaseController
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The product details if found, otherwise an appropriate error response.</returns>
     [HttpGet("{id}", Name = "GetProductByIdAsync")]
-    [ProducesResponseType(StatusCodes.Status200OK)]  // Retorno bem-sucedido
-    [ProducesResponseType(StatusCodes.Status400BadRequest)] // ID inválido ou erro de validação
-    [ProducesResponseType(StatusCodes.Status404NotFound)] // Usuário não encontrado
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)] // Erros inesperados
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetProductByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        // Validação inicial: ID não pode ser vazio
         if (id == Guid.Empty)
         {
             return BadRequest(new { Message = "Invalid product ID." });
@@ -61,7 +61,6 @@ public class ProductsController : BaseController
         var command = _mapper.Map<GetProductCommand>(id);
         var response = await _mediator.Send(command, cancellationToken);
 
-        // Verifica se o usuário foi encontrado
         if (response == null)
         {
             return NotFound(new { Message = "Product not found." });
@@ -86,5 +85,29 @@ public class ProductsController : BaseController
         var query = new GetProductsByCategoryQuery(category, page, size, order);
         var result = await _mediator.Send(query);
         return Ok(result);
+    }
+
+    /// <summary>
+    /// Deletes a product by their ID.
+    /// </summary>
+    /// <param name="id">The unique identifier of the product to delete.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>No content if the product was deleted, or an error response.</returns>
+    [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> DeleteProductAsync([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        var command = _mapper.Map<DeleteProductCommand>(id);
+        var result = await _mediator.Send(command, cancellationToken);
+
+        if (result == null)
+        {
+            return NotFound(new { Message = "Product not found." });
+        }
+
+        return NoContent();
     }
 }
