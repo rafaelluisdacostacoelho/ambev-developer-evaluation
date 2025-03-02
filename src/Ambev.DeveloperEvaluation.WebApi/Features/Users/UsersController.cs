@@ -1,4 +1,6 @@
 using Ambev.DeveloperEvaluation.Application.Pagination;
+using Ambev.DeveloperEvaluation.Application.Users.CreateUser.Commands;
+using Ambev.DeveloperEvaluation.Application.Users.DeleteUser;
 using Ambev.DeveloperEvaluation.Application.Users.GetUser.Commands;
 using Ambev.DeveloperEvaluation.Application.Users.ListUsers;
 using Ambev.DeveloperEvaluation.Application.Users.ListUsers.Responses;

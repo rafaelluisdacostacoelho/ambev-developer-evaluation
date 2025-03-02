@@ -1,3 +1,4 @@
+using Ambev.DeveloperEvaluation.Application.Products.CreateProduct.Commands;
 using Ambev.DeveloperEvaluation.Application.Products.CreateProduct.Responses;
 using Ambev.DeveloperEvaluation.Application.Products.GetProduct.Commands;
 using Ambev.DeveloperEvaluation.Application.Products.GetProductCategories;
