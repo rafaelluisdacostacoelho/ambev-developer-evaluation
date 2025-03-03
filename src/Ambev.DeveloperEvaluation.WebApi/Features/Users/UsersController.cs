@@ -101,16 +101,6 @@ public class UsersController : BaseController
                                                        [FromQuery] string? order = null,
                                                        [FromQuery] ListUsersQuery? filter = null)
     {
-        if (pageNumber < 1)
-        {
-            return BadRequest(new { Message = "Page number must be greater than or equal to 1." });
-        }
-
-        if (pageSize < 1 || pageSize > 100)
-        {
-            return BadRequest(new { Message = "Page size must be between 1 and 100." });
-        }
-
         var query = new PaginationQuery<ListUsersQuery, ListUserResponse>(pageNumber, pageSize, order, filter);
 
         PaginatedResponse<ListUserResponse> result = await _mediator.Send(query);

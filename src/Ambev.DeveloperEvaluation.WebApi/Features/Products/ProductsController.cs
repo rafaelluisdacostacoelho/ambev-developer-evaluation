@@ -90,16 +90,6 @@ public class ProductsController : BaseController
                                                           [FromQuery] string? order = null,
                                                           [FromQuery] ListProductsQuery? filter = null)
     {
-        if (pageNumber < 1)
-        {
-            return BadRequest(new { Message = "Page number must be greater than or equal to 1." });
-        }
-
-        if (pageSize < 1 || pageSize > 100)
-        {
-            return BadRequest(new { Message = "Page size must be between 1 and 100." });
-        }
-
         var query = new PaginationQuery<ListProductsQuery, ListProductResponse>(pageNumber, pageSize, order, filter);
 
         PaginatedResponse<ListProductResponse> result = await _mediator.Send(query);
@@ -107,15 +97,38 @@ public class ProductsController : BaseController
         return OkPaginated(result);
     }
 
-
+    /// <summary>
+    /// Obtém todas as categorias de produtos disponíveis.
+    /// </summary>
+    /// <returns>Uma lista de categorias de produtos.</returns>
+    /// <response code="200">Retorna a lista de categorias de produtos.</response>
+    /// <response code="500">Erro inesperado no servidor.</response>
     [HttpGet("categories")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetCategories()
     {
         var categories = await _mediator.Send(new GetProductCategoriesQuery());
         return Ok(categories);
     }
 
+    /// <summary>
+    /// Obtém uma lista paginada de produtos com base na categoria fornecida.
+    /// </summary>
+    /// <param name="category">A categoria dos produtos.</param>
+    /// <param name="page">Número da página para paginação (padrão: 1).</param>
+    /// <param name="size">Quantidade de itens por página (padrão: 10).</param>
+    /// <param name="order">Campo de ordenação opcional.</param>
+    /// <returns>Uma lista paginada de produtos da categoria especificada.</returns>
+    /// <response code="200">Retorna a lista de produtos na categoria especificada.</response>
+    /// <response code="400">A categoria fornecida é inválida.</response>
+    /// <response code="404">Nenhum produto encontrado para a categoria fornecida.</response>
+    /// <response code="500">Erro inesperado no servidor.</response>
     [HttpGet("category/{category}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetProductsByCategory(string category,
                                                            [FromQuery] int page = 1,
                                                            [FromQuery] int size = 10,

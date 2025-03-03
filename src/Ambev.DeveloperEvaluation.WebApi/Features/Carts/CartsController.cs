@@ -89,16 +89,6 @@ public class CartsController : BaseController
                                                       [FromQuery] string? order = null,
                                                       [FromQuery] ListCartsQuery? filter = null)
     {
-        if (pageNumber < 1)
-        {
-            return BadRequest(new { Message = "Page number must be greater than or equal to 1." });
-        }
-
-        if (pageSize < 1 || pageSize > 100)
-        {
-            return BadRequest(new { Message = "Page size must be between 1 and 100." });
-        }
-
         var query = new PaginationQuery<ListCartsQuery, ListCartResponse>(pageNumber, pageSize, order, filter);
 
         PaginatedResponse<ListCartResponse> result = await _mediator.Send(query);
