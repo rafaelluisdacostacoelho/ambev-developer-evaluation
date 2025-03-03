@@ -21,5 +21,8 @@ public class UpdateUserProfile : Profile
         CreateMap<UpdateGeolocationInfoCommand, GeolocationInfo>();
 
         CreateMap<User, UpdateUserResponse>();
+        CreateMap<AddressInfo, UpdateAddressInfoResponse>();
+        CreateMap<NameInfo, UpdateNameInfoResponse>();
+        CreateMap<GeolocationInfo, UpdateGeolocationInfoResponse>();
     }
 }
