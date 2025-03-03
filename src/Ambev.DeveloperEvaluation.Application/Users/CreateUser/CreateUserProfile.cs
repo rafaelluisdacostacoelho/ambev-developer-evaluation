@@ -35,5 +35,9 @@ public class CreateUserProfile : Profile
             ));
 
         CreateMap<User, CreateUserResponse>();
+
+        CreateMap<AddressInfo, CreateAddressInfoResponse>();
+        CreateMap<NameInfo, CreateNameInfoResponse>();
+        CreateMap<GeolocationInfo, CreateGeolocationInfoResponse>();
     }
 }

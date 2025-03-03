@@ -1,17 +1,57 @@
-﻿namespace Ambev.DeveloperEvaluation.Application.Users.CreateUser.Responses;
+using Ambev.DeveloperEvaluation.Domain.Enums;
+using System.Text.Json.Serialization;
+
+namespace Ambev.DeveloperEvaluation.Application.Users.CreateUser.Responses;
 
 /// <summary>
-/// Represents the response returned after successfully creating a new user.
+/// Response model for GetUser operation
 /// </summary>
-/// <remarks>
-/// This response contains the unique identifier of the newly created user,
-/// which can be used for subsequent operations or reference.
-/// </remarks>
 public class CreateUserResponse
 {
     /// <summary>
-    /// Gets or sets the unique identifier of the newly created user.
+    /// 
     /// </summary>
-    /// <value>A GUID that uniquely identifies the created user in the system.</value>
     public Guid Id { get; set; }
+
+    /// <summary>
+    /// Gets or sets the username of the user to be created.
+    /// </summary>
+    public string Username { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the password for the user.
+    /// </summary>
+    public string Password { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the phone number for the user.
+    /// </summary>
+    public string Phone { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the email address for the user.
+    /// </summary>
+    public string Email { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the status of the user.
+    /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public UserStatus Status { get; set; }
+
+    /// <summary>
+    /// Gets or sets the role of the user.
+    /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public UserRole Role { get; set; }
+
+    /// <summary>
+    /// Gets or sets the full name of the user.
+    /// </summary>
+    public CreateNameInfoResponse Name { get; set; } = new CreateNameInfoResponse();
+
+    /// <summary>
+    /// Gets or sets the address of the user.
+    /// </summary>
+    public CreateAddressInfoResponse Address { get; set; } = new CreateAddressInfoResponse();
 }
