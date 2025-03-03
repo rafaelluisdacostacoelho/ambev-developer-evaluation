@@ -4,7 +4,7 @@ services:
     image: ${DOCKER_REGISTRY-}ambevdeveloperevaluationwebapi
     build:
       context: .
-      dockerfile: src/Ambev.DeveloperEvaluation.WebApi/Dockerfile
+      dockerfile: src/Ambev.DeveloperEvaluation.WebApi/Dockerfile.dev
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
