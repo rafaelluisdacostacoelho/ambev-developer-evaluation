@@ -5,8 +5,8 @@ namespace Ambev.DeveloperEvaluation.Application.Carts.GetCart.Responses;
 /// </summary>
 public class GetCartResponse
 {
-    public Guid UserId { get; private set; }
-    public DateTime Date { get; private set; }
-    public List<GetCartItemResponse> Products { get; private set; } = [];
-
+    public Guid Id { get; set; }
+    public Guid UserId { get; set; }
+    public DateTime Date { get; set; }
+    public List<GetCartItemResponse> Products { get; set; } = [];
 }
