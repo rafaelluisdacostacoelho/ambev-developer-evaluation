@@ -21,7 +21,7 @@ public class CategoryInfoTests
     [Fact]
     public void CategoryInfo_Should_Throw_Exception_With_Empty_ExternalId()
     {
-        Action act = () => new CategoryInfo("", "Valid Name");
+        Action act = static () => _ = new CategoryInfo("", "Valid Name");
         act.Should().Throw<ArgumentException>()
             .WithMessage("ExternalId cannot be empty. (Parameter 'externalId')");
     }
@@ -29,7 +29,7 @@ public class CategoryInfoTests
     [Fact]
     public void CategoryInfo_Should_Throw_Exception_With_Empty_Name()
     {
-        Action act = () => new CategoryInfo("ValidExternalId", "");
+        Action act = () => _ = new CategoryInfo("ValidExternalId", "");
         act.Should().Throw<ArgumentException>()
             .WithMessage("Name cannot be empty. (Parameter 'name')");
     }

@@ -1,6 +1,4 @@
 using Ambev.DeveloperEvaluation.Application.Users.UpdateUser.Responses;
-using Ambev.DeveloperEvaluation.Application.Users.UpdateUser.Validators;
-using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.Domain.Enums;
 using MediatR;
 
@@ -63,20 +61,5 @@ public class UpdateUserCommand : IRequest<UpdateUserResponse>
         Status = status;
         Address = address;
         Name = name;
-    }
-
-    /// <summary>
-    /// Validates the CreateUserCommand using the CreateUserCommandValidator
-    /// </summary>
-    /// <returns>A ValidationResultDetail containing validation results</returns>
-    public ValidationResultDetail Validate()
-    {
-        var validator = new UpdateUserCommandValidator();
-        var result = validator.Validate(this);
-        return new ValidationResultDetail
-        {
-            IsValid = result.IsValid,
-            Errors = result.Errors.Select(error => (ValidationErrorDetail)error)
-        };
     }
 }
