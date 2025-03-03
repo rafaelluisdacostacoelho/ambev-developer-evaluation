@@ -9,7 +9,6 @@ public class RatingInfo
     public double AverageRate { get; private set; }
     public int TotalReviews { get; private set; }
 
-    // Construtor privado para ORMs
     private RatingInfo() { }
 
     public RatingInfo(string externalId, double averageRate, int totalReviews)

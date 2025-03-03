@@ -8,7 +8,6 @@ public class CategoryInfo
     public string ExternalId { get; private set; } = string.Empty;
     public string Name { get; private set; } = string.Empty;
 
-    // Construtor privado para ORMs
     private CategoryInfo() { }
 
     public CategoryInfo(string externalId, string name)
