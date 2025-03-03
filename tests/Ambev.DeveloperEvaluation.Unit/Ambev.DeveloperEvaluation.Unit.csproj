@@ -47,8 +47,4 @@
     </Compile>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Application\Carts\" />
-  </ItemGroup>
-
 </Project>

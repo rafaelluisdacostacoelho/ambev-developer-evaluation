@@ -6,12 +6,12 @@ using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Carts.ListCarts;
 
-public class ListCartsQueryHandler : IRequestHandler<PaginationQuery<ListCartsQuery, ListCartResponse>, PaginatedResponse<ListCartResponse>>
+public class ListCartsHandler : IRequestHandler<PaginationQuery<ListCartsQuery, ListCartResponse>, PaginatedResponse<ListCartResponse>>
 {
     private readonly ICartRepository _repository;
     private readonly IMapper _mapper;
 
-    public ListCartsQueryHandler(ICartRepository repository, IMapper mapper)
+    public ListCartsHandler(ICartRepository repository, IMapper mapper)
     {
         _repository = repository;
         _mapper = mapper;

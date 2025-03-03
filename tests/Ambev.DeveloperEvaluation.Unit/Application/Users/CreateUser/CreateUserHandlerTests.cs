@@ -11,7 +11,7 @@ using FluentAssertions;
 using NSubstitute;
 using Xunit;
 
-namespace Ambev.DeveloperEvaluation.Unit.Application.Users;
+namespace Ambev.DeveloperEvaluation.Unit.Application.Users.CreateUsers;
 
 /// <summary>
 /// Contains unit tests for the <see cref="CreateUserHandler"/> class.

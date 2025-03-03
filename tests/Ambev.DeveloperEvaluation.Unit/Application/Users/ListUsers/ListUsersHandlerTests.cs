@@ -11,16 +11,16 @@ using FluentAssertions;
 using NSubstitute;
 using Xunit;
 
-namespace Ambev.DeveloperEvaluation.Unit.Application.Users;
+namespace Ambev.DeveloperEvaluation.Unit.Application.Users.ListUsers;
 
-public class ListUsersQueryHandlerTests
+public class ListUsersHandlerTests
 {
     private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
     private readonly IMapper _mapper = Substitute.For<IMapper>();
     private readonly ListUsersQueryHandler _handler;
     private readonly Faker _faker = new Faker("pt_BR");
 
-    public ListUsersQueryHandlerTests()
+    public ListUsersHandlerTests()
     {
         _handler = new ListUsersQueryHandler(_userRepository, _mapper);
     }

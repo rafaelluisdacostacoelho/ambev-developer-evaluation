@@ -10,14 +10,14 @@ using FluentAssertions;
 using NSubstitute;
 using Xunit;
 
-namespace Ambev.DeveloperEvaluation.Unit.Application.Users;
+namespace Ambev.DeveloperEvaluation.Unit.Application.Users.UpdateUser;
 
 public class UpdateUserHandlerTests
 {
     private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
     private readonly IMapper _mapper = Substitute.For<IMapper>();
     private readonly UpdateUserHandler _handler;
-    private readonly Faker _faker = new Faker("pt_BR");
+    private readonly Faker _faker = new("pt_BR");
 
     public UpdateUserHandlerTests()
     {
