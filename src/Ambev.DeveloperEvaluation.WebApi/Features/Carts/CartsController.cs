@@ -1,7 +1,9 @@
 using Ambev.DeveloperEvaluation.Application.Carts.CreateCart.Commands;
+using Ambev.DeveloperEvaluation.Application.Carts.DeleteCart.Commands;
 using Ambev.DeveloperEvaluation.Application.Carts.GetCart.Commands;
 using Ambev.DeveloperEvaluation.Application.Carts.ListCarts;
 using Ambev.DeveloperEvaluation.Application.Carts.ListCarts.Responses;
+using Ambev.DeveloperEvaluation.Application.Carts.UpdateCart.Commands;
 using Ambev.DeveloperEvaluation.Application.Pagination;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using AutoMapper;
@@ -102,5 +104,50 @@ public class CartsController : BaseController
         PaginatedResponse<ListCartResponse> result = await _mediator.Send(query);
 
         return OkPaginated(result);
+    }
+
+    /// <summary>
+    /// Updates an existing cart
+    /// </summary>
+    /// <param name="id">The unique identifier of the cart to update</param>
+    /// <param name="request">The cart update request</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>The updated cart details</returns>
+    [HttpPut("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdateCartAsync([FromRoute] Guid id, [FromBody] UpdateCartCommand request, CancellationToken cancellationToken)
+    {
+        // Garante que o ID da rota seja utilizado no comando
+        request.Id = id;
+
+        // Envia o comando direto ao Mediator, confiando que os middlewares e validators já garantem a integridade dos dados
+        var response = await _mediator.Send(request, cancellationToken);
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Deletes a cart by their ID.
+    /// </summary>
+    /// <param name="id">The unique identifier of the cart to delete.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>No content if the cart was deleted, or an error response.</returns>
+    [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> DeleteCartAsync([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        var command = _mapper.Map<DeleteCartCommand>(id);
+        var result = await _mediator.Send(command, cancellationToken);
+
+        if (result == null)
+        {
+            return NotFound(new { Message = "Cart not found." });
+        }
+
+        return NoContent();
     }
 }

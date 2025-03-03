@@ -7,7 +7,7 @@ using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Products.UpdateProduct;
 
-class UpdateProductHandler : IRequestHandler<UpdateProductCommand, UpdateProductResponse>
+class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, UpdateProductResponse>
 {
     private readonly IProductRepository _productRepository;
     private readonly IMapper _mapper;
@@ -18,7 +18,7 @@ class UpdateProductHandler : IRequestHandler<UpdateProductCommand, UpdateProduct
     /// <param name="userRepository">The user repository</param>
     /// <param name="mapper">The AutoMapper instance</param>
     /// <param name="validator">The validator for UpdateUserCommand</param>
-    public UpdateProductHandler(IProductRepository productRepository, IMapper mapper)
+    public UpdateProductCommandHandler(IProductRepository productRepository, IMapper mapper)
     {
         _productRepository = productRepository;
         _mapper = mapper;
