@@ -5,8 +5,6 @@ public class CartItem
     public Guid ProductId { get; private set; }
     public int Quantity { get; private set; }
 
-    // Construtor privado para ORMs
-    // CartItem possui construtor privado para evitar inicializações inválidas e garantir imutabilidade.
     private CartItem() { }
 
     public CartItem(Guid productId, int quantity)

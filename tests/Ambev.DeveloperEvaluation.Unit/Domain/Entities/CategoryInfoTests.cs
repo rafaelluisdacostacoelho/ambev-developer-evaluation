@@ -1,6 +1,7 @@
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Bogus;
 using FluentAssertions;
+using System.Reflection;
 using Xunit;
 
 namespace Ambev.DeveloperEvaluation.Unit.Domain.Entities;
@@ -32,5 +33,21 @@ public class CategoryInfoTests
         Action act = () => _ = new CategoryInfo("ValidExternalId", "");
         act.Should().Throw<ArgumentException>()
             .WithMessage("Name cannot be empty. (Parameter 'name')");
+    }
+
+    [Fact(DisplayName = "Should create an instance using the private constructor")]
+    public void Given_PrivateConstructor_When_Invoked_Then_ShouldCreateInstance()
+    {
+        var constructorInfo = typeof(CategoryInfo).GetConstructor(
+            BindingFlags.NonPublic | BindingFlags.Instance,
+            null, Type.EmptyTypes, null);
+
+        constructorInfo.Should().NotBeNull("The private constructor should exist.");
+
+        var categoryInfo = (CategoryInfo)constructorInfo!.Invoke(null);
+
+        categoryInfo.Should().NotBeNull();
+        categoryInfo.ExternalId.Should().BeEmpty();
+        categoryInfo.Name.Should().BeEmpty();
     }
 }
