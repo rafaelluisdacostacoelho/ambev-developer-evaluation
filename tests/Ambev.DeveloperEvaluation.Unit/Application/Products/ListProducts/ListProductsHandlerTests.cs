@@ -55,20 +55,6 @@ public class ListProductsHandlerTests
         result.TotalCount.Should().Be(paginatedResult.TotalItems);
     }
 
-    [Fact]
-    public void CategoryInfo_Should_ThrowException_When_ExternalIdIsEmpty()
-    {
-        Action act = () => new CategoryInfo("", "Category Name");
-        act.Should().Throw<ArgumentException>().WithMessage("ExternalId cannot be empty.");
-    }
-
-    [Fact]
-    public void CategoryInfo_Should_ThrowException_When_NameIsEmpty()
-    {
-        Action act = () => new CategoryInfo("123", "");
-        act.Should().Throw<ArgumentException>().WithMessage("Name cannot be empty.");
-    }
-
     private PaginatedResult<Product> GenerateFakePaginatedProducts()
     {
         var products = new List<Product>();

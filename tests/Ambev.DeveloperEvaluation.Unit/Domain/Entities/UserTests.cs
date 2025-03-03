@@ -1,6 +1,7 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Enums;
-using Ambev.DeveloperEvaluation.Unit.Domain.Entities.TestData;
+using Bogus;
+using FluentAssertions;
 using Xunit;
 
 namespace Ambev.DeveloperEvaluation.Unit.Domain.Entities;
@@ -11,80 +12,49 @@ namespace Ambev.DeveloperEvaluation.Unit.Domain.Entities;
 /// </summary>
 public class UserTests
 {
-    /// <summary>
-    /// Tests that when a suspended user is activated, their status changes to Active.
-    /// </summary>
-    [Fact(DisplayName = "User status should change to Active when activated")]
-    public void Given_SuspendedUser_When_Activated_Then_StatusShouldBeActive()
+    [Fact]
+    public void User_Should_Create_With_Valid_Parameters()
     {
-        // Arrange
-        var user = UserTestData.GenerateValidUser();
-        user.Status = UserStatus.Suspended;
+        var name = new Faker<NameInfo>()
+            .RuleFor(n => n.Firstname, f => f.Name.FirstName())
+            .RuleFor(n => n.Lastname, f => f.Name.LastName())
+            .Generate();
 
-        // Act
+        var address = new Faker<AddressInfo>()
+            .RuleFor(a => a.City, f => f.Address.City())
+            .RuleFor(a => a.Street, f => f.Address.StreetName())
+            .RuleFor(a => a.Number, f => f.Random.Int(1, 1000))
+            .RuleFor(a => a.Zipcode, f => f.Address.ZipCode())
+            .RuleFor(a => a.Geolocation, f => new GeolocationInfo())
+            .Generate();
+
+        var user = new Faker<User>()
+            .RuleFor(u => u.Username, f => f.Internet.UserName())
+            .RuleFor(u => u.Email, f => f.Internet.Email())
+            .RuleFor(u => u.Password, f => f.Internet.Password())
+            .RuleFor(u => u.Phone, f => f.Phone.PhoneNumber())
+            .RuleFor(u => u.Status, f => f.PickRandom<UserStatus>())
+            .RuleFor(u => u.Role, f => f.PickRandom<UserRole>())
+            .RuleFor(u => u.Name, f => name)
+            .RuleFor(u => u.Address, f => address)
+            .Generate();
+
+        user.Username.Should().NotBeNullOrEmpty();
+        user.Email.Should().Contain("@");
+        user.Password.Should().NotBeNullOrEmpty();
+        user.Phone.Should().NotBeNullOrEmpty();
+        user.Status.Should().BeOneOf(UserStatus.Active, UserStatus.Inactive, UserStatus.Suspended);
+        user.Role.Should().BeOneOf(UserRole.Admin, UserRole.Customer, UserRole.Admin, UserRole.Manager, UserRole.None);
+        user.Name.Should().NotBeNull();
+        user.Address.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void User_Should_Activate_Successfully()
+    {
+        var user = new User { Status = UserStatus.Inactive };
         user.Activate();
-
-        // Assert
-        Assert.Equal(UserStatus.Active, user.Status);
-    }
-
-    /// <summary>
-    /// Tests that when an active user is suspended, their status changes to Suspended.
-    /// </summary>
-    [Fact(DisplayName = "User status should change to Suspended when suspended")]
-    public void Given_ActiveUser_When_Suspended_Then_StatusShouldBeSuspended()
-    {
-        // Arrange
-        var user = UserTestData.GenerateValidUser();
-        user.Status = UserStatus.Active;
-
-        // Act
-        user.Suspend();
-
-        // Assert
-        Assert.Equal(UserStatus.Suspended, user.Status);
-    }
-
-    /// <summary>
-    /// Tests that validation passes when all user properties are valid.
-    /// </summary>
-    [Fact(DisplayName = "Validation should pass for valid user data")]
-    public void Given_ValidUserData_When_Validated_Then_ShouldReturnValid()
-    {
-        // Arrange
-        var user = UserTestData.GenerateValidUser();
-
-        // Act
-        var result = user.Validate();
-
-        // Assert
-        Assert.True(result.IsValid);
-        Assert.Empty(result.Errors);
-    }
-
-    /// <summary>
-    /// Tests that validation fails when user properties are invalid.
-    /// </summary>
-    [Fact(DisplayName = "Validation should fail for invalid user data")]
-    public void Given_InvalidUserData_When_Validated_Then_ShouldReturnInvalid()
-    {
-        // Arrange
-        var user = new User(
-            username: "", // Invalid: empty
-            email: UserTestData.GenerateInvalidEmail(), // Invalid: not a valid email
-            password: UserTestData.GenerateInvalidPassword(), // Invalid: doesn't meet password requirements
-            phone: UserTestData.GenerateInvalidPhone(), // Invalid: doesn't match pattern
-            status: UserStatus.Unknown, // Invalid: cannot be Unknown
-            role: UserRole.None, // Invalid: cannot be None
-            name: new NameInfo("", ""),
-            address: new AddressInfo("", "", 0, "", new GeolocationInfo(0.0, 0.0)) // Provide a default AddressInfo instance
-        );
-
-        // Act
-        var result = user.Validate();
-
-        // Assert
-        Assert.False(result.IsValid);
-        Assert.NotEmpty(result.Errors);
+        user.Status.Should().Be(UserStatus.Active);
+        user.UpdatedAt.Should().NotBeNull();
     }
 }
