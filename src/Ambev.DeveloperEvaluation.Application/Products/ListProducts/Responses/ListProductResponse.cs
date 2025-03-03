@@ -3,10 +3,10 @@ namespace Ambev.DeveloperEvaluation.Application.Products.ListProducts.Responses;
 
 public class ListProductResponse
 {
-    public string Title { get; private set; } = string.Empty;
-    public decimal Price { get; private set; }
-    public string Description { get; private set; } = string.Empty;
-    public string Image { get; private set; } = string.Empty;
-    public ListProductCategoryInfoResponse Category { get; private set; } = default!;
-    public ListProductRatingInfoResponse Rating { get; private set; } = default!;
+    public string Title { get; set; } = string.Empty;
+    public decimal Price { get; set; }
+    public string Description { get; set; } = string.Empty;
+    public string Image { get; set; } = string.Empty;
+    public ListProductCategoryInfoResponse Category { get; set; } = default!;
+    public ListProductRatingInfoResponse Rating { get; set; } = default!;
 }

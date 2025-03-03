@@ -6,12 +6,12 @@ using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Products.ListProducts;
 
-public class ListProductsQueryHandler : IRequestHandler<PaginationQuery<ListProductsQuery, ListProductResponse>, PaginatedResponse<ListProductResponse>>
+public class ListProductsHandler : IRequestHandler<PaginationQuery<ListProductsQuery, ListProductResponse>, PaginatedResponse<ListProductResponse>>
 {
     private readonly IProductRepository _repository;
     private readonly IMapper _mapper;
 
-    public ListProductsQueryHandler(IProductRepository repository, IMapper mapper)
+    public ListProductsHandler(IProductRepository repository, IMapper mapper)
     {
         _repository = repository;
         _mapper = mapper;

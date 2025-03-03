@@ -49,7 +49,6 @@
 
   <ItemGroup>
     <Folder Include="Application\Carts\" />
-    <Folder Include="Application\Products\" />
   </ItemGroup>
 
 </Project>
