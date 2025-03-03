@@ -41,7 +41,6 @@ public class InfrastructureCacheModuleInitializer : IModuleInitializer
 
         // Registro dos Behaviors do MediatR para Cache
         builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>));
-        builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CacheInvalidationBehavior<,>));
     }
 
     // Método para construir a string de conexão do Redis

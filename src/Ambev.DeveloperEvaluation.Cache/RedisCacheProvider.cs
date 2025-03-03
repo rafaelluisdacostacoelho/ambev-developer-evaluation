@@ -1,6 +1,5 @@
-﻿using Ambev.DeveloperEvaluation.Common.Cache;
+using Ambev.DeveloperEvaluation.Common.Cache;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
 using System.Text.Json;
 
@@ -27,28 +26,10 @@ public class RedisCacheService : ICacheService
         return JsonSerializer.Deserialize<T>(value!);
     }
 
-    public async Task SetAsync<T>(string key, T value, TimeSpan? expiration = null)
+    public async Task SetAsync<T>(string key, T value, TimeSpan? expiration)
     {
         expiration ??= TimeSpan.FromMinutes(_cacheExpirationInMinutes);
         var serializedValue = JsonSerializer.Serialize(value);
         await _database.StringSetAsync(key, serializedValue, expiration);
-    }
-
-    public async Task RemoveAsync(string key)
-    {
-        await _database.KeyDeleteAsync(key);
-    }
-}
-
-public static class RedisCacheProviderExtensions
-{
-    public static IServiceCollection AddRedisCacheProvider(this IServiceCollection services, IConfiguration configuration)
-    {
-        var redisConfig = configuration.GetSection("Redis");
-        string redisConnectionString = $"{redisConfig["Host"]}:{redisConfig["Port"]},password={redisConfig["Password"]}";
-
-        services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConnectionString));
-        services.AddSingleton<ICacheService, RedisCacheService>();
-        return services;
     }
 }
