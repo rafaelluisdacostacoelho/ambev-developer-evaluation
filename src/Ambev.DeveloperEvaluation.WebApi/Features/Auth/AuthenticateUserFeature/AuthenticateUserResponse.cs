@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Auth.AuthenticateUserFeature;
 

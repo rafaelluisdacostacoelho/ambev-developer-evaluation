@@ -1,6 +1,7 @@
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Enums;
-using Ambev.DeveloperEvaluation.Unit.Domain.Entities.TestData;
+using Bogus;
+using FluentAssertions;
 using Xunit;
 
 namespace Ambev.DeveloperEvaluation.Unit.Domain.Entities;
@@ -11,79 +12,112 @@ namespace Ambev.DeveloperEvaluation.Unit.Domain.Entities;
 /// </summary>
 public class UserTests
 {
-    /// <summary>
-    /// Tests that when a suspended user is activated, their status changes to Active.
-    /// </summary>
-    [Fact(DisplayName = "User status should change to Active when activated")]
-    public void Given_SuspendedUser_When_Activated_Then_StatusShouldBeActive()
+    private readonly Faker _faker = new();
+
+    [Fact]
+    public void User_Creation_With_Valid_Data_Should_Succeed()
     {
         // Arrange
-        var user = UserTestData.GenerateValidUser();
-        user.Status = UserStatus.Suspended;
+        var name = new NameInfo { Firstname = _faker.Name.FirstName(), Lastname = _faker.Name.LastName() };
+        var address = new AddressInfo { Street = _faker.Address.StreetAddress(), City = _faker.Address.City(), Zipcode = _faker.Address.ZipCode() };
+        var username = _faker.Internet.UserName();
+        var email = _faker.Internet.Email();
+        var password = _faker.Internet.Password();
+        var phone = _faker.Phone.PhoneNumber();
+
+        // Act
+        var user = new User(username, email, password, phone, UserStatus.Inactive, UserRole.Customer, name, address);
+
+        // Assert
+        user.Username.Should().Be(username);
+        user.Email.Should().Be(email);
+        user.Password.Should().Be(password);
+        user.Phone.Should().Be(phone);
+        user.Status.Should().Be(UserStatus.Inactive);
+        user.Role.Should().Be(UserRole.Customer);
+        user.Name.Should().Be(name);
+        user.Address.Should().Be(address);
+    }
+
+    [Fact]
+    public void User_Creation_With_Empty_Username_Should_Throw_Exception()
+    {
+        // Arrange
+        var name = new NameInfo { Firstname = _faker.Name.FirstName(), Lastname = _faker.Name.LastName() };
+        var address = new AddressInfo { Street = _faker.Address.StreetAddress(), City = _faker.Address.City(), Zipcode = _faker.Address.ZipCode() };
+
+        // Act & Assert
+        Action act = () => new User("", _faker.Internet.Email(), _faker.Internet.Password(), _faker.Phone.PhoneNumber(), UserStatus.Inactive, UserRole.Customer, name, address);
+        act.Should().Throw<ArgumentException>().WithMessage("*Username cannot be empty.*");
+    }
+
+    [Fact]
+    public void Activate_Should_Set_Status_To_Active()
+    {
+        // Arrange
+        var user = new User { Status = UserStatus.Inactive };
 
         // Act
         user.Activate();
 
         // Assert
-        Assert.Equal(UserStatus.Active, user.Status);
+        user.Status.Should().Be(UserStatus.Active);
+        user.UpdatedAt.Should().NotBeNull();
     }
 
-    /// <summary>
-    /// Tests that when an active user is suspended, their status changes to Suspended.
-    /// </summary>
-    [Fact(DisplayName = "User status should change to Suspended when suspended")]
-    public void Given_ActiveUser_When_Suspended_Then_StatusShouldBeSuspended()
+    [Fact]
+    public void Deactivate_Should_Set_Status_To_Inactive()
     {
         // Arrange
-        var user = UserTestData.GenerateValidUser();
-        user.Status = UserStatus.Active;
+        var user = new User { Status = UserStatus.Active };
+
+        // Act
+        user.Deactivate();
+
+        // Assert
+        user.Status.Should().Be(UserStatus.Inactive);
+        user.UpdatedAt.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void Suspend_Should_Set_Status_To_Suspended()
+    {
+        // Arrange
+        var user = new User { Status = UserStatus.Active };
 
         // Act
         user.Suspend();
 
         // Assert
-        Assert.Equal(UserStatus.Suspended, user.Status);
+        user.Status.Should().Be(UserStatus.Suspended);
+        user.UpdatedAt.Should().NotBeNull();
     }
 
-    /// <summary>
-    /// Tests that validation passes when all user properties are valid.
-    /// </summary>
-    [Fact(DisplayName = "Validation should pass for valid user data")]
-    public void Given_ValidUserData_When_Validated_Then_ShouldReturnValid()
+    [Fact]
+    public void UpdateAddressInfo_Should_Update_Address()
     {
         // Arrange
-        var user = UserTestData.GenerateValidUser();
+        var user = new User();
+        var newAddress = new AddressInfo { Street = _faker.Address.StreetAddress(), City = _faker.Address.City(), Zipcode = _faker.Address.ZipCode() };
 
         // Act
-        var result = user.Validate();
+        user.UpdateAddressInfo(newAddress);
 
         // Assert
-        Assert.True(result.IsValid);
-        Assert.Empty(result.Errors);
+        user.Address.Should().Be(newAddress);
     }
 
-    /// <summary>
-    /// Tests that validation fails when user properties are invalid.
-    /// </summary>
-    [Fact(DisplayName = "Validation should fail for invalid user data")]
-    public void Given_InvalidUserData_When_Validated_Then_ShouldReturnInvalid()
+    [Fact]
+    public void UpdateNameInfo_Should_Update_Name()
     {
         // Arrange
-        var user = new User
-        {
-            Username = "", // Invalid: empty
-            Password = UserTestData.GenerateInvalidPassword(), // Invalid: doesn't meet password requirements
-            Email = UserTestData.GenerateInvalidEmail(), // Invalid: not a valid email
-            Phone = UserTestData.GenerateInvalidPhone(), // Invalid: doesn't match pattern
-            Status = UserStatus.Unknown, // Invalid: cannot be Unknown
-            Role = UserRole.None // Invalid: cannot be None
-        };
+        var user = new User();
+        var newName = new NameInfo { Firstname = _faker.Name.FirstName(), Lastname = _faker.Name.LastName() };
 
         // Act
-        var result = user.Validate();
+        user.UpdateNameInfo(newName);
 
         // Assert
-        Assert.False(result.IsValid);
-        Assert.NotEmpty(result.Errors);
+        user.Name.Should().Be(newName);
     }
 }

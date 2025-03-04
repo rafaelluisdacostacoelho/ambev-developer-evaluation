@@ -1,4 +1,4 @@
-using Ambev.DeveloperEvaluation.Domain.Entities;
+﻿using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Enums;
 using Bogus;
 
@@ -23,14 +23,23 @@ public static class ActiveUserSpecificationTestData
     /// Status is not set here as it's the main test parameter
     /// </summary>
     private static readonly Faker<User> userFaker = new Faker<User>()
-        .CustomInstantiator(f => new User {
-            Email = f.Internet.Email(),
-            Password = $"Test@{f.Random.Number(100, 999)}",
-            Username = f.Name.FirstName(),
-            Status = f.PickRandom<UserStatus>(),
-            Phone = $"+55{f.Random.Number(11, 99)}{f.Random.Number(100000000, 999999999)}",
-            Role = f.PickRandom<UserRole> ()
-        });
+        .CustomInstantiator(f => new User(username: f.Internet.UserName(),
+                                          email: f.Internet.Email(),
+                                          password: $"Test@{f.Random.Number(1000)}", // Simulando senha aleatória
+                                          phone: "",
+                                          status: UserStatus.Active,
+                                          role: f.PickRandom<UserRole>(),
+                                          name: new NameInfo(f.Name.FirstName(), f.Name.LastName()),
+                                          address: new AddressInfo(
+                                              city: f.Address.City(),
+                                              street: f.Address.StreetName(),
+                                              number: f.Random.Int(1, 1000),
+                                              zipcode: f.Address.ZipCode(),
+                                              geolocation: new GeolocationInfo(
+                                                  latitude: f.Address.Latitude(),
+                                                  longitude: f.Address.Longitude()
+                                              )
+                                          )));
 
     /// <summary>
     /// Generates a valid User entity with the specified status.

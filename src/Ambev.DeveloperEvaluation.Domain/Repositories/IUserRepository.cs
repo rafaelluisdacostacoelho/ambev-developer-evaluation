@@ -5,7 +5,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Repositories;
 /// <summary>
 /// Repository interface for User entity operations
 /// </summary>
-public interface IUserRepository
+public interface IUserRepository : IPaginatedRepository<User>
 {
     /// <summary>
     /// Creates a new user in the repository
@@ -30,6 +30,8 @@ public interface IUserRepository
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The user if found, null otherwise</returns>
     Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default);
+
+    Task<User?> UpdateAsync(User user, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Deletes a user from the repository

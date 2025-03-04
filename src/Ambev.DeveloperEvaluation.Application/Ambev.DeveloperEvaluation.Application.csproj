@@ -3,6 +3,9 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <EnforceUTF8Encoding>true</EnforceUTF8Encoding>
+    <GenerateDebugInformation>true</GenerateDebugInformation>
+    <DebugType>portable</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,6 +16,12 @@
     <PackageReference Include="AutoMapper" Version="13.0.1" />    
     <PackageReference Include="MediatR" Version="12.4.1" />
     <PackageReference Include="OneOf" Version="3.0.271" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="**\*.cs">
+      <Encoding>utf-8</Encoding>
+    </Compile>
   </ItemGroup>
 
 </Project>

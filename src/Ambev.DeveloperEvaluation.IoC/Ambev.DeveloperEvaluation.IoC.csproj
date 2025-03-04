@@ -4,6 +4,9 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+    <EnforceUTF8Encoding>true</EnforceUTF8Encoding>
+    <GenerateDebugInformation>true</GenerateDebugInformation>
+    <DebugType>portable</DebugType>
 	</PropertyGroup>
 	
 	<ItemGroup>
@@ -11,14 +14,24 @@
 	</ItemGroup>
 	
 	<ItemGroup>
+	  <PackageReference Include="AspNetCore.HealthChecks.Redis" Version="8.0.1" />
+	  <PackageReference Include="MongoDB.Driver" Version="3.2.1" />
 	  <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.8" />
 	</ItemGroup>
 	
 	<ItemGroup>
+		<ProjectReference Include="..\Ambev.DeveloperEvaluation.Cache\Ambev.DeveloperEvaluation.Cache.csproj" />
 		<ProjectReference Include="..\Ambev.DeveloperEvaluation.Domain\Ambev.DeveloperEvaluation.Domain.csproj" />
 		<ProjectReference Include="..\Ambev.DeveloperEvaluation.Application\Ambev.DeveloperEvaluation.Application.csproj" />
+		<ProjectReference Include="..\Ambev.DeveloperEvaluation.NoSql\Ambev.DeveloperEvaluation.NoSql.csproj" />
 		<ProjectReference Include="..\Ambev.DeveloperEvaluation.ORM\Ambev.DeveloperEvaluation.ORM.csproj" />
 		<ProjectReference Include="..\Ambev.DeveloperEvaluation.Common\Ambev.DeveloperEvaluation.Common.csproj" />
 	</ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="**\*.cs">
+      <Encoding>utf-8</Encoding>
+    </Compile>
+  </ItemGroup>
 
 </Project>

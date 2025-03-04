@@ -1,11 +1,8 @@
 using Ambev.DeveloperEvaluation.Common.Security;
-using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.Domain.Common;
 using Ambev.DeveloperEvaluation.Domain.Enums;
-using Ambev.DeveloperEvaluation.Domain.Validation;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities;
-
 
 /// <summary>
 /// Represents a user in the system with authentication and profile information.
@@ -14,51 +11,54 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities;
 public class User : BaseEntity, IUser
 {
     /// <summary>
-    /// Gets the user's full name.
-    /// Must not be null or empty and should contain both first and last names.
+    /// The username of the user.
     /// </summary>
     public string Username { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets the user's email address.
-    /// Must be a valid email format and is used as a unique identifier for authentication.
+    /// The email address of the user.
     /// </summary>
     public string Email { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets the user's phone number.
-    /// Must be a valid phone number format following the pattern (XX) XXXXX-XXXX.
+    /// The phone number of the user.
     /// </summary>
-    public string Phone { get; set; } = string.Empty ;
+    public string Phone { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets the hashed password for authentication.
-    /// Password must meet security requirements: minimum 8 characters, at least one uppercase letter,
-    /// one lowercase letter, one number, and one special character.
+    /// The hashed password for authentication.
     /// </summary>
     public string Password { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets the user's role in the system.
-    /// Determines the user's permissions and access levels.
+    /// The user's role in the system.
     /// </summary>
-    public UserRole Role { get;     set; }
+    public UserRole Role { get; set; }
 
     /// <summary>
-    /// Gets the user's current status.
-    /// Indicates whether the user is active, inactive, or blocked in the system.
+    /// The user's account status.
     /// </summary>
     public UserStatus Status { get; set; }
 
     /// <summary>
-    /// Gets the date and time when the user was created.
+    /// The timestamp of when the user was created.
     /// </summary>
-    public DateTime CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     /// <summary>
-    /// Gets the date and time of the last update to the user's information.
+    /// The timestamp of the last update to the user's information.
     /// </summary>
     public DateTime? UpdatedAt { get; set; }
+
+    /// <summary>
+    /// The user's full name.
+    /// </summary>
+    public NameInfo Name { get; set; } = null!;
+
+    /// <summary>
+    /// The user's address.
+    /// </summary>
+    public AddressInfo Address { get; set; } = null!;
 
     /// <summary>
     /// Gets the unique identifier of the user.
@@ -81,42 +81,43 @@ public class User : BaseEntity, IUser
     /// <summary>
     /// Initializes a new instance of the User class.
     /// </summary>
-    public User()
+    public User() { }
+
+    public User(string username, string email, string password, string phone, UserStatus status, UserRole role, NameInfo name, AddressInfo address)
     {
+        if (string.IsNullOrWhiteSpace(username))
+            throw new ArgumentException("Username cannot be empty.", nameof(username));
+
+        if (string.IsNullOrWhiteSpace(email))
+            throw new ArgumentException("Email cannot be empty.", nameof(email));
+
+        if (string.IsNullOrWhiteSpace(password))
+            throw new ArgumentException("Password cannot be empty.", nameof(password));
+
+        Username = username;
+        Email = email;
+        Phone = phone;
+        Password = password;
+        Status = status;
+        Role = role;
+        Status = UserStatus.Inactive;
         CreatedAt = DateTime.UtcNow;
+        Name = name ?? throw new ArgumentNullException(nameof(name));
+        Address = address ?? throw new ArgumentNullException(nameof(address));
     }
 
-    /// <summary>
-    /// Performs validation of the user entity using the UserValidator rules.
-    /// </summary>
-    /// <returns>
-    /// A <see cref="ValidationResultDetail"/> containing:
-    /// - IsValid: Indicates whether all validation rules passed
-    /// - Errors: Collection of validation errors if any rules failed
-    /// </returns>
-    /// <remarks>
-    /// <listheader>The validation includes checking:</listheader>
-    /// <list type="bullet">Username format and length</list>
-    /// <list type="bullet">Email format</list>
-    /// <list type="bullet">Phone number format</list>
-    /// <list type="bullet">Password complexity requirements</list>
-    /// <list type="bullet">Role validity</list>
-    /// 
-    /// </remarks>
-    public ValidationResultDetail Validate()
+    public void UpdateAddressInfo(AddressInfo newAddress)
     {
-        var validator = new UserValidator();
-        var result = validator.Validate(this);
-        return new ValidationResultDetail
-        {
-            IsValid = result.IsValid,
-            Errors = result.Errors.Select(o => (ValidationErrorDetail)o)
-        };
+        Address = newAddress ?? throw new ArgumentNullException(nameof(newAddress));
+    }
+
+    public void UpdateNameInfo(NameInfo newNameInfo)
+    {
+        Name = newNameInfo ?? throw new ArgumentNullException(nameof(newNameInfo));
     }
 
     /// <summary>
     /// Activates the user account.
-    /// Changes the user's status to Active.
     /// </summary>
     public void Activate()
     {
@@ -126,7 +127,6 @@ public class User : BaseEntity, IUser
 
     /// <summary>
     /// Deactivates the user account.
-    /// Changes the user's status to Inactive.
     /// </summary>
     public void Deactivate()
     {
@@ -135,8 +135,7 @@ public class User : BaseEntity, IUser
     }
 
     /// <summary>
-    /// Blocks the user account.
-    /// Changes the user's status to Blocked.
+    /// Suspends the user account.
     /// </summary>
     public void Suspend()
     {

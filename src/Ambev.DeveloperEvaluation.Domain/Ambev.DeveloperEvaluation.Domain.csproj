@@ -1,24 +1,37 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <EnforceUTF8Encoding>true</EnforceUTF8Encoding>
+    <GenerateDebugInformation>true</GenerateDebugInformation>
+    <DebugType>portable</DebugType>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="ValueObjects\**" />
+    <EmbeddedResource Remove="ValueObjects\**" />
+    <None Remove="ValueObjects\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Enums\" />
     <Folder Include="Exceptions\" />
-    <Folder Include="Repositories\" />
     <Folder Include="Events\" />
-    <Folder Include="ValueObjects\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="11.10.0" />
+    <PackageReference Include="NetTopologySuite" Version="2.5.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Ambev.DeveloperEvaluation.Common\Ambev.DeveloperEvaluation.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="**\*.cs">
+      <Encoding>utf-8</Encoding>
+    </Compile>
   </ItemGroup>
 
 </Project>
