@@ -5,6 +5,7 @@ using Ambev.DeveloperEvaluation.Application.Users.GetUser.Commands;
 using Ambev.DeveloperEvaluation.Application.Users.ListUsers;
 using Ambev.DeveloperEvaluation.Application.Users.ListUsers.Responses;
 using Ambev.DeveloperEvaluation.Application.Users.UpdateUser.Commands;
+using Ambev.DeveloperEvaluation.Common.Cache;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using AutoMapper;
 using MediatR;
@@ -20,6 +21,9 @@ public class UsersController : BaseController
 {
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
+
+    private const string USER_CACHE_KEY = "User:{id}";
+    private const string USERS_PAGE_CACHE_KEY = "Users:Page:{pageNumber}_{pageSize}_{order}_{filter}";
 
     /// <summary>
     /// Initializes a new instance of UsersController
@@ -66,6 +70,7 @@ public class UsersController : BaseController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [Cache(USER_CACHE_KEY, DurationInMinutes = 15)]
     public async Task<IActionResult> GetUserByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         if (id == Guid.Empty)
@@ -96,6 +101,7 @@ public class UsersController : BaseController
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [PaginatedCache(USERS_PAGE_CACHE_KEY, DurationInMinutes = 15)]
     public async Task<IActionResult> GetUsersPageAsync([FromQuery] int pageNumber = 1,
                                                        [FromQuery] int pageSize = 10,
                                                        [FromQuery] string? order = null,
@@ -119,6 +125,7 @@ public class UsersController : BaseController
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [InvalidateCache(USER_CACHE_KEY)]
     public async Task<IActionResult> UpdateUserAsync([FromRoute] Guid id, [FromBody] UpdateUserCommand request, CancellationToken cancellationToken)
     {
         // Garante que o ID da rota seja utilizado no comando
@@ -140,6 +147,7 @@ public class UsersController : BaseController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [InvalidateCache(USER_CACHE_KEY)]
     public async Task<IActionResult> DeleteUserAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var command = _mapper.Map<DeleteUserCommand>(id);

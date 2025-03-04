@@ -32,4 +32,9 @@ public class RedisCacheService : ICacheService
         var serializedValue = JsonSerializer.Serialize(value);
         await _database.StringSetAsync(key, serializedValue, expiration);
     }
+
+    public async Task<bool> RemoveAsync(string key)
+    {
+        return await _database.KeyDeleteAsync(key);
+    }
 }

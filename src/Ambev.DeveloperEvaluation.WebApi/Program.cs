@@ -1,11 +1,9 @@
 using Ambev.DeveloperEvaluation.Application;
 using Ambev.DeveloperEvaluation.Common.HealthChecks;
 using Ambev.DeveloperEvaluation.Common.Security;
-using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.IoC;
 using Ambev.DeveloperEvaluation.ORM;
 using Ambev.DeveloperEvaluation.WebApi.Middleware;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.OpenApi.Models;
@@ -24,6 +22,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
 });
 
+// Add swagger configurations
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -55,7 +54,7 @@ builder.Services.AddSwaggerGen(c =>
 // Health Checks
 builder.AddBasicHealthChecks();
 
-// Configuração do DbContext
+// DbContext Configuration
 builder.Services.AddDbContext<StoreDbContext>(options =>
 {
     if (builder.Environment.IsEnvironment("Testing"))
@@ -87,37 +86,37 @@ builder.Services.AddDbContext<StoreDbContext>(options =>
     }
 });
 
-// Adicionar DbContextFactory (Útil para processamento paralelo, background jobs, etc.)
+// Add DbContextFactory (Useful for parallel processing, background jobs, etc.)
 builder.Services.AddSingleton<IDbContextFactory<StoreDbContext>>(provider =>
 {
     var options = provider.GetRequiredService<DbContextOptions<StoreDbContext>>();
     return new PooledDbContextFactory<StoreDbContext>(options);
 });
 
-// Autenticação JWT
+// JWT Authentication
 builder.Services.AddJwtAuthentication(builder.Configuration);
 
-// Injeção de dependências via IoC
+// Dependency injection via IoC
 builder.RegisterDependencies();
 
-// Configuração do AutoMapper
+// AutoMapper Configuration
 builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(ApplicationLayer).Assembly);
 
-// Configuração do MediatR
+// MediatR Configuration
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssemblies(typeof(ApplicationLayer).Assembly)
 );
 
-// Adicionando Pipeline de validação
-builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+// Adding a validation pipeline, but it did not prove to be a flexible and robust option, using attributes proved to be more efficient
+// builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
-// Construção da aplicação
+// Building the application
 var app = builder.Build();
 
-// Middleware de validação
+// Validation and Exception middleware
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-// Configuração de middlewares principais
+// Main middleware configuration
 app.UseRouting();
 
 if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing"))
@@ -134,7 +133,7 @@ app.UseBasicHealthChecks();
 
 app.MapControllers();
 
-// Inicializa a aplicação e captura exceções
+// Initialize the application and catch exceptions
 try
 {
     Log.Information("Starting web application");
@@ -149,4 +148,4 @@ finally
     Log.CloseAndFlush();
 }
 
-public partial class Program { }
+public partial class Program { } // Used specifically for integration testing

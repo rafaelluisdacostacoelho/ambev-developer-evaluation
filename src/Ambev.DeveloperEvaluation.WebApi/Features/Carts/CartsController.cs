@@ -5,6 +5,7 @@ using Ambev.DeveloperEvaluation.Application.Carts.ListCarts;
 using Ambev.DeveloperEvaluation.Application.Carts.ListCarts.Responses;
 using Ambev.DeveloperEvaluation.Application.Carts.UpdateCart.Commands;
 using Ambev.DeveloperEvaluation.Application.Pagination;
+using Ambev.DeveloperEvaluation.Common.Cache;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using AutoMapper;
 using MediatR;
@@ -17,6 +18,9 @@ public class CartsController : BaseController
 {
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
+
+    private const string CART_CACHE_KEY = "Cart:{id}";
+    private const string CARTS_PAGE_CACHE_KEY = "Carts:Page:{pageNumber}_{pageSize}_{order}_{filter}";
 
     public CartsController(IMediator mediator, IMapper mapper)
     {
@@ -54,6 +58,7 @@ public class CartsController : BaseController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [Cache(CART_CACHE_KEY, DurationInMinutes = 15)]
     public async Task<IActionResult> GetCartByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         if (id == Guid.Empty)
@@ -84,6 +89,7 @@ public class CartsController : BaseController
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [PaginatedCache(CARTS_PAGE_CACHE_KEY, DurationInMinutes = 15)]
     public async Task<IActionResult> GetCartPageAsync([FromQuery] int pageNumber = 1,
                                                       [FromQuery] int pageSize = 10,
                                                       [FromQuery] string? order = null,
@@ -107,6 +113,7 @@ public class CartsController : BaseController
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [InvalidateCache(CART_CACHE_KEY)]
     public async Task<IActionResult> UpdateCartAsync([FromRoute] Guid id, [FromBody] UpdateCartCommand request, CancellationToken cancellationToken)
     {
         // Garante que o ID da rota seja utilizado no comando
@@ -128,6 +135,7 @@ public class CartsController : BaseController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [InvalidateCache(CART_CACHE_KEY)]
     public async Task<IActionResult> DeleteCartAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var command = _mapper.Map<DeleteCartCommand>(id);

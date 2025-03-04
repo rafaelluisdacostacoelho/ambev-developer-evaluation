@@ -8,6 +8,7 @@ using Ambev.DeveloperEvaluation.Application.Products.GetProductsByCategory;
 using Ambev.DeveloperEvaluation.Application.Products.ListProducts;
 using Ambev.DeveloperEvaluation.Application.Products.ListProducts.Responses;
 using Ambev.DeveloperEvaluation.Application.Products.UpdateProduct.Commands;
+using Ambev.DeveloperEvaluation.Common.Cache;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using AutoMapper;
 using MediatR;
@@ -21,6 +22,10 @@ public class ProductsController : BaseController
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
 
+    private const string PRODUCT_CACHE_KEY = "Product:{id}";
+    private const string PRODUCTS_PAGE_CACHE_KEY = "Products:Page:{pageNumber}_{pageSize}_{order}_{filter}";
+    private const string CATEGORIES_CACHE_KEY = "Categories";
+    private const string PRODUCTS_BY_CATEGORIES_PAGE_CACHE_KEY = "Products:ByCategories:Page:{pageNumber}_{pageSize}_{order}_{filter}";
     public ProductsController(IMediator mediator, IMapper mapper)
     {
         _mediator = mediator;
@@ -55,6 +60,7 @@ public class ProductsController : BaseController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [Cache(PRODUCT_CACHE_KEY, DurationInMinutes = 15)]
     public async Task<IActionResult> GetProductByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         if (id == Guid.Empty)
@@ -85,6 +91,7 @@ public class ProductsController : BaseController
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [PaginatedCache(PRODUCTS_PAGE_CACHE_KEY, DurationInMinutes = 15)]
     public async Task<IActionResult> GetProductsPageAsync([FromQuery] int pageNumber = 1,
                                                           [FromQuery] int pageSize = 10,
                                                           [FromQuery] string? order = null,
@@ -106,6 +113,7 @@ public class ProductsController : BaseController
     [HttpGet("categories")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [Cache(CATEGORIES_CACHE_KEY, DurationInMinutes = 15)]
     public async Task<IActionResult> GetCategories()
     {
         var categories = await _mediator.Send(new GetProductCategoriesQuery());
@@ -129,6 +137,7 @@ public class ProductsController : BaseController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [PaginatedCache(PRODUCTS_BY_CATEGORIES_PAGE_CACHE_KEY, DurationInMinutes = 15)]
     public async Task<IActionResult> GetProductsByCategory(string category,
                                                            [FromQuery] int page = 1,
                                                            [FromQuery] int size = 10,
@@ -150,6 +159,7 @@ public class ProductsController : BaseController
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [InvalidateCache(PRODUCT_CACHE_KEY)]
     public async Task<IActionResult> UpdateProductAsync([FromRoute] Guid id, [FromBody] UpdateProductCommand request, CancellationToken cancellationToken)
     {
         // Garante que o ID da rota seja utilizado no comando
@@ -171,6 +181,7 @@ public class ProductsController : BaseController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [InvalidateCache(PRODUCT_CACHE_KEY)]
     public async Task<IActionResult> DeleteProductAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var command = _mapper.Map<DeleteProductCommand>(id);
