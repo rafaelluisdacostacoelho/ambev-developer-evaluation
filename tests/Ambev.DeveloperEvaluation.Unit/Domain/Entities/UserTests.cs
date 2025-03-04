@@ -12,49 +12,112 @@ namespace Ambev.DeveloperEvaluation.Unit.Domain.Entities;
 /// </summary>
 public class UserTests
 {
+    private readonly Faker _faker = new();
+
     [Fact]
-    public void User_Should_Create_With_Valid_Parameters()
+    public void User_Creation_With_Valid_Data_Should_Succeed()
     {
-        var name = new Faker<NameInfo>()
-            .RuleFor(n => n.Firstname, f => f.Name.FirstName())
-            .RuleFor(n => n.Lastname, f => f.Name.LastName())
-            .Generate();
+        // Arrange
+        var name = new NameInfo { Firstname = _faker.Name.FirstName(), Lastname = _faker.Name.LastName() };
+        var address = new AddressInfo { Street = _faker.Address.StreetAddress(), City = _faker.Address.City(), Zipcode = _faker.Address.ZipCode() };
+        var username = _faker.Internet.UserName();
+        var email = _faker.Internet.Email();
+        var password = _faker.Internet.Password();
+        var phone = _faker.Phone.PhoneNumber();
 
-        var address = new Faker<AddressInfo>()
-            .RuleFor(a => a.City, f => f.Address.City())
-            .RuleFor(a => a.Street, f => f.Address.StreetName())
-            .RuleFor(a => a.Number, f => f.Random.Int(1, 1000))
-            .RuleFor(a => a.Zipcode, f => f.Address.ZipCode())
-            .RuleFor(a => a.Geolocation, f => new GeolocationInfo())
-            .Generate();
+        // Act
+        var user = new User(username, email, password, phone, UserStatus.Inactive, UserRole.Customer, name, address);
 
-        var user = new Faker<User>()
-            .RuleFor(u => u.Username, f => f.Internet.UserName())
-            .RuleFor(u => u.Email, f => f.Internet.Email())
-            .RuleFor(u => u.Password, f => f.Internet.Password())
-            .RuleFor(u => u.Phone, f => f.Phone.PhoneNumber())
-            .RuleFor(u => u.Status, f => f.PickRandom<UserStatus>())
-            .RuleFor(u => u.Role, f => f.PickRandom<UserRole>())
-            .RuleFor(u => u.Name, f => name)
-            .RuleFor(u => u.Address, f => address)
-            .Generate();
-
-        user.Username.Should().NotBeNullOrEmpty();
-        user.Email.Should().Contain("@");
-        user.Password.Should().NotBeNullOrEmpty();
-        user.Phone.Should().NotBeNullOrEmpty();
-        user.Status.Should().BeOneOf(UserStatus.Active, UserStatus.Inactive, UserStatus.Suspended);
-        user.Role.Should().BeOneOf(UserRole.Admin, UserRole.Customer, UserRole.Admin, UserRole.Manager, UserRole.None);
-        user.Name.Should().NotBeNull();
-        user.Address.Should().NotBeNull();
+        // Assert
+        user.Username.Should().Be(username);
+        user.Email.Should().Be(email);
+        user.Password.Should().Be(password);
+        user.Phone.Should().Be(phone);
+        user.Status.Should().Be(UserStatus.Inactive);
+        user.Role.Should().Be(UserRole.Customer);
+        user.Name.Should().Be(name);
+        user.Address.Should().Be(address);
     }
 
     [Fact]
-    public void User_Should_Activate_Successfully()
+    public void User_Creation_With_Empty_Username_Should_Throw_Exception()
     {
+        // Arrange
+        var name = new NameInfo { Firstname = _faker.Name.FirstName(), Lastname = _faker.Name.LastName() };
+        var address = new AddressInfo { Street = _faker.Address.StreetAddress(), City = _faker.Address.City(), Zipcode = _faker.Address.ZipCode() };
+
+        // Act & Assert
+        Action act = () => new User("", _faker.Internet.Email(), _faker.Internet.Password(), _faker.Phone.PhoneNumber(), UserStatus.Inactive, UserRole.Customer, name, address);
+        act.Should().Throw<ArgumentException>().WithMessage("*Username cannot be empty.*");
+    }
+
+    [Fact]
+    public void Activate_Should_Set_Status_To_Active()
+    {
+        // Arrange
         var user = new User { Status = UserStatus.Inactive };
+
+        // Act
         user.Activate();
+
+        // Assert
         user.Status.Should().Be(UserStatus.Active);
         user.UpdatedAt.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void Deactivate_Should_Set_Status_To_Inactive()
+    {
+        // Arrange
+        var user = new User { Status = UserStatus.Active };
+
+        // Act
+        user.Deactivate();
+
+        // Assert
+        user.Status.Should().Be(UserStatus.Inactive);
+        user.UpdatedAt.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void Suspend_Should_Set_Status_To_Suspended()
+    {
+        // Arrange
+        var user = new User { Status = UserStatus.Active };
+
+        // Act
+        user.Suspend();
+
+        // Assert
+        user.Status.Should().Be(UserStatus.Suspended);
+        user.UpdatedAt.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void UpdateAddressInfo_Should_Update_Address()
+    {
+        // Arrange
+        var user = new User();
+        var newAddress = new AddressInfo { Street = _faker.Address.StreetAddress(), City = _faker.Address.City(), Zipcode = _faker.Address.ZipCode() };
+
+        // Act
+        user.UpdateAddressInfo(newAddress);
+
+        // Assert
+        user.Address.Should().Be(newAddress);
+    }
+
+    [Fact]
+    public void UpdateNameInfo_Should_Update_Name()
+    {
+        // Arrange
+        var user = new User();
+        var newName = new NameInfo { Firstname = _faker.Name.FirstName(), Lastname = _faker.Name.LastName() };
+
+        // Act
+        user.UpdateNameInfo(newName);
+
+        // Assert
+        user.Name.Should().Be(newName);
     }
 }

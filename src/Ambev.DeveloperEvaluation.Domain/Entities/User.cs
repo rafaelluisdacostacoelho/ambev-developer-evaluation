@@ -1,8 +1,6 @@
 using Ambev.DeveloperEvaluation.Common.Security;
-using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.Domain.Common;
 using Ambev.DeveloperEvaluation.Domain.Enums;
-using Ambev.DeveloperEvaluation.Domain.Validation;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities;
 
@@ -106,20 +104,6 @@ public class User : BaseEntity, IUser
         CreatedAt = DateTime.UtcNow;
         Name = name ?? throw new ArgumentNullException(nameof(name));
         Address = address ?? throw new ArgumentNullException(nameof(address));
-    }
-
-    /// <summary>
-    /// Performs validation of the user entity using the UserValidator rules.
-    /// </summary>
-    public ValidationResultDetail Validate()
-    {
-        var validator = new UserValidator();
-        var result = validator.Validate(this);
-        return new ValidationResultDetail
-        {
-            IsValid = result.IsValid,
-            Errors = result.Errors.Select(o => (ValidationErrorDetail)o)
-        };
     }
 
     public void UpdateAddressInfo(AddressInfo newAddress)
