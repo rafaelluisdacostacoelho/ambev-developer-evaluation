@@ -1,6 +1,5 @@
 using Ambev.DeveloperEvaluation.Application.Users.CreateUser.Responses;
 using Ambev.DeveloperEvaluation.Application.Users.CreateUser.Validators;
-using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.Domain.Enums;
 using MediatR;
 
@@ -61,18 +60,4 @@ public class CreateUserCommand : IRequest<CreateUserResponse>
     /// Gets or sets the address of the user.
     /// </summary>
     public CreateAddressInfoCommand Address { get; set; } = new CreateAddressInfoCommand();
-
-    /// <summary>
-    /// Performs validation of the command using the CreateUserCommandValidator rules.
-    /// </summary>
-    public ValidationResultDetail Validate()
-    {
-        var validator = new CreateUserCommandValidator();
-        var result = validator.Validate(this);
-        return new ValidationResultDetail
-        {
-            IsValid = result.IsValid,
-            Errors = result.Errors.Select(o => (ValidationErrorDetail)o)
-        };
-    }
 }

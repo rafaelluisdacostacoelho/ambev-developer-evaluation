@@ -19,7 +19,11 @@ builder.Host.UseSerilog((context, services, configuration) =>
 );
 
 // Configuração de Controllers e Swagger
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+});
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -54,16 +58,29 @@ builder.AddBasicHealthChecks();
 // Configuração do DbContext
 builder.Services.AddDbContext<StoreDbContext>(options =>
 {
-    options.UseNpgsql(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        npgsqlOptions =>
-        {
-            npgsqlOptions.MigrationsAssembly("Ambev.DeveloperEvaluation.ORM");
-            npgsqlOptions.UseNetTopologySuite();
-        }
-    );
+    if (builder.Environment.IsEnvironment("Testing"))
+    {
+        options.UseInMemoryDatabase("TestDb");
+    }
+    else
+    {
+        options.UseNpgsql(
+            builder.Configuration.GetConnectionString("DefaultConnection"),
+            npgsqlOptions =>
+            {
+                npgsqlOptions.MigrationsAssembly("Ambev.DeveloperEvaluation.ORM");
+                npgsqlOptions.UseNetTopologySuite();
+            }
+        );
 
-    if (builder.Environment.IsDevelopment())
+        if (builder.Environment.IsDevelopment())
+        {
+            options.EnableSensitiveDataLogging();
+            options.EnableDetailedErrors();
+        }
+    }
+
+    if (builder.Environment.IsDevelopment() || builder.Environment.IsEnvironment("Testing"))
     {
         options.EnableSensitiveDataLogging();
         options.EnableDetailedErrors();
@@ -103,8 +120,9 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 // Configuração de middlewares principais
 app.UseRouting();
 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing"))
 {
+    app.UseDeveloperExceptionPage(); // Exibe detalhes do erro durante os testes
     app.UseSwagger();
     app.UseSwaggerUI();
 }
@@ -130,3 +148,5 @@ finally
 {
     Log.CloseAndFlush();
 }
+
+public partial class Program { }
