@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Carts.ListCarts;
 
-public class ListCartsHandler : IRequestHandler<PaginationQuery<ListCartsQuery, ListCartResponse>, PaginatedResponse<ListCartResponse>>
+public class ListCartsHandler : IRequestHandler<PaginationQuery<ListCartResponse>, PaginatedResponse<ListCartResponse>>
 {
     private readonly ICartRepository _repository;
     private readonly IMapper _mapper;
@@ -17,7 +17,7 @@ public class ListCartsHandler : IRequestHandler<PaginationQuery<ListCartsQuery, 
         _mapper = mapper;
     }
 
-    public async Task<PaginatedResponse<ListCartResponse>> Handle(PaginationQuery<ListCartsQuery, ListCartResponse> request, CancellationToken cancellationToken)
+    public async Task<PaginatedResponse<ListCartResponse>> Handle(PaginationQuery<ListCartResponse> request, CancellationToken cancellationToken)
     {
         var paginatedResult = await _repository.GetPaginatedAsync(
             request.PageNumber,

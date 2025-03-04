@@ -1,6 +1,5 @@
 using Ambev.DeveloperEvaluation.Cache;
 using Ambev.DeveloperEvaluation.Common.Cache;
-using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,9 +37,6 @@ public class InfrastructureCacheModuleInitializer : IModuleInitializer
 
         // Registro do serviço de cache
         builder.Services.AddSingleton<ICacheService, RedisCacheService>();
-
-        // Registro dos Behaviors do MediatR para Cache
-        builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>));
     }
 
     // Método para construir a string de conexão do Redis

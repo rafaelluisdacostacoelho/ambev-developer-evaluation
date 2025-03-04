@@ -1,7 +1,6 @@
 using Ambev.DeveloperEvaluation.Application.Carts.CreateCart.Commands;
 using Ambev.DeveloperEvaluation.Application.Carts.DeleteCart.Commands;
 using Ambev.DeveloperEvaluation.Application.Carts.GetCart.Commands;
-using Ambev.DeveloperEvaluation.Application.Carts.ListCarts;
 using Ambev.DeveloperEvaluation.Application.Carts.ListCarts.Responses;
 using Ambev.DeveloperEvaluation.Application.Carts.UpdateCart.Commands;
 using Ambev.DeveloperEvaluation.Application.Pagination;
@@ -20,7 +19,7 @@ public class CartsController : BaseController
     private readonly IMapper _mapper;
 
     private const string CART_CACHE_KEY = "Cart:{id}";
-    private const string CARTS_PAGE_CACHE_KEY = "Carts:Page:{pageNumber}_{pageSize}_{order}_{filter}";
+    private const string CARTS_PAGE_CACHE_KEY = "Carts:Page:{pageNumber}_{pageSize}_{order}";
 
     public CartsController(IMediator mediator, IMapper mapper)
     {
@@ -90,12 +89,9 @@ public class CartsController : BaseController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [PaginatedCache(CARTS_PAGE_CACHE_KEY, DurationInMinutes = 15)]
-    public async Task<IActionResult> GetCartPageAsync([FromQuery] int pageNumber = 1,
-                                                      [FromQuery] int pageSize = 10,
-                                                      [FromQuery] string? order = null,
-                                                      [FromQuery] ListCartsQuery? filter = null)
+    public async Task<IActionResult> GetCartPageAsync([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string? order = null)
     {
-        var query = new PaginationQuery<ListCartsQuery, ListCartResponse>(pageNumber, pageSize, order, filter);
+        var query = new PaginationQuery<ListCartResponse>(pageNumber, pageSize, order);
 
         PaginatedResponse<ListCartResponse> result = await _mediator.Send(query);
 

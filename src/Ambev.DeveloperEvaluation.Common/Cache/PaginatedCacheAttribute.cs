@@ -71,12 +71,13 @@ public class PaginatedCacheAttribute : Attribute, IAsyncActionFilter
             {
                 // Gera uma representação detalhada do objeto complexo na chave do cache
                 var complexKey = GenerateComplexObjectKey(parameter.Value);
-                key = key.Replace($"{{{parameter.Key}}}", complexKey);
+                key = key.Replace($"{{{parameter.Key}}}", string.IsNullOrEmpty(complexKey) ? "null" : complexKey);
             }
         }
 
-        // Remove placeholders não preenchidos para evitar chaves malformadas
+        // Remove placeholders não preenchidos de forma segura, evitando underscores desnecessários
         key = Regex.Replace(key, @"\{.*?\}", "null");
+        key = Regex.Replace(key, "_null", ""); // Remove "_null" desnecessários do final
 
         return key;
     }

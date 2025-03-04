@@ -38,16 +38,13 @@ public class CreateUserHandler : IRequestHandler<CreateUserCommand, CreateUserRe
     /// <returns>The created user details</returns>
     public async Task<CreateUserResponse> Handle(CreateUserCommand command, CancellationToken cancellationToken)
     {
-        // Verifica se o usuário já existe
         var existingUser = await _userRepository.GetByEmailAsync(command.Email, cancellationToken);
         if (existingUser != null)
             throw new InvalidOperationException($"User with email {command.Email} already exists");
 
-        // Mapeia o comando para a entidade User
         var user = _mapper.Map<User>(command);
-        user.Password = _passwordHasher.HashPassword(command.Password); // Hash da senha
+        user.Password = _passwordHasher.HashPassword(command.Password);
 
-        // Persiste no repositório
         var createdUser = await _userRepository.CreateAsync(user, cancellationToken);
 
         var response = _mapper.Map<CreateUserResponse>(createdUser);

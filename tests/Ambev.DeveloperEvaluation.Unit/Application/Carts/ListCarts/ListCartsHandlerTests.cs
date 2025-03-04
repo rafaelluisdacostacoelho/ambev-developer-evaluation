@@ -25,11 +25,10 @@ public class ListCartsHandlerTests
     [Fact]
     public async Task Handle_Should_ReturnPaginatedCarts()
     {
-        var paginationQuery = new PaginationQuery<ListCartsQuery, ListCartResponse>(
+        var paginationQuery = new PaginationQuery<ListCartResponse>(
             pageNumber: 1,
             pageSize: 10,
-            order: "Date",
-            filter: new ListCartsQuery { Name = "John", Email = "john@example.com" }
+            order: "Date"
         );
 
         var paginatedResult = GenerateFakePaginatedCarts();
