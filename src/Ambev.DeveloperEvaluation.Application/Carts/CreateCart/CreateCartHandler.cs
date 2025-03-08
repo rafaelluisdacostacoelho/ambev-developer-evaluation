@@ -45,7 +45,7 @@ public class CreateCartHandler : IRequestHandler<CreateCartCommand, CreateCartRe
             var unitPrice = await _productPriceService.GetPriceAsync(product.ProductId);
 
             // Adiciona o produto ao carrinho usando o método do domínio
-            cart.UpdateProduct(product.ProductId, product.Quantity, unitPrice);
+            cart.UpdateProductQuantity(product.ProductId, product.Quantity, unitPrice);
         }
 
         // Persist the cart entity in the repository

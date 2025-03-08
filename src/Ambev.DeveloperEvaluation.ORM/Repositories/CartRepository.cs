@@ -58,13 +58,15 @@ public class CartRepository : ICartRepository
     {
         var existingCart = await _context.Carts
                                          .Include(c => c.Products)
-                                         .SingleAsync(c => c.Id == cart.Id, cancellationToken: cancellationToken)
+                                         .AsNoTracking()
+                                         .SingleOrDefaultAsync(c => c.Id == cart.Id, cancellationToken: cancellationToken)
             ?? throw new KeyNotFoundException("Carrinho não encontrado.");
 
-        _context.Entry(existingCart).CurrentValues.SetValues(cart);
-
+        // Limpar os itens existentes e adicionar os novos
         existingCart.Products.Clear();
         existingCart.Products.AddRange(cart.Products);
+
+        _context.Entry(existingCart).CurrentValues.SetValues(cart);
 
         await _context.SaveChangesAsync(cancellationToken);
 

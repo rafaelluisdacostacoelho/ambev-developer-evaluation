@@ -4,63 +4,47 @@ public class CartItem
 {
     public Guid ProductId { get; private set; }
     public int Quantity { get; private set; }
-    public decimal Price { get; private set; }
+    public decimal UnitPrice { get; private set; }
+    public decimal PriceTotal { get; private set; }
+    public decimal PriceTotalWithDiscount { get; private set; }
     public decimal Discount { get; private set; }
 
     private CartItem() { }
 
-    public CartItem(Guid productId, int quantity)
+    public CartItem(Guid productId, int quantity, decimal unitPrice)
     {
         if (quantity < 1 || quantity > 20)
             throw new ArgumentOutOfRangeException(nameof(quantity), "Quantity must be between 1 and 20");
 
         ProductId = productId;
+        UnitPrice = unitPrice;
+        UpdateProductQuantity(quantity, unitPrice);
+    }
+
+    public void UpdateProductQuantity(int quantity, decimal unitPrice)
+    {
+        if (quantity < 1 || quantity > 20)
+            throw new ArgumentOutOfRangeException(nameof(quantity), "Quantity must be between 1 and 20");
+
         Quantity = quantity;
+        UnitPrice = unitPrice;
+        CalculateDiscountedPrice(Quantity, unitPrice);
     }
 
-    public void IncreaseQuantity(int quantity, decimal unitPrice)
+    private void CalculateDiscountedPrice(int quantity, decimal unitPrice)
     {
-        if (Quantity + quantity > 20)
-            throw new ArgumentOutOfRangeException(nameof(quantity), "Total quantity cannot exceed 20");
-
-        Quantity += quantity;
-        Price = CalculateDiscountedPrice(Quantity, unitPrice);
-    }
-
-    public void DecreaseQuantity(int quantity, decimal unitPrice)
-    {
-        if (Quantity - quantity < 1)
-            throw new ArgumentOutOfRangeException(nameof(quantity), "Quantity must be at least 1");
-
-        Quantity -= quantity;
-        Price = CalculateDiscountedPrice(Quantity, unitPrice);
-    }
-
-    private decimal CalculateDiscountedPrice(int quantity, decimal unitPrice)
-    {
-        const decimal noDiscount = 0m;
-        const decimal discountOf10percent = 0.10m;
-        const decimal discountOf20percent = 0.20m;
-
-        if (quantity < 4)
-        {
-            return unitPrice * quantity;
-        }
-
-        decimal discount = noDiscount;
+        Discount = 0m;
 
         if (quantity >= 4 && quantity < 10)
         {
-            discount = discountOf10percent;
+            Discount = 0.10m;
         }
         else if (quantity >= 10 && quantity <= 20)
         {
-            discount = discountOf20percent;
+            Discount = 0.20m;
         }
 
-        Discount = discount;
-
-        decimal totalPrice = unitPrice * quantity;
-        return totalPrice - (totalPrice * discount);
+        PriceTotal = unitPrice * quantity;
+        PriceTotalWithDiscount = PriceTotal - (PriceTotal * Discount);
     }
 }
