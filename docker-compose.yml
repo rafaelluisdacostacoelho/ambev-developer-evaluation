@@ -24,7 +24,7 @@ services:
     depends_on:
       - elasticsearch
       - logstash
-      - kibana 
+      - kibana
 
   ambev.developerevaluation.database:
     container_name: ambev_developer_evaluation_database
