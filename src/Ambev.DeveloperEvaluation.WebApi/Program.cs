@@ -15,8 +15,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Configuração do Serilog (Logging global desde o início)
 builder.Host.UseSerilog((context, services, configuration) =>
-    configuration.ReadFrom.Configuration(context.Configuration)
-);
+{
+    configuration
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext()
+        .Enrich.WithMachineName()
+        .WriteTo.Console();
+});
 
 // Configuração de Controllers e Swagger
 builder.Services.AddControllers().AddJsonOptions(options =>
@@ -119,6 +125,8 @@ var app = builder.Build();
 
 // Validation and Exception middleware
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+app.UseSerilogRequestLogging();
 
 // Main middleware configuration
 app.UseRouting();

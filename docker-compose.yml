@@ -13,6 +13,7 @@ services:
       - DOTNET_CLI_UI_LANGUAGE=en
       - LC_ALL=en_US.UTF-8
       - LANG=en_US.UTF-8
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
     ports:
       - "61094:8080"
       - "61095:8081"
@@ -20,6 +21,10 @@ services:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
       - .:/app
+    depends_on:
+      - elasticsearch
+      - logstash
+      - kibana 
 
   ambev.developerevaluation.database:
     container_name: ambev_developer_evaluation_database
@@ -52,8 +57,53 @@ services:
     ports:
        - "6379:6379"
 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.1
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.10.1
+    container_name: logstash
+    ports:
+      - "5044:5044"
+      - "9600:9600"
+    volumes:
+      - ./logstash:/usr/share/logstash/pipeline
+    depends_on:
+      - elasticsearch
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://elasticsearch:9200"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.10.1
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://elasticsearch:9200"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
 volumes:
   ambev_pg_data:
     external: true
   ambev_mongo_data:
     external: true
+  es_data:
+    external: false
