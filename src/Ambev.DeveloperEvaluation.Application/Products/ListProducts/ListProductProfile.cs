@@ -36,6 +36,6 @@ public class ListProductsProfile : Profile
 
         // Mapeamento de ICollection<Product> para ICollection<ListProductResponse>
         CreateMap<ICollection<Product>, ICollection<ListProductResponse>>()
-            .ConvertUsing((src, dest, context) => src.Select(product => context.Mapper.Map<ListProductResponse>(product)).ToList());
+            .ConvertUsing((src, dest, context) => [.. src.Select(product => context.Mapper.Map<ListProductResponse>(product))]);
     }
 }

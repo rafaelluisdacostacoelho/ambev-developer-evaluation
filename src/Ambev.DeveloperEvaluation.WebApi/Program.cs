@@ -1,6 +1,8 @@
 using Ambev.DeveloperEvaluation.Application;
 using Ambev.DeveloperEvaluation.Common.HealthChecks;
 using Ambev.DeveloperEvaluation.Common.Security;
+using Ambev.DeveloperEvaluation.Domain.Services;
+using Ambev.DeveloperEvaluation.Domain.Services.Interfces;
 using Ambev.DeveloperEvaluation.IoC;
 using Ambev.DeveloperEvaluation.ORM;
 using Ambev.DeveloperEvaluation.WebApi.Middleware;
@@ -13,8 +15,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Configuração do Serilog (Logging global desde o início)
 builder.Host.UseSerilog((context, services, configuration) =>
-    configuration.ReadFrom.Configuration(context.Configuration)
-);
+{
+    configuration
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext()
+        .Enrich.WithMachineName()
+        .WriteTo.Console();
+});
 
 // Configuração de Controllers e Swagger
 builder.Services.AddControllers().AddJsonOptions(options =>
@@ -102,6 +110,8 @@ builder.RegisterDependencies();
 // AutoMapper Configuration
 builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(ApplicationLayer).Assembly);
 
+builder.Services.AddScoped<IProductPriceService, ProductPriceService>();
+
 // MediatR Configuration
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssemblies(typeof(ApplicationLayer).Assembly)
@@ -115,6 +125,8 @@ var app = builder.Build();
 
 // Validation and Exception middleware
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+app.UseSerilogRequestLogging();
 
 // Main middleware configuration
 app.UseRouting();

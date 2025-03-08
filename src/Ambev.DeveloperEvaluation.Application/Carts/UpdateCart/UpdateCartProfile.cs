@@ -1,4 +1,3 @@
-using Ambev.DeveloperEvaluation.Application.Carts.UpdateCart.Commands;
 using Ambev.DeveloperEvaluation.Application.Carts.UpdateCart.Responses;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using AutoMapper;
@@ -16,24 +15,5 @@ public class UpdateCartProfile : Profile
     public UpdateCartProfile()
     {
         CreateMap<Cart, UpdateCartResponse>();
-
-        // Mapeamento do comando para a entidade Cart utilizando os métodos de domínio
-        CreateMap<UpdateCartCommand, Cart>()
-            .ConstructUsing((command, context) =>
-            {
-                var cart = new Cart(command.UserId);
-
-                // Adiciona produtos ao carrinho usando o método de domínio
-                foreach (var product in command.Products)
-                {
-                    cart.AddProduct(product.ProductId, product.Quantity);
-                }
-
-                return cart;
-            });
-
-        // Mapeamento do comando do item do carrinho para a entidade CartItem
-        CreateMap<UpdateCartItemCommand, CartItem>()
-            .ConstructUsing(src => new CartItem(src.ProductId, src.Quantity));
     }
 }

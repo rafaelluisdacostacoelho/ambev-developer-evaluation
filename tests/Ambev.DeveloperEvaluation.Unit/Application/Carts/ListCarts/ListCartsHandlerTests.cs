@@ -52,14 +52,14 @@ public class ListCartsHandlerTests
         result.TotalCount.Should().Be(paginatedResult.TotalItems);
     }
 
-    private PaginatedResult<Cart> GenerateFakePaginatedCarts()
+    private static PaginatedResult<Cart> GenerateFakePaginatedCarts()
     {
         var carts = new List<Cart>();
 
         for (int i = 0; i < 10; i++)
         {
             var cart = new Cart(userId: Guid.NewGuid());
-            cart.AddProduct(productId: Guid.NewGuid(), quantity: 1);
+            cart.UpdateProductQuantity(productId: Guid.NewGuid(), quantity: 1, 1);
             carts.Add(cart);
         }
 

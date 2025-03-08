@@ -36,7 +36,7 @@ public class CreateUserHandlerTests
         var user = new User { Email = command.Email, Password = "hashedPassword" };
         var response = GenerateFakeCreateUserResponse(command);
 
-        _userRepository.GetByEmailAsync(command.Email, Arg.Any<CancellationToken>()).Returns((User)null);
+        _userRepository.GetByEmailAsync(command.Email, Arg.Any<CancellationToken>()).Returns((User?)null);
         _mapper.Map<User>(command).Returns(user);
         _passwordHasher.HashPassword(command.Password).Returns("hashedPassword");
         _userRepository.CreateAsync(user, Arg.Any<CancellationToken>()).Returns(user);
@@ -82,7 +82,7 @@ public class CreateUserHandlerTests
         var command = GenerateFakeCreateUserCommand();
         var user = new User { Email = command.Email, Password = "" };
 
-        _userRepository.GetByEmailAsync(command.Email, Arg.Any<CancellationToken>()).Returns((User)null);
+        _userRepository.GetByEmailAsync(command.Email, Arg.Any<CancellationToken>()).Returns((User?)null);
         _mapper.Map<User>(command).Returns(user);
         _passwordHasher.HashPassword(command.Password).Returns("hashedPassword");
 
@@ -98,7 +98,7 @@ public class CreateUserHandlerTests
         var command = GenerateFakeCreateUserCommand();
         var user = new User { Email = command.Email };
 
-        _userRepository.GetByEmailAsync(command.Email, Arg.Any<CancellationToken>()).Returns((User)null);
+        _userRepository.GetByEmailAsync(command.Email, Arg.Any<CancellationToken>()).Returns((User?)null);
         _mapper.Map<User>(command).Returns(user);
 
         await _handler.Handle(command, CancellationToken.None);

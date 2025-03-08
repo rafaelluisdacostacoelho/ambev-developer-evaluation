@@ -12,10 +12,10 @@ public class CartItemTests
     {
         // Arrange
         var productId = Guid.NewGuid();
-        var quantity = 10;
+        const int quantity = 10;
 
         // Act
-        var cartItem = new CartItem(productId, quantity);
+        var cartItem = new CartItem(productId, quantity, 5);
 
         // Assert
         cartItem.ProductId.Should().Be(productId);
@@ -31,7 +31,7 @@ public class CartItemTests
         var productId = Guid.NewGuid();
 
         // Act
-        Action act = () => new CartItem(productId, quantity);
+        Action act = () => new CartItem(productId, quantity, 5);
 
         // Assert
         act.Should().Throw<ArgumentOutOfRangeException>()
@@ -42,10 +42,10 @@ public class CartItemTests
     public void Given_ValidAmount_When_IncreasingQuantity_Then_ShouldIncreaseSuccessfully()
     {
         // Arrange
-        var cartItem = new CartItem(Guid.NewGuid(), 10);
+        var cartItem = new CartItem(Guid.NewGuid(), 10, 5);
 
         // Act
-        cartItem.IncreaseQuantity(5);
+        cartItem.IncreaseQuantity(5, 10);
 
         // Assert
         cartItem.Quantity.Should().Be(15);
@@ -55,10 +55,10 @@ public class CartItemTests
     public void Given_InvalidAmount_When_IncreasingQuantity_Then_ShouldThrowException()
     {
         // Arrange
-        var cartItem = new CartItem(Guid.NewGuid(), 18);
+        var cartItem = new CartItem(Guid.NewGuid(), 18, 5);
 
         // Act
-        Action act = () => cartItem.IncreaseQuantity(5);
+        Action act = () => cartItem.IncreaseQuantity(5, 10);
 
         // Assert
         act.Should().Throw<ArgumentOutOfRangeException>()
@@ -69,10 +69,10 @@ public class CartItemTests
     public void Given_ValidAmount_When_DecreasingQuantity_Then_ShouldDecreaseSuccessfully()
     {
         // Arrange
-        var cartItem = new CartItem(Guid.NewGuid(), 10);
+        var cartItem = new CartItem(Guid.NewGuid(), 10, 5);
 
         // Act
-        cartItem.DecreaseQuantity(5);
+        cartItem.DecreaseQuantity(5, 10);
 
         // Assert
         cartItem.Quantity.Should().Be(5);
@@ -82,10 +82,10 @@ public class CartItemTests
     public void Given_InvalidAmount_When_DecreasingQuantity_Then_ShouldThrowException()
     {
         // Arrange
-        var cartItem = new CartItem(Guid.NewGuid(), 5);
+        var cartItem = new CartItem(Guid.NewGuid(), 5, 5);
 
         // Act
-        Action act = () => cartItem.DecreaseQuantity(10);
+        Action act = () => cartItem.DecreaseQuantity(10, 10);
 
         // Assert
         act.Should().Throw<ArgumentOutOfRangeException>()

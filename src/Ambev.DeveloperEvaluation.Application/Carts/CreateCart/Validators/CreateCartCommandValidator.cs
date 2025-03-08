@@ -1,5 +1,4 @@
 using Ambev.DeveloperEvaluation.Application.Carts.CreateCart.Commands;
-using Ambev.DeveloperEvaluation.Domain.Entities;
 using FluentValidation;
 
 namespace Ambev.DeveloperEvaluation.Application.Carts.CreateCart.Validators;
@@ -40,24 +39,5 @@ public class CreateCartCommandValidator : AbstractValidator<CreateCartCommand>
                  product.NotNull().WithMessage("Product cannot be null.");
                  product.SetValidator(new CreateCartItemCommandValidator());
              });
-
-        // Validação customizada utilizando lógica de domínio
-        RuleFor(x => x)
-            .Custom((command, context) =>
-            {
-                var cart = new Cart(command.UserId);
-
-                foreach (var product in command.Products)
-                {
-                    try
-                    {
-                        cart.AddProduct(product.ProductId, product.Quantity);
-                    }
-                    catch (ArgumentOutOfRangeException ex)
-                    {
-                        context.AddFailure($"Product {product.ProductId}", ex.Message);
-                    }
-                }
-            });
     }
 }

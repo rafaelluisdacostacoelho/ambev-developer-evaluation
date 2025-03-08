@@ -22,19 +22,16 @@ public class CartRepository : ICartRepository
     public async Task<PaginatedResult<Cart>> GetPaginatedAsync(int page = 1, int size = 10, string? order = null, CancellationToken cancellationToken = default)
     {
         var query = _context.Carts
-                            .Include(c => c.Products) // Carregar os produtos do carrinho
+                            .Include(c => c.Products)
                             .AsQueryable();
 
-        // Aplicar ordenação dinâmica
         if (!string.IsNullOrWhiteSpace(order))
         {
             query = ApplySorting(query, order);
         }
 
-        // Contagem total de itens antes da paginação
         var totalItems = await query.CountAsync(cancellationToken: cancellationToken);
 
-        // Aplicar paginação
         var items = await query.Skip((page - 1) * size)
                                .Take(size)
                                .ToListAsync(cancellationToken: cancellationToken);
@@ -61,14 +58,15 @@ public class CartRepository : ICartRepository
     {
         var existingCart = await _context.Carts
                                          .Include(c => c.Products)
-                                         .SingleAsync(c => c.Id == cart.Id, cancellationToken: cancellationToken)
+                                         .AsNoTracking()
+                                         .SingleOrDefaultAsync(c => c.Id == cart.Id, cancellationToken: cancellationToken)
             ?? throw new KeyNotFoundException("Carrinho não encontrado.");
 
-        _context.Entry(existingCart).CurrentValues.SetValues(cart);
-
-        // Atualizar produtos do carrinho
+        // Limpar os itens existentes e adicionar os novos
         existingCart.Products.Clear();
         existingCart.Products.AddRange(cart.Products);
+
+        _context.Entry(existingCart).CurrentValues.SetValues(cart);
 
         await _context.SaveChangesAsync(cancellationToken);
 
