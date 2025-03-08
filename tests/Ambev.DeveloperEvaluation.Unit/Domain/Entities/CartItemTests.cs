@@ -12,7 +12,7 @@ public class CartItemTests
     {
         // Arrange
         var productId = Guid.NewGuid();
-        var quantity = 10;
+        const int quantity = 10;
 
         // Act
         var cartItem = new CartItem(productId, quantity);
@@ -45,7 +45,7 @@ public class CartItemTests
         var cartItem = new CartItem(Guid.NewGuid(), 10);
 
         // Act
-        cartItem.IncreaseQuantity(5);
+        cartItem.IncreaseQuantity(5, 10);
 
         // Assert
         cartItem.Quantity.Should().Be(15);
@@ -58,7 +58,7 @@ public class CartItemTests
         var cartItem = new CartItem(Guid.NewGuid(), 18);
 
         // Act
-        Action act = () => cartItem.IncreaseQuantity(5);
+        Action act = () => cartItem.IncreaseQuantity(5, 10);
 
         // Assert
         act.Should().Throw<ArgumentOutOfRangeException>()
@@ -72,7 +72,7 @@ public class CartItemTests
         var cartItem = new CartItem(Guid.NewGuid(), 10);
 
         // Act
-        cartItem.DecreaseQuantity(5);
+        cartItem.DecreaseQuantity(5, 10);
 
         // Assert
         cartItem.Quantity.Should().Be(5);
@@ -85,7 +85,7 @@ public class CartItemTests
         var cartItem = new CartItem(Guid.NewGuid(), 5);
 
         // Act
-        Action act = () => cartItem.DecreaseQuantity(10);
+        Action act = () => cartItem.DecreaseQuantity(10, 10);
 
         // Assert
         act.Should().Throw<ArgumentOutOfRangeException>()

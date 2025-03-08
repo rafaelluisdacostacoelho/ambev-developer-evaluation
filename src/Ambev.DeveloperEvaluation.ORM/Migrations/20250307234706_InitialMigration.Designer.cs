@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Ambev.DeveloperEvaluation.ORM.Migrations
 {
     [DbContext(typeof(StoreDbContext))]
-    [Migration("20250228045904_InitialMigration")]
+    [Migration("20250307234706_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.10")
+                .HasAnnotation("ProductVersion", "8.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "postgis");
@@ -35,6 +35,9 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("numeric");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -138,6 +141,12 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
 
                             NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b1.Property<int>("Id"));
 
+                            b1.Property<decimal>("Discount")
+                                .HasColumnType("numeric");
+
+                            b1.Property<decimal>("Price")
+                                .HasColumnType("numeric");
+
                             b1.Property<Guid>("ProductId")
                                 .HasColumnType("uuid")
                                 .HasColumnName("ProductId");
@@ -222,6 +231,7 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
                     b.OwnsOne("Ambev.DeveloperEvaluation.Domain.Entities.AddressInfo", "Address", b1 =>
                         {
                             b1.Property<Guid>("UserId")
+                                .ValueGeneratedOnAdd()
                                 .HasColumnType("uuid");
 
                             b1.Property<string>("City")

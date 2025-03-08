@@ -59,7 +59,7 @@ public class ListCartsHandlerTests
         for (int i = 0; i < 10; i++)
         {
             var cart = new Cart(userId: Guid.NewGuid());
-            cart.AddProduct(productId: Guid.NewGuid(), quantity: 1);
+            cart.UpdateProduct(productId: Guid.NewGuid(), quantity: 1, 1);
             carts.Add(cart);
         }
 

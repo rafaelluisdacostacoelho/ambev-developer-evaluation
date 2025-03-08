@@ -1,6 +1,5 @@
 using Ambev.DeveloperEvaluation.Application.Carts.CreateCart.Validators;
 using Ambev.DeveloperEvaluation.Application.Carts.UpdateCart.Commands;
-using Ambev.DeveloperEvaluation.Domain.Entities;
 using FluentValidation;
 
 namespace Ambev.DeveloperEvaluation.Application.Carts.UpdateCart.Validators;
@@ -29,10 +28,6 @@ public class UpdateCartCommandValidator : AbstractValidator<UpdateCartCommand>
             .NotEmpty().WithMessage("UserId is required.")
             .NotEqual(Guid.Empty).WithMessage("UserId must be a valid GUID.");
 
-        RuleFor(x => x.Date)
-            .NotEmpty().WithMessage("Date is required.")
-            .LessThanOrEqualTo(DateTime.Now).WithMessage("Date cannot be in the future.");
-
         RuleFor(x => x.Products)
              .NotEmpty().WithMessage("Carts list cannot be empty.")
              .Must(p => p != null && p.Count > 0).WithMessage("Carts list must contain at least one item.")
@@ -41,24 +36,5 @@ public class UpdateCartCommandValidator : AbstractValidator<UpdateCartCommand>
                  cart.NotNull().WithMessage("Cart cannot be null.");
                  cart.SetValidator(new UpdateCartItemCommandValidator());
              });
-
-        // Validação customizada utilizando lógica de domínio
-        RuleFor(x => x)
-            .Custom((command, context) =>
-            {
-                var cart = new Cart(command.UserId);
-
-                foreach (var product in command.Products)
-                {
-                    try
-                    {
-                        cart.AddProduct(product.ProductId, product.Quantity);
-                    }
-                    catch (ArgumentOutOfRangeException ex)
-                    {
-                        context.AddFailure($"Product {product.ProductId}", ex.Message);
-                    }
-                }
-            });
     }
 }

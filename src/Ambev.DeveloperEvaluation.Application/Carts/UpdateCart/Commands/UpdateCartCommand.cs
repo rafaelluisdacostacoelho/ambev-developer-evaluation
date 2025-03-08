@@ -20,28 +20,24 @@ namespace Ambev.DeveloperEvaluation.Application.Carts.UpdateCart.Commands;
 /// </remarks>
 public class UpdateCartCommand : IRequest<UpdateCartResponse>
 {
+    /// <summary>
+    /// Cart ID that will be updated.
+    /// </summary>
     public Guid Id { get; set; }
 
     /// <summary>
-    /// The unique identifier of the user creating the cart.
+    /// The unique identifier of the user owner that is updating the cart.
     /// </summary>
     public Guid UserId { get; private set; }
 
     /// <summary>
-    /// The date when the cart was created.
-    /// </summary>
-    public DateTime Date { get; private set; }
-
-    /// <summary>
-    /// The list of products to be added to the cart.
-    /// Each item in the list represents a product with specific details and quantity.
+    /// Products with quantity and calculated price (with discounts)
     /// </summary>
     public List<UpdateCartItemCommand> Products { get; private set; } = [];
 
-    public UpdateCartCommand(Guid userId, DateTime date, List<UpdateCartItemCommand> products)
+    public UpdateCartCommand(Guid userId, List<UpdateCartItemCommand> products)
     {
         UserId = userId;
-        Date = date;
         Products = products;
     }
 }

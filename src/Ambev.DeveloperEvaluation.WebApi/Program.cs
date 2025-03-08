@@ -1,6 +1,8 @@
 using Ambev.DeveloperEvaluation.Application;
 using Ambev.DeveloperEvaluation.Common.HealthChecks;
 using Ambev.DeveloperEvaluation.Common.Security;
+using Ambev.DeveloperEvaluation.Domain.Services;
+using Ambev.DeveloperEvaluation.Domain.Services.Interfces;
 using Ambev.DeveloperEvaluation.IoC;
 using Ambev.DeveloperEvaluation.ORM;
 using Ambev.DeveloperEvaluation.WebApi.Middleware;
@@ -101,6 +103,8 @@ builder.RegisterDependencies();
 
 // AutoMapper Configuration
 builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(ApplicationLayer).Assembly);
+
+builder.Services.AddScoped<IProductPriceService, ProductPriceService>();
 
 // MediatR Configuration
 builder.Services.AddMediatR(cfg =>
