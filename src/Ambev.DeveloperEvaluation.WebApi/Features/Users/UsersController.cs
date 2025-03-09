@@ -21,6 +21,7 @@ public class UsersController : BaseController
 {
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
+    private readonly ILogger<UsersController> _logger;
 
     private const string USER_CACHE_KEY = "User:{id}";
     private const string USERS_PAGE_CACHE_KEY = "Users:Page:{pageNumber}_{pageSize}_{order}_{filter}";
@@ -30,10 +31,11 @@ public class UsersController : BaseController
     /// </summary>
     /// <param name="mediator">The mediator instance</param>
     /// <param name="mapper">The AutoMapper instance</param>
-    public UsersController(IMediator mediator, IMapper mapper)
+    public UsersController(IMediator mediator, IMapper mapper, ILogger<UsersController> logger)
     {
         _mediator = mediator;
         _mapper = mapper;
+        _logger = logger;
     }
 
     /// <summary>
