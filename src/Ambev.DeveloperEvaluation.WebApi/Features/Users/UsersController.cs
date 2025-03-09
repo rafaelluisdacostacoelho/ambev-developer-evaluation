@@ -10,8 +10,6 @@ using Ambev.DeveloperEvaluation.WebApi.Common;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Serilog.Context;
-using System.Diagnostics;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Users;
 
@@ -77,26 +75,20 @@ public class UsersController : BaseController
     [Cache(USER_CACHE_KEY, DurationInMinutes = 15)]
     public async Task<IActionResult> GetUserByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        var requestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
-
-        using (LogContext.PushProperty("RequestId", id))
-        using (LogContext.PushProperty("UserId", id))
+        if (id == Guid.Empty)
         {
-            if (id == Guid.Empty)
-            {
-                return BadRequest(new { Message = "Invalid user ID." });
-            }
-
-            var command = _mapper.Map<GetUserCommand>(id);
-            var response = await _mediator.Send(command, cancellationToken);
-
-            if (response == null)
-            {
-                return NotFound(new { Message = "User not found." });
-            }
-
-            return Ok(response);
+            return BadRequest(new { Message = "Invalid user ID." });
         }
+
+        var command = _mapper.Map<GetUserCommand>(id);
+        var response = await _mediator.Send(command, cancellationToken);
+
+        if (response == null)
+        {
+            return NotFound(new { Message = "User not found." });
+        }
+
+        return Ok(response);
     }
 
     /// <summary>

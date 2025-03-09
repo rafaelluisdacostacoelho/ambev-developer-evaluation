@@ -16,23 +16,28 @@ public class LoggingMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
-        // Gerando um ID de rastreamento para cada requisição
+        // Adicionando propriedades contextuais ao LogContext do Serilog
         var requestId = Activity.Current?.Id ?? context.TraceIdentifier;
 
-        // Adicionando propriedades contextuais ao LogContext do Serilog
         using (LogContext.PushProperty("RequestId", requestId))
         using (LogContext.PushProperty("RequestPath", context.Request.Path))
+        using (LogContext.PushProperty("StatusCode", context.Response.StatusCode))
+        using (LogContext.PushProperty("HttpMethod", context.Request.Method))
         {
-            _logger.LogInformation("Handling request {RequestPath} with RequestId {RequestId}", context.Request.Path, requestId);
+            _logger.LogInformation("Handling request {RequestPath} with RequestId {RequestId} using Method {HttpMethod}",
+                                   context.Request.Path, requestId, context.Request.Method);
 
             try
             {
                 await _next(context);
-                _logger.LogInformation("Finished handling request {RequestPath} with status code {StatusCode}", context.Request.Path, context.Response.StatusCode);
+
+                _logger.LogInformation("Finished handling request {RequestPath} with status code {StatusCode} and method {HttpMethod}",
+                                       context.Request.Path, context.Response.StatusCode, context.Request.Method);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while processing the request {RequestPath}", context.Request.Path);
+                _logger.LogError(ex, "An error occurred while processing the request {RequestPath} with method {HttpMethod}",
+                                 context.Request.Path, context.Request.Method);
                 throw;
             }
         }

@@ -33,7 +33,7 @@ public static class LoggingExtension
         if (exclusionPredicate.Level != LogEventLevel.Information) return true;
 
         exclusionPredicate.Properties.TryGetValue("StatusCode", out var statusCode);
-        exclusionPredicate.Properties.TryGetValue("Path", out var path);
+        exclusionPredicate.Properties.TryGetValue("RequestPath", out var path);
 
         var excludeByStatusCode = statusCode == null || statusCode.ToString().Equals("200");
         var excludeByPath = path?.ToString().Contains("/health") ?? false;
@@ -48,7 +48,7 @@ public static class LoggingExtension
     /// <returns>A <see cref="WebApplicationBuilder"/> that can be used to further configure the API services.</returns>
     /// <remarks>
     /// <para>Logging output are diferents on Debug and Release modes.</para>
-    /// </remarks> 
+    /// </remarks>
     public static WebApplicationBuilder AddDefaultLogging(this WebApplicationBuilder builder)
     {
         Log.Logger = new LoggerConfiguration().CreateLogger();
@@ -66,20 +66,23 @@ public static class LoggingExtension
 
             if (Debugger.IsAttached)
             {
-                configuration.Enrich.WithProperty("DebuggerAttached", Debugger.IsAttached);
-                configuration.WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}", theme: SystemConsoleTheme.Colored);
+                configuration
+                    .Enrich.WithProperty("DebuggerAttached", Debugger.IsAttached)
+                    .WriteTo.Console(
+                        outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] [{SourceContext}] {Message:lj} [Method: {HttpMethod}] [StatusCode: {StatusCode}]{NewLine}{Exception}",
+                        theme: SystemConsoleTheme.Colored
+                    );
             }
             else
             {
                 configuration
-                    .WriteTo.Console
-                    (
-                        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {SourceContext} {Message:lj}{NewLine}{Exception}"
+                    .WriteTo.Console(
+                        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {SourceContext} {Message:lj} [Method: {HttpMethod}] [StatusCode: {StatusCode}]{NewLine}{Exception}"
                     )
                     .WriteTo.File(
                         "logs/log-.txt",
                         rollingInterval: RollingInterval.Day,
-                        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {SourceContext} {Message:lj}{NewLine}{Exception}"
+                        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {SourceContext} {Message:lj} [Method: {HttpMethod}] [StatusCode: {StatusCode}]{NewLine}{Exception}"
                     );
             }
         });
@@ -89,16 +92,20 @@ public static class LoggingExtension
         return builder;
     }
 
-    /// <summary>Adds middleware for Swagger documetation generation.</summary>
-    /// <param name="app">The <see cref="WebApplication"/> instance this method extends.</param>
-    /// <returns>The <see cref="WebApplication"/> for Swagger documentation.</returns>
+    /// <summary>
+    /// Adds middleware for default logging.
+    /// </summary>
     public static WebApplication UseDefaultLogging(this WebApplication app)
     {
         var logger = app.Services.GetRequiredService<ILogger<Logger>>();
 
         var mode = Debugger.IsAttached ? "Debug" : "Release";
-        logger.LogInformation("Logging enabled for '{Application}' on '{Environment}' - Mode: {Mode}", app.Environment.ApplicationName, app.Environment.EnvironmentName, mode);
-        return app;
+        logger.LogInformation("Logging enabled for '{Application}' on '{Environment}' - Mode: {Mode}",
+            app.Environment.ApplicationName,
+            app.Environment.EnvironmentName,
+            mode
+        );
 
+        return app;
     }
 }
