@@ -45,7 +45,7 @@ public class CartItemTests
         var cartItem = new CartItem(Guid.NewGuid(), 10, 5);
 
         // Act
-        cartItem.IncreaseQuantity(5, 10);
+        cartItem.UpdateProductQuantity(15, 10);
 
         // Assert
         cartItem.Quantity.Should().Be(15);
@@ -58,11 +58,11 @@ public class CartItemTests
         var cartItem = new CartItem(Guid.NewGuid(), 18, 5);
 
         // Act
-        Action act = () => cartItem.IncreaseQuantity(5, 10);
+        Action act = () => cartItem.UpdateProductQuantity(23, 10);
 
         // Assert
         act.Should().Throw<ArgumentOutOfRangeException>()
-           .WithMessage("Total quantity cannot exceed 20*");
+           .WithMessage("Quantity must be between 1 and 20*");
     }
 
     [Fact(DisplayName = "Should decrease quantity successfully")]
@@ -72,7 +72,7 @@ public class CartItemTests
         var cartItem = new CartItem(Guid.NewGuid(), 10, 5);
 
         // Act
-        cartItem.DecreaseQuantity(5, 10);
+        cartItem.UpdateProductQuantity(5, 10);
 
         // Assert
         cartItem.Quantity.Should().Be(5);
@@ -85,11 +85,11 @@ public class CartItemTests
         var cartItem = new CartItem(Guid.NewGuid(), 5, 5);
 
         // Act
-        Action act = () => cartItem.DecreaseQuantity(10, 10);
+        Action act = () => cartItem.UpdateProductQuantity(0, 10);
 
         // Assert
         act.Should().Throw<ArgumentOutOfRangeException>()
-           .WithMessage("Quantity must be at least 1*");
+           .WithMessage("Quantity must be between 1 and 20*");
     }
 
     [Fact(DisplayName = "Should create instance using private constructor")]
