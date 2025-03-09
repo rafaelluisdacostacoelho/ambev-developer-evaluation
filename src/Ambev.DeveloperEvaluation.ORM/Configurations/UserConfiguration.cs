@@ -4,12 +4,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Ambev.DeveloperEvaluation.ORM.Confiturations;
+namespace Ambev.DeveloperEvaluation.ORM.Configurations;
 
 /// <summary>
 /// Configuration for the User entity in PostgreSQL.
 /// </summary>
-public class UserConfiguration : IEntityTypeConfiguration<User>
+internal class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
