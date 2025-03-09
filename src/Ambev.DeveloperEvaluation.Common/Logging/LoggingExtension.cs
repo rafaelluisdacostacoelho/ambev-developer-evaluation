@@ -52,10 +52,11 @@ public static class LoggingExtension
     public static WebApplicationBuilder AddDefaultLogging(this WebApplicationBuilder builder)
     {
         Log.Logger = new LoggerConfiguration().CreateLogger();
-        builder.Host.UseSerilog((hostingContext, loggerConfiguration) =>
+        builder.Host.UseSerilog((context, services, configuration) =>
         {
-            loggerConfiguration
-                .ReadFrom.Configuration(hostingContext.Configuration)
+            configuration
+                .ReadFrom.Configuration(context.Configuration)
+                .ReadFrom.Services(services)
                 .Enrich.WithMachineName()
                 .Enrich.WithProperty("Environment", builder.Environment.EnvironmentName)
                 .Enrich.WithProperty("Application", builder.Environment.ApplicationName)
@@ -65,12 +66,12 @@ public static class LoggingExtension
 
             if (Debugger.IsAttached)
             {
-                loggerConfiguration.Enrich.WithProperty("DebuggerAttached", Debugger.IsAttached);
-                loggerConfiguration.WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}", theme: SystemConsoleTheme.Colored);
+                configuration.Enrich.WithProperty("DebuggerAttached", Debugger.IsAttached);
+                configuration.WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}", theme: SystemConsoleTheme.Colored);
             }
             else
             {
-                loggerConfiguration
+                configuration
                     .WriteTo.Console
                     (
                         outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {SourceContext} {Message:lj}{NewLine}{Exception}"

@@ -10,6 +10,8 @@ using Ambev.DeveloperEvaluation.WebApi.Common;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Serilog.Context;
+using System.Diagnostics;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Users;
 
@@ -21,6 +23,7 @@ public class UsersController : BaseController
 {
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
+    private readonly ILogger<UsersController> _logger;
 
     private const string USER_CACHE_KEY = "User:{id}";
     private const string USERS_PAGE_CACHE_KEY = "Users:Page:{pageNumber}_{pageSize}_{order}_{filter}";
@@ -30,10 +33,11 @@ public class UsersController : BaseController
     /// </summary>
     /// <param name="mediator">The mediator instance</param>
     /// <param name="mapper">The AutoMapper instance</param>
-    public UsersController(IMediator mediator, IMapper mapper)
+    public UsersController(IMediator mediator, IMapper mapper, ILogger<UsersController> logger)
     {
         _mediator = mediator;
         _mapper = mapper;
+        _logger = logger;
     }
 
     /// <summary>
@@ -73,20 +77,26 @@ public class UsersController : BaseController
     [Cache(USER_CACHE_KEY, DurationInMinutes = 15)]
     public async Task<IActionResult> GetUserByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        if (id == Guid.Empty)
+        var requestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
+
+        using (LogContext.PushProperty("RequestId", id))
+        using (LogContext.PushProperty("UserId", id))
         {
-            return BadRequest(new { Message = "Invalid user ID." });
+            if (id == Guid.Empty)
+            {
+                return BadRequest(new { Message = "Invalid user ID." });
+            }
+
+            var command = _mapper.Map<GetUserCommand>(id);
+            var response = await _mediator.Send(command, cancellationToken);
+
+            if (response == null)
+            {
+                return NotFound(new { Message = "User not found." });
+            }
+
+            return Ok(response);
         }
-
-        var command = _mapper.Map<GetUserCommand>(id);
-        var response = await _mediator.Send(command, cancellationToken);
-
-        if (response == null)
-        {
-            return NotFound(new { Message = "User not found." });
-        }
-
-        return Ok(response);
     }
 
     /// <summary>

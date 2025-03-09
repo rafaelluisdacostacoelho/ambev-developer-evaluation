@@ -1,5 +1,6 @@
 using Ambev.DeveloperEvaluation.Application;
 using Ambev.DeveloperEvaluation.Common.HealthChecks;
+using Ambev.DeveloperEvaluation.Common.Logging;
 using Ambev.DeveloperEvaluation.Common.Security;
 using Ambev.DeveloperEvaluation.Domain.Services;
 using Ambev.DeveloperEvaluation.Domain.Services.Interfces;
@@ -14,15 +15,7 @@ using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 
 // Configuração do Serilog (Logging global desde o início)
-builder.Host.UseSerilog((context, services, configuration) =>
-{
-    configuration
-        .ReadFrom.Configuration(context.Configuration)
-        .ReadFrom.Services(services)
-        .Enrich.FromLogContext()
-        .Enrich.WithMachineName()
-        .WriteTo.Console();
-});
+builder.AddDefaultLogging();
 
 // Configuração de Controllers e Swagger
 builder.Services.AddControllers().AddJsonOptions(options =>
@@ -123,8 +116,12 @@ builder.Services.AddMediatR(cfg =>
 // Building the application
 var app = builder.Build();
 
+// Logging Middleware
+app.UseMiddleware<LoggingMiddleware>();
+
 // Validation and Exception middleware
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 
 app.UseSerilogRequestLogging();
 

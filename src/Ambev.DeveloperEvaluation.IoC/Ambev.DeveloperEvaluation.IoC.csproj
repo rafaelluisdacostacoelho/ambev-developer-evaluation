@@ -23,6 +23,7 @@
 		<ProjectReference Include="..\Ambev.DeveloperEvaluation.Cache\Ambev.DeveloperEvaluation.Cache.csproj" />
 		<ProjectReference Include="..\Ambev.DeveloperEvaluation.Domain\Ambev.DeveloperEvaluation.Domain.csproj" />
 		<ProjectReference Include="..\Ambev.DeveloperEvaluation.Application\Ambev.DeveloperEvaluation.Application.csproj" />
+		<ProjectReference Include="..\Ambev.DeveloperEvaluation.Logging\Ambev.DeveloperEvaluation.Logging.csproj" />
 		<ProjectReference Include="..\Ambev.DeveloperEvaluation.NoSql\Ambev.DeveloperEvaluation.NoSql.csproj" />
 		<ProjectReference Include="..\Ambev.DeveloperEvaluation.ORM\Ambev.DeveloperEvaluation.ORM.csproj" />
 		<ProjectReference Include="..\Ambev.DeveloperEvaluation.Common\Ambev.DeveloperEvaluation.Common.csproj" />
