@@ -13,9 +13,6 @@ public class CartItem
 
     public CartItem(Guid productId, int quantity, decimal unitPrice)
     {
-        if (quantity < 1 || quantity > 20)
-            throw new ArgumentOutOfRangeException(nameof(quantity), "Quantity must be between 1 and 20");
-
         ProductId = productId;
         UnitPrice = unitPrice;
         UpdateProductQuantity(quantity, unitPrice);
@@ -23,7 +20,7 @@ public class CartItem
 
     public void UpdateProductQuantity(int quantity, decimal unitPrice)
     {
-        if (quantity < 1 || quantity > 20)
+        if (quantity < 1 || 20 < quantity)
             throw new ArgumentOutOfRangeException(nameof(quantity), "Quantity must be between 1 and 20");
 
         Quantity = quantity;
