@@ -1,4 +1,5 @@
 using Ambev.DeveloperEvaluation.Common.Messaging;
+using Ambev.DeveloperEvaluation.Domain.Events.Sale;
 using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.CreateSale.Commands;
@@ -17,4 +18,8 @@ public class CreateSaleCommand : IRequest<Guid>
 
     // Campos desnormalizados do Cart
     public Guid UserId { get; set; }
+
+
+    // Evento associado ao comando
+    public IEvent SaleCreatedEvent => new SaleCreatedEvent(Guid.NewGuid());
 }

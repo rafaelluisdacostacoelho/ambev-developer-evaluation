@@ -1,4 +1,5 @@
 using Ambev.DeveloperEvaluation.Application.Sales.CreateSale.Commands;
+using Ambev.DeveloperEvaluation.Common.Cache;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -10,16 +11,20 @@ public class SalesController : BaseController
 {
     private readonly IMediator _mediator;
 
+    private const string SALE_CACHE_KEY = "Product:{id}";
+
     public SalesController(IMediator mediator)
     {
         _mediator = mediator;
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateSale([FromBody] CreateSaleCommand command)
     {
-        var saleId = await _mediator.Send(command);
-        return CreatedAtAction(nameof(GetSaleAsync), new { id = saleId }, saleId);
+        var id = await _mediator.Send(command);
+        return Created(nameof(GetSaleAsync), new { id }, id);
     }
 
     /// <summary>
@@ -27,7 +32,12 @@ public class SalesController : BaseController
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    [HttpGet("{id}")]
+    [HttpGet("{id}", Name = nameof(GetSaleAsync))]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [Cache(SALE_CACHE_KEY, DurationInMinutes = 15)]
     public async Task<IActionResult> GetSaleAsync([FromRoute] Guid id)
     {
         // Lógica para buscar a venda

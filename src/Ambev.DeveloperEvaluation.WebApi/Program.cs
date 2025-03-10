@@ -109,8 +109,9 @@ builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(ApplicationLayer
 builder.Services.AddScoped<IProductPriceService, ProductPriceService>();
 
 // Add event publisher pipeline
-builder.Services.AddSingleton<IDomainEventDispatcher, DomainEventDispatcher>();
+builder.Services.AddScoped(typeof(IDomainEventDispatcher<>), typeof(DomainEventDispatcher<>));
 builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(DomainEventPublisherBehavior<,>));
+
 
 // MediatR Configuration
 builder.Services.AddMediatR(cfg =>

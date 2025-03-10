@@ -1,57 +1,56 @@
 using Ambev.DeveloperEvaluation.Common.Messaging;
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Exceptions;
 using System.Text.Json;
 
 namespace Ambev.DeveloperEvaluation.Messaging.Services;
 
-public class RabbitMqProducer : IProducer
+public class RabbitMqProducer : IEventPublisher
 {
     private readonly IConnection _connection;
+    private readonly ILogger<RabbitMqProducer> _logger;
 
-    public RabbitMqProducer(IConnection connection)
+    public RabbitMqProducer(IConnection connection, ILogger<RabbitMqProducer> logger)
     {
         _connection = connection ?? throw new ArgumentNullException(nameof(connection));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public Task PublishAsync<T>(string queueName, T message)
+    public async Task PublishEventAsync<T>(T domainEvent) where T : class
     {
-        if (string.IsNullOrEmpty(queueName))
-            throw new ArgumentNullException(nameof(queueName));
+        ArgumentNullException.ThrowIfNull(domainEvent);
 
-        if (message == null)
-            throw new ArgumentNullException(nameof(message));
+        var queueName = typeof(T).Name;
 
         try
         {
             using var channel = _connection.CreateModel();
 
-            // Declaração da fila de forma síncrona
             channel.QueueDeclare(queue: queueName, durable: true, exclusive: false, autoDelete: false, arguments: null);
 
-            var body = JsonSerializer.SerializeToUtf8Bytes(message);
+            var body = JsonSerializer.SerializeToUtf8Bytes(domainEvent);
 
             var properties = channel.CreateBasicProperties();
             properties.Persistent = true;
 
-            // Publicação da mensagem de forma síncrona
             channel.BasicPublish(exchange: "", routingKey: queueName, mandatory: false, basicProperties: properties, body: body);
 
-            Console.WriteLine($"Message published to queue '{queueName}': {message}");
+            _logger.LogInformation("Mensagem publicada na fila '{QueueName}': {DomainEvent}", queueName, JsonSerializer.Serialize(domainEvent));
         }
         catch (BrokerUnreachableException ex)
         {
-            Console.WriteLine($"Failed to connect to RabbitMQ: {ex.Message}");
+            _logger.LogError(ex, "Falha ao conectar ao RabbitMQ.");
         }
         catch (AlreadyClosedException ex)
         {
-            Console.WriteLine($"RabbitMQ connection was already closed: {ex.Message}");
+            _logger.LogError(ex, "Conexão com o RabbitMQ já estava fechada.");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"An unexpected error occurred while publishing to RabbitMQ: {ex.Message}");
+            _logger.LogError(ex, "Erro inesperado ao publicar no RabbitMQ.");
         }
 
-        return Task.CompletedTask;
+        await Task.CompletedTask;
     }
 }

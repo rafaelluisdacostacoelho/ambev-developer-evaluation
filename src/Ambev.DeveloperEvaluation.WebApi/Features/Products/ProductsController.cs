@@ -55,7 +55,7 @@ public class ProductsController : BaseController
     /// <param name="id">The unique identifier of the product.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The product details if found, otherwise an appropriate error response.</returns>
-    [HttpGet("{id}", Name = "GetProductByIdAsync")]
+    [HttpGet("{id}", Name = nameof(GetProductByIdAsync))]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

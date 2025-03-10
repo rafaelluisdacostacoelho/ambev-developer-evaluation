@@ -27,15 +27,16 @@ public class InfrastructureMessagingModuleInitializer : IModuleInitializer
 
         var factory = new ConnectionFactory
         {
-            HostName = hostName, // Deve ser "rabbitmq" para o acesso correto via Docker
+            HostName = hostName,
             UserName = userName,
             Password = password,
-            Port = port // Especificar a porta correta do RabbitMQ
+            Port = port
         };
 
         var connection = factory.CreateConnection();
 
         builder.Services.AddSingleton(connection);
-        builder.Services.AddSingleton<IProducer, RabbitMqProducer>();
+
+        builder.Services.AddSingleton<IEventPublisher, RabbitMqProducer>();
     }
 }

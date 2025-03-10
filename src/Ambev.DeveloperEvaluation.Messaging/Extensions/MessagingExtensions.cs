@@ -1,6 +1,5 @@
 using Ambev.DeveloperEvaluation.Common.Messaging;
 using Ambev.DeveloperEvaluation.Messaging.Services;
-using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -24,8 +23,7 @@ public static class RabbitMqExtensions
             ?? throw new InvalidOperationException("RabbitMQ connection is not established."));
 
         // Registro do produtor e do pipeline behavior
-        services.AddScoped<IProducer, RabbitMqProducer>();
-        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(EventPublishingBehavior<,>));
+        services.AddScoped<IEventPublisher, RabbitMqProducer>();
 
         return services;
     }

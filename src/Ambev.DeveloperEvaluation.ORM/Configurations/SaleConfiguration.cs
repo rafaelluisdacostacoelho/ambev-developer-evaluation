@@ -22,18 +22,19 @@ internal class SaleConfiguration : IEntityTypeConfiguration<Sale>
                .HasDefaultValueSql("gen_random_uuid()");
 
         builder.Property(u => u.SaleDate)
-               .IsRequired()
-               .HasColumnType("timestamp")
-               .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-        builder.Property(u => u.UserId)
+               .HasColumnType("timestamp with time zone")
                .IsRequired();
 
         builder.Property(u => u.PriceTotal)
                .IsRequired()
                .HasColumnType("decimal(18,2)");
 
+        builder.Property(u => u.UserId)
+               .HasColumnType("uuid")
+               .IsRequired();
+
         builder.Property(u => u.CartId)
+               .HasColumnType("uuid")
                .IsRequired();
     }
 }

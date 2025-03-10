@@ -1,8 +1,8 @@
 namespace Ambev.DeveloperEvaluation.Common.Messaging;
 
-public interface IDomainEventDispatcher
+public interface IDomainEventDispatcher<TEvent> where TEvent : class
 {
-    void AddEvent<TEvent>(TEvent domainEvent) where TEvent : class;
-    IEnumerable<object> GetDomainEvents();
+    void AddEvent(TEvent domainEvent);
+    IEnumerable<TEvent> GetDomainEvents();
     void ClearEvents();
 }
