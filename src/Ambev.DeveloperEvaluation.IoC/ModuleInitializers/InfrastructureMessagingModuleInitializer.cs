@@ -4,12 +4,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client;
 
-
 namespace Ambev.DeveloperEvaluation.IoC.ModuleInitializers;
 
-public class InfrastructureMessagingModuleInitializer : IModuleInitializerAsync
+public class InfrastructureMessagingModuleInitializer : IModuleInitializer
 {
-    public async Task InitializeAsync(WebApplicationBuilder builder)
+    public void Initialize(WebApplicationBuilder builder)
     {
         var hostName = builder.Configuration["RabbitMQ:HostName"];
         var userName = builder.Configuration["RabbitMQ:UserName"];
@@ -34,7 +33,7 @@ public class InfrastructureMessagingModuleInitializer : IModuleInitializerAsync
             Port = port // Especificar a porta correta do RabbitMQ
         };
 
-        var connection = await factory.CreateConnectionAsync();
+        var connection = factory.CreateConnection();
 
         builder.Services.AddSingleton(connection);
         builder.Services.AddSingleton<IProducer, RabbitMqProducer>();

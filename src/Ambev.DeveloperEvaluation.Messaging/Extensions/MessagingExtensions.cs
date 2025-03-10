@@ -11,8 +11,6 @@ namespace Ambev.DeveloperEvaluation.Messaging.Extensions;
 
 public static class RabbitMqExtensions
 {
-    private static readonly string[] hostnames = new[] { "RabbitMQ Connection" };
-
     public static IServiceCollection AddRabbitMqServices(this IServiceCollection services, IConfiguration configuration)
     {
         // Obtenção das configurações do RabbitMQ via IConfiguration
@@ -21,7 +19,8 @@ public static class RabbitMqExtensions
 
         // Registro do IHostedService para gerenciar a conexão RabbitMQ
         services.AddSingleton<RabbitMqConnectionService>();
-        services.AddSingleton(static sp => sp.GetRequiredService<RabbitMqConnectionService>().Connection
+        services.AddSingleton<IConnection>(sp =>
+            sp.GetRequiredService<RabbitMqConnectionService>().Connection
             ?? throw new InvalidOperationException("RabbitMQ connection is not established."));
 
         // Registro do produtor e do pipeline behavior
@@ -36,13 +35,13 @@ public static class RabbitMqExtensions
 internal class RabbitMqOptions
 {
     public string HostName { get; set; } = string.Empty;
-    public int Port { get; set; }
-    public string UserName { get; set; } = string.Empty;
-    public string Password { get; set; } = string.Empty;
-    public string VirtualHost { get; set; } = string.Empty;
+    public int Port { get; set; } = 5672; // Porta padrão do RabbitMQ
+    public string UserName { get; set; } = "guest";
+    public string Password { get; set; } = "guest";
+    public string VirtualHost { get; set; } = "/";
 }
 
-public class RabbitMqConnectionService : IHostedService, IAsyncDisposable
+public class RabbitMqConnectionService : IHostedService, IDisposable
 {
     private readonly RabbitMqOptions _options;
     private IConnection? _connection;
@@ -55,7 +54,7 @@ public class RabbitMqConnectionService : IHostedService, IAsyncDisposable
 
     public IConnection? Connection => _connection;
 
-    public async Task StartAsync(CancellationToken cancellationToken)
+    public Task StartAsync(CancellationToken cancellationToken)
     {
         var factory = new ConnectionFactory
         {
@@ -64,35 +63,36 @@ public class RabbitMqConnectionService : IHostedService, IAsyncDisposable
             UserName = _options.UserName,
             Password = _options.Password,
             VirtualHost = _options.VirtualHost,
-            AutomaticRecoveryEnabled = true,
-            NetworkRecoveryInterval = TimeSpan.FromSeconds(10)
+            AutomaticRecoveryEnabled = true, // Habilitar a recuperação automática
+            NetworkRecoveryInterval = TimeSpan.FromSeconds(10) // Intervalo de recuperação
         };
 
         try
         {
-            _connection = await factory.CreateConnectionAsync([_options.HostName], "RabbitMQ Connection", cancellationToken);
+            _connection = factory.CreateConnection(new[] { _options.HostName }, "RabbitMQ Connection");
             Console.WriteLine("RabbitMQ Connection established.");
         }
         catch (BrokerUnreachableException ex)
         {
             Console.WriteLine($"Failed to connect to RabbitMQ: {ex.Message}");
         }
+
+        return Task.CompletedTask;
     }
 
-    public async Task StopAsync(CancellationToken cancellationToken)
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        Dispose();
+        return Task.CompletedTask;
+    }
+
+    public void Dispose()
     {
         if (_connection != null)
         {
-            await _connection.CloseAsync(cancellationToken: cancellationToken);
-        }
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        if (_connection != null)
-        {
-            await _connection.CloseAsync();
+            _connection.Close();
             _connection.Dispose();
+            Console.WriteLine("RabbitMQ Connection closed.");
         }
         GC.SuppressFinalize(this);
     }
