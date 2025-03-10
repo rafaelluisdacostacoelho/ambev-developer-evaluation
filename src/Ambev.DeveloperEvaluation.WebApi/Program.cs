@@ -1,12 +1,14 @@
 using Ambev.DeveloperEvaluation.Application;
 using Ambev.DeveloperEvaluation.Common.HealthChecks;
 using Ambev.DeveloperEvaluation.Common.Logging;
+using Ambev.DeveloperEvaluation.Common.Messaging;
 using Ambev.DeveloperEvaluation.Common.Security;
 using Ambev.DeveloperEvaluation.Domain.Services;
 using Ambev.DeveloperEvaluation.Domain.Services.Interfces;
 using Ambev.DeveloperEvaluation.IoC;
 using Ambev.DeveloperEvaluation.ORM;
 using Ambev.DeveloperEvaluation.WebApi.Middleware;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.OpenApi.Models;
@@ -98,12 +100,17 @@ builder.Services.AddSingleton<IDbContextFactory<StoreDbContext>>(provider =>
 builder.Services.AddJwtAuthentication(builder.Configuration);
 
 // Dependency injection via IoC
-builder.RegisterDependencies();
+await builder.RegisterDependencies();
+
 
 // AutoMapper Configuration
 builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(ApplicationLayer).Assembly);
 
 builder.Services.AddScoped<IProductPriceService, ProductPriceService>();
+
+// Add event publisher pipeline
+builder.Services.AddSingleton<IDomainEventDispatcher, DomainEventDispatcher>();
+builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(DomainEventPublisherBehavior<,>));
 
 // MediatR Configuration
 builder.Services.AddMediatR(cfg =>
@@ -121,7 +128,6 @@ app.UseMiddleware<LoggingMiddleware>();
 
 // Validation and Exception middleware
 app.UseMiddleware<ExceptionHandlingMiddleware>();
-
 
 app.UseSerilogRequestLogging();
 

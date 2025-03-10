@@ -60,6 +60,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ambev.DeveloperEvaluation.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ambev.DeveloperEvaluation.Logging", "src\Ambev.DeveloperEvaluation.Logging\Ambev.DeveloperEvaluation.Logging.csproj", "{31D94620-A827-4548-987E-C21D1AAC3298}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ambev.DeveloperEvaluation.Messaging", "src\Ambev.DeveloperEvaluation.Messaging\Ambev.DeveloperEvaluation.Messaging.csproj", "{B9E1ED17-20D8-4E93-9B26-EAF610B71004}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -118,6 +120,10 @@ Global
 		{31D94620-A827-4548-987E-C21D1AAC3298}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{31D94620-A827-4548-987E-C21D1AAC3298}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{31D94620-A827-4548-987E-C21D1AAC3298}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9E1ED17-20D8-4E93-9B26-EAF610B71004}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9E1ED17-20D8-4E93-9B26-EAF610B71004}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9E1ED17-20D8-4E93-9B26-EAF610B71004}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9E1ED17-20D8-4E93-9B26-EAF610B71004}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -144,6 +150,7 @@ Global
 		{01624B51-E595-4CC1-AD8B-0BFA4452D6CA} = {BD3812F8-8783-42C6-B231-8A032EF9481F}
 		{7896ED9A-3EAE-4A4C-9736-C54D4776189C} = {BD3812F8-8783-42C6-B231-8A032EF9481F}
 		{31D94620-A827-4548-987E-C21D1AAC3298} = {BD3812F8-8783-42C6-B231-8A032EF9481F}
+		{B9E1ED17-20D8-4E93-9B26-EAF610B71004} = {BD3812F8-8783-42C6-B231-8A032EF9481F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {13EAB81A-C6B2-4C22-B4DE-C6603FC445B6}

@@ -14,6 +14,10 @@ services:
       - LC_ALL=en_US.UTF-8
       - LANG=en_US.UTF-8
       - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__UserName=guest
+      - RabbitMQ__Password=guest
     ports:
       - "61094:8080"
       - "61095:8081"
@@ -21,10 +25,15 @@ services:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
       - .:/app
-    depends_on:
-      - elasticsearch
-      - logstash
-      - kibana
+    # depends_on:
+    #   elasticsearch:
+    #     condition: service_healthy
+    #   logstash:
+    #     condition: service_healthy
+    #   kibana:
+    #     condition: service_healthy
+    #   rabbitmq:
+    #     condition: service_healthy
 
   ambev.developerevaluation.database:
     container_name: ambev_developer_evaluation_database
@@ -101,6 +110,23 @@ services:
       timeout: 10s
       retries: 5
 
+  rabbitmq:
+    image: rabbitmq:3.11-management
+    container_name: rabbitmq
+    ports:
+      - "5673:5672" # Porta personalizada para AMQP
+      - "15673:15672" # Porta personalizada para interface de gerenciamento
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
 volumes:
   ambev_pg_data:
     external: true
@@ -108,3 +134,5 @@ volumes:
     external: true
   es_data:
     external: true
+  rabbitmq_data:
+    driver: local

@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 
@@ -17,14 +17,25 @@ public static class MongoDbServiceCollectionExtensions
         if (string.IsNullOrWhiteSpace(databaseName))
             throw new ArgumentNullException(nameof(configuration), "O nome do banco de dados MongoDB não pode ser nulo ou vazio.");
 
-        services.AddSingleton<IMongoClient>(new MongoClient(connectionString));
-        services.AddScoped<IMongoDatabase>(sp =>
+        try
         {
-            var client = sp.GetRequiredService<IMongoClient>();
-            return client.GetDatabase(databaseName);
-        });
+            // Registra o MongoClient como Singleton (reutilizável em toda a aplicação)
+            services.AddSingleton<IMongoClient>(sp => new MongoClient(connectionString));
 
-        services.AddScoped<StoreNoSqlContext>();
+            // Registra o IMongoDatabase como Singleton também (não há necessidade de escopo)
+            services.AddSingleton(sp =>
+            {
+                var client = sp.GetRequiredService<IMongoClient>();
+                return client.GetDatabase(databaseName);
+            });
+
+            // Registra o contexto do MongoDB (se necessário)
+            services.AddScoped<StoreNoSqlContext>();
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("Falha ao configurar o MongoDB.", ex);
+        }
 
         return services;
     }

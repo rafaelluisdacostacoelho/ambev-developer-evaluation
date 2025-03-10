@@ -24,4 +24,10 @@
     </Compile>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Sales\GetSale\" />
+    <Folder Include="Sales\DeleteSale\" />
+    <Folder Include="Sales\UpdateSale\" />
+  </ItemGroup>
+
 </Project>
